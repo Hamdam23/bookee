@@ -19,6 +19,13 @@ public class GenreEntity {
 
     private String description;
 
-    @ManyToMany
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name="genre_book",
+            joinColumns=@JoinColumn(name="book_id"),
+            inverseJoinColumns=@JoinColumn(name="genre_id")
+    )
     private List<BookEntity> books;
 }

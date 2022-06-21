@@ -25,9 +25,7 @@ public class BookEntity {
 
     private int rating;
 
-    private String genre;
-
-    @ManyToMany
+    @ManyToMany(mappedBy = "books")
     private List<GenreEntity> genres;
 
 }

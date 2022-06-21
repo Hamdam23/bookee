@@ -1,17 +1,16 @@
 package hamdam.bookee.genre;
 
+import hamdam.bookee.book.BookRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService{
 
     private final GenreRepository genreRepository;
-
-    public GenreServiceImpl(GenreRepository genreRepository) {
-        this.genreRepository = genreRepository;
-    }
 
     @Override
     public List<GenreEntity> getAllGenres() {

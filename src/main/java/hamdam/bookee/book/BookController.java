@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/books")
 public class BookController {
 
     private final BookServiceImpl bookService;
@@ -14,27 +14,27 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @GetMapping("/books")
+    @GetMapping
     public List<BookEntity> getAllBooks(){
         return bookService.getAllBooks();
     }
 
-    @GetMapping("/book/{id}")
+    @GetMapping("/{id}")
     public BookEntity getBookByID(@PathVariable Long id){
         return bookService.getBookById(id);
     }
 
-    @PostMapping("/add/book")
+    @PostMapping
     public void addBook(@RequestBody BookEntity book){
         bookService.addBook(book);
     }
 
-    @PutMapping("/book/{id}")
+    @PutMapping("/{id}")
     public void updateBook(@PathVariable Long id, @RequestBody BookEntity newBook){
         bookService.updateBook(newBook, id);
     }
 
-    @DeleteMapping("/book/{id}")
+    @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable Long id){
         bookService.deleteBook(id);
     }

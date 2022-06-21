@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/genres")
 public class GenreController {
 
     private final GenreServiceImpl service;
@@ -14,27 +14,27 @@ public class GenreController {
         this.service = service;
     }
 
-    @GetMapping("/genres")
+    @GetMapping
     public List<GenreEntity> getAllGenres(){
         return service.getAllGenres();
     }
 
-    @GetMapping("/genre/{id}")
+    @GetMapping("{id}")
     public GenreEntity getGenreByID(@PathVariable Long id){
         return service.getGenreByID(id);
     }
 
-    @PostMapping("/add/genre")
+    @PostMapping
     public void addGenre(@RequestBody GenreEntity genre){
         service.addGenre(genre);
     }
 
-    @PutMapping("/genre/{id}")
+    @PutMapping("{id}")
     public void updateGenre(@PathVariable Long id, @RequestBody GenreEntity genre){
         service.updateGenre(id, genre);
     }
 
-    @DeleteMapping("/genre/{id}")
+    @DeleteMapping("{id}")
     public void deleteGenre(@PathVariable Long id){
         service.deleteGenre(id);
     }

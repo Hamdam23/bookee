@@ -1,18 +1,16 @@
 package hamdam.bookee.book;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService{
 
     private final BookRepository bookRepository;
-
-    public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
 
     @Override
     public List<BookEntity> getAllBooks() {
