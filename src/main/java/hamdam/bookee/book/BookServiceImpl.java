@@ -1,5 +1,6 @@
 package hamdam.bookee.book;
 
+import hamdam.bookee.exeption.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class BookServiceImpl implements BookService {
         BookEntity oldBook = bookRepository.findById(id).get();
 
         if (oldBook == null) {
-            throw new ObjectNotFoundException(id, book.getName());
+            throw new ResourceNotFoundException("Book", "id", id);
         }
 
         bookRepository.save(oldBook);
