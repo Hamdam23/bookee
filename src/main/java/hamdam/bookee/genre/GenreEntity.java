@@ -4,6 +4,7 @@ import hamdam.bookee.book.BookEntity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,8 +25,8 @@ public class GenreEntity {
             CascadeType.MERGE
     })
     @JoinTable(name="genre_book",
-            joinColumns=@JoinColumn(name="book_id"),
-            inverseJoinColumns=@JoinColumn(name="genre_id")
+            joinColumns=@JoinColumn(name="genre_id"),
+            inverseJoinColumns=@JoinColumn(name="book_id")
     )
-    private List<BookEntity> books;
+    private List<BookEntity> books = new ArrayList<>();
 }

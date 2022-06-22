@@ -4,6 +4,7 @@ import hamdam.bookee.genre.GenreEntity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,9 +24,9 @@ public class BookEntity {
 
     private String author;
 
-    private int rating;
+    private Integer rating;
 
     @ManyToMany(mappedBy = "books")
-    private List<GenreEntity> genres;
+    private List<GenreEntity> genres = new ArrayList<>();
 
 }

@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static hamdam.bookee.constants.Endpoints.API_BOOK;
+
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping(API_BOOK)
 public class BookController {
 
     private final BookServiceImpl bookService;

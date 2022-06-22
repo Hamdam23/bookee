@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static hamdam.bookee.constants.Endpoints.API_GENRE;
+
 @RestController
-@RequestMapping("/api/v1/genres")
+@RequestMapping(API_GENRE)
 public class GenreController {
 
     private final GenreServiceImpl service;
@@ -19,7 +21,7 @@ public class GenreController {
         return service.getAllGenres();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public GenreEntity getGenreByID(@PathVariable Long id){
         return service.getGenreByID(id);
     }
@@ -29,12 +31,12 @@ public class GenreController {
         service.addGenre(genre);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public void updateGenre(@PathVariable Long id, @RequestBody GenreEntity genre){
         service.updateGenre(id, genre);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteGenre(@PathVariable Long id){
         service.deleteGenre(id);
     }

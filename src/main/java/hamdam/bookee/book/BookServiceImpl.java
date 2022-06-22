@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BookServiceImpl implements BookService{
+public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
@@ -33,7 +33,7 @@ public class BookServiceImpl implements BookService{
 
         BookEntity oldBook = bookRepository.findById(id).get();
 
-        if(oldBook == null){
+        if (oldBook == null) {
             throw new ObjectNotFoundException(id, book.getName());
         }
 
@@ -44,7 +44,7 @@ public class BookServiceImpl implements BookService{
     public void deleteBook(Long id) {
         BookEntity oldBook = bookRepository.findById(id).get();
 
-        if(oldBook == null){
+        if (oldBook == null) {
             throw new ObjectNotFoundException(id, oldBook.getName());
         }
 
