@@ -1,4 +1,4 @@
-package hamdam.bookee.genre;
+package hamdam.bookee.APIs.genre;
 
 import java.util.List;
 

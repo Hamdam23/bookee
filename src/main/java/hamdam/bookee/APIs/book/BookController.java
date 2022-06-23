@@ -1,10 +1,10 @@
-package hamdam.bookee.book;
+package hamdam.bookee.APIs.book;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static hamdam.bookee.constants.Endpoints.API_BOOK;
+import static hamdam.bookee.tools.constants.Endpoints.API_BOOK;
 
 @RestController
 @RequestMapping(API_BOOK)

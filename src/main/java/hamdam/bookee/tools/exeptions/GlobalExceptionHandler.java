@@ -1,4 +1,4 @@
-package hamdam.bookee.exeption;
+package hamdam.bookee.tools.exeptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

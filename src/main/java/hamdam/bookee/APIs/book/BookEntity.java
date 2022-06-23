@@ -1,6 +1,6 @@
-package hamdam.bookee.book;
+package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.genre.GenreEntity;
+import hamdam.bookee.APIs.genre.GenreEntity;
 import lombok.Data;
 
 import javax.persistence.*;

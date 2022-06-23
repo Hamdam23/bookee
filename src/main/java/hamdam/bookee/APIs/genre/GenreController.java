@@ -1,10 +1,10 @@
-package hamdam.bookee.genre;
+package hamdam.bookee.APIs.genre;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static hamdam.bookee.constants.Endpoints.API_GENRE;
+import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 
 @RestController
 @RequestMapping(API_GENRE)

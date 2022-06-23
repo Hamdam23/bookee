@@ -1,4 +1,4 @@
-package hamdam.bookee.genre;
+package hamdam.bookee.APIs.genre;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package hamdam.bookee.constants;
+package hamdam.bookee.tools.constants;
 
 public final class Endpoints {
     public static final String API_BOOK = "/api/v1/books";

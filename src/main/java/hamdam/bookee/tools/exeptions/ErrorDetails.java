@@ -1,4 +1,4 @@
-package hamdam.bookee.exeption;
+package hamdam.bookee.tools.exeptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
