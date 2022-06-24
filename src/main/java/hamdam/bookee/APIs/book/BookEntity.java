@@ -29,4 +29,21 @@ public class BookEntity {
     @ManyToMany(mappedBy = "books")
     private List<GenreEntity> genres = new ArrayList<>();
 
+    public BookEntity(BookDTO bookDTO) {
+        this.name = bookDTO.getName();
+        this.tagline = bookDTO.getTagline();
+        this.description = bookDTO.getDescription();
+        this.author = bookDTO.getAuthor();
+        this.rating = bookDTO.getRating();
+        bookDTO.getGenres().forEach(
+                genreId -> this.genres.add(new GenreEntity(genreId))
+        );
+    }
+
+    public BookEntity(Long id) {
+        this.id = id;
+    }
+
+    public BookEntity() {
+    }
 }

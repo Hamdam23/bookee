@@ -6,8 +6,8 @@ public interface BookService {
 
     List<BookEntity> getAllBooks();
     BookEntity getBookById(Long id);
-    void addBook(BookEntity book);
-    void updateBook(BookEntity book, Long id);
+    void addBook(BookDTO book);
+    void updateBook(BookDTO book, Long id);
     void deleteBook(Long id);
 
 }
