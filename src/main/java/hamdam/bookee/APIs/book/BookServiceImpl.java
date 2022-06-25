@@ -20,27 +20,29 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookEntity getBookById(Long id) {
         BookEntity book = bookRepository.findById(id).orElseThrow(()
-            -> new ResourceNotFoundException("Book", "id", id));
+                -> new ResourceNotFoundException("Book", "id", id));
         return book;
     }
 
     @Override
-    public void addBook(BookEntity book) {
-        bookRepository.save(book);
+    public void addBook(BookDTO book) {
+        bookRepository.save(new BookEntity(book));
     }
 
     @Override
-    public void updateBook(BookEntity book, Long id) {
+    public void updateBook(BookDTO book, Long id) {
         BookEntity oldBok = bookRepository.findById(id).orElseThrow(()
-            -> new ResourceNotFoundException("Book", "id", id));
+                -> new ResourceNotFoundException("Book", "id", id));
 
-        oldBok.setId(book.getId());
-        oldBok.setName(book.getName());
-        oldBok.setTagline(book.getTagline());
-        oldBok.setDescription(book.getDescription());
-        oldBok.setAuthor(book.getAuthor());
-        oldBok.setGenres(book.getGenres());
-        oldBok.setRating(book.getRating());
+        BookEntity newBook = new BookEntity(book);
+
+        oldBok.setId(newBook.getId());
+        oldBok.setName(newBook.getName());
+        oldBok.setTagline(newBook.getTagline());
+        oldBok.setDescription(newBook.getDescription());
+        oldBok.setAuthor(newBook.getAuthor());
+        oldBok.setGenres(newBook.getGenres());
+        oldBok.setRating(newBook.getRating());
         bookRepository.save(oldBok);
     }
 

@@ -6,7 +6,7 @@ public interface GenreService {
 
     List<GenreEntity> getAllGenres();
     GenreEntity getGenreByID(Long id);
-    void addGenre(GenreEntity genre);
-    void updateGenre(Long id, GenreEntity genre);
+    void addGenre(GenreDTO genre);
+    void updateGenre(Long id, GenreDTO genre);
     void deleteGenre(Long id);
 }

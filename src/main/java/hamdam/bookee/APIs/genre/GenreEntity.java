@@ -20,13 +20,25 @@ public class GenreEntity {
 
     private String description;
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name="genre_book",
-            joinColumns=@JoinColumn(name="genre_id"),
-            inverseJoinColumns=@JoinColumn(name="book_id")
+    @ManyToMany
+    @JoinTable(name = "genre_book",
+            joinColumns = @JoinColumn(name = "genre_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private List<BookEntity> books = new ArrayList<>();
+
+    public GenreEntity(GenreDTO genreDTO) {
+        this.name = genreDTO.getName();
+        this.description = genreDTO.getDescription();
+        genreDTO.getBooks().forEach(
+                bookId -> this.books.add(new BookEntity(bookId))
+        );
+    }
+
+    public GenreEntity(Long id) {
+        this.id = id;
+    }
+
+    public GenreEntity() {
+    }
 }

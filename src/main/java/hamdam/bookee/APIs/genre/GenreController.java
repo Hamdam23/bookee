@@ -27,12 +27,12 @@ public class GenreController {
     }
 
     @PostMapping
-    public void addGenre(@RequestBody GenreEntity genre){
+    public void addGenre(@RequestBody GenreDTO genre){
         service.addGenre(genre);
     }
 
     @PutMapping("/{id}")
-    public void updateGenre(@PathVariable Long id, @RequestBody GenreEntity genre){
+    public void updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre){
         service.updateGenre(id, genre);
     }
 
