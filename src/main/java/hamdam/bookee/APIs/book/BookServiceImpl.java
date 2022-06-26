@@ -2,6 +2,7 @@ package hamdam.bookee.APIs.book;
 
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,19 +32,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void updateBook(BookDTO book, Long id) {
-        BookEntity oldBok = bookRepository.findById(id).orElseThrow(()
+        BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
 
-        BookEntity newBook = new BookEntity(book);
+        BeanUtils.copyProperties(book, oldBook);
 
-        oldBok.setId(newBook.getId());
-        oldBok.setName(newBook.getName());
-        oldBok.setTagline(newBook.getTagline());
-        oldBok.setDescription(newBook.getDescription());
-        oldBok.setAuthor(newBook.getAuthor());
-        oldBok.setGenres(newBook.getGenres());
-        oldBok.setRating(newBook.getRating());
-        bookRepository.save(oldBok);
+        BookEntity newBook = new BookEntity(book);
+        oldBook.setGenres(newBook.getGenres());
+        bookRepository.save(oldBook);
     }
 
     @Override

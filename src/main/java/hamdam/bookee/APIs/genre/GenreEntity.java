@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.genre;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hamdam.bookee.APIs.book.BookEntity;
 import lombok.Data;
 
@@ -20,11 +21,8 @@ public class GenreEntity {
 
     private String description;
 
-    @ManyToMany
-    @JoinTable(name = "genre_book",
-            joinColumns = @JoinColumn(name = "genre_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
+    @ManyToMany(mappedBy = "genres")
+    @JsonIgnore
     private List<BookEntity> books = new ArrayList<>();
 
     public GenreEntity(GenreDTO genreDTO) {
@@ -32,7 +30,7 @@ public class GenreEntity {
         this.description = genreDTO.getDescription();
         genreDTO.getBooks().forEach(
                 bookId -> this.books.add(new BookEntity(bookId))
-        );
+        );;
     }
 
     public GenreEntity(Long id) {

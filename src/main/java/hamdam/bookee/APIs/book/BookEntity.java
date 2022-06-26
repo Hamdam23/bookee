@@ -26,7 +26,11 @@ public class BookEntity {
 
     private Integer rating;
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany()
+    @JoinTable(name = "book_genre",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
     private List<GenreEntity> genres = new ArrayList<>();
 
     public BookEntity(BookDTO bookDTO) {
