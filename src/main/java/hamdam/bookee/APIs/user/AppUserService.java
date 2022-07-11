@@ -1,9 +1,10 @@
 package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.image.Image;
-import hamdam.bookee.APIs.image.ImageDTO;
+import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.image.ImageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,13 +43,15 @@ public class AppUserService {
         userRepository.deleteById(id);
     }
 
-    public void setImageToUser(long id, ImageDTO imageDTO){
-        AppUser user = userRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("User not found!")
-        );
+    public void setImageToUser(long id, UserImageDTO imageDTO){
         Image image = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
         -> new RuntimeException("Image not found!")
         );
+
+        AppUser user = userRepository.findById(id).orElseThrow(()
+                -> new RuntimeException("User not found!")
+        );
         user.setUserImage(image);
+        userRepository.save(user);
     }
 }

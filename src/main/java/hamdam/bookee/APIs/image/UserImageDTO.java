@@ -7,9 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Data
-public class ImageDTO {
+public class UserImageDTO {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long imageId;
 }

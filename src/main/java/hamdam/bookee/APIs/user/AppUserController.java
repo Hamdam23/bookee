@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.APIs.image.ImageDTO;
+import hamdam.bookee.APIs.image.UserImageDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +40,7 @@ public class AppUserController {
     }
 
     @PatchMapping("/set-image-to-user/{id}")
-    public void setImageToUser(@PathVariable long id, @RequestBody ImageDTO dto){
+    public void setImageToUser(@PathVariable long id, @RequestBody UserImageDTO dto){
         userService.setImageToUser(id, dto);
     }
 }
