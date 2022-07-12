@@ -12,16 +12,26 @@ import static hamdam.bookee.tools.constants.Endpoints.API_USER;
 @RequestMapping(API_USER)
 @RequiredArgsConstructor
 public class AppUserController {
-    private final AppUserService userService;
+    private final AppUserServiceImpl userService;
 
     @PostMapping
     public void addUser(@RequestBody AppUserDTO user){
         userService.addUser(user);
     }
 
-    @GetMapping("/{id}")
-    public AppUser getUserByID(@PathVariable long id){
-        return userService.getUserById(id);
+    @PatchMapping("/set-role-to-user/{userId}")
+    public AppUser addRoleToUser(@PathVariable long userId, @RequestBody AppUserRoleDTO appUserRoleDTO){
+        return userService.setRoleToUser(userId, appUserRoleDTO);
+    }
+
+    @PatchMapping("/set-image-to-user/{id}")
+    public void setImageToUser(@PathVariable long id, @RequestBody UserImageDTO dto){
+        userService.setImageToUser(id, dto);
+    }
+
+    @GetMapping("/{name}")
+    public AppUser getUserByName(@PathVariable String name){
+        return userService.getUserByName(name);
     }
 
     @GetMapping
@@ -37,10 +47,5 @@ public class AppUserController {
     @DeleteMapping("{id}")
     public void deleteUser(@PathVariable long id){
         userService.deleteUser(id);
-    }
-
-    @PatchMapping("/set-image-to-user/{id}")
-    public void setImageToUser(@PathVariable long id, @RequestBody UserImageDTO dto){
-        userService.setImageToUser(id, dto);
     }
 }

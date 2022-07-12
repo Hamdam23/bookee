@@ -8,7 +8,5 @@ import javax.persistence.Id;
 
 @Data
 public class UserImageDTO {
-
-    @Id
     private long imageId;
 }
