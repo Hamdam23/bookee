@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class AppUserDTO {
     private String name;
+    private String userName;
     private String password;
 }

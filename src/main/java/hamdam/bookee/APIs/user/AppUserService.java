@@ -5,8 +5,8 @@ import hamdam.bookee.APIs.image.UserImageDTO;
 import java.util.List;
 
 public interface AppUserService {
-    void addUser(AppUserDTO user);
-    AppUser getUserByName(String name);
+    AppUser addUser(AppUserDTO user);
+    AppUser getUser(String userName);
     List<AppUser> getAllUsers();
     AppUser updateUser(AppUser newUser, long id);
     void deleteUser(long id);

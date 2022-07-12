@@ -4,19 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import hamdam.bookee.APIs.image.Image;
 import hamdam.bookee.APIs.role.AppRole;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(unique = true)
     private String name;
+
+    private String userName;
 
     @JsonIgnore
     private String password;
@@ -27,12 +29,9 @@ public class AppUser {
     @ManyToOne
     private AppRole roles;
 
-    public AppUser(AppUserDTO user) {
-        this.setName(user.getName());
-        this.setPassword(user.getPassword());
-    }
-
-    public AppUser() {
-
+    public AppUser(AppUserDTO dto){
+        this.setName(dto.getName());
+        this.setUserName(dto.getUserName());
+        this.setPassword(dto.getPassword());
     }
 }
