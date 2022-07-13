@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AppUserService {
     AppUser addUser(AppUserDTO user);
-    AppUser getUser(String userName);
+    AppUser getUserByUsername(String userName);
     List<AppUser> getAllUsers();
     AppUser updateUser(AppUser newUser, long id);
     void deleteUser(long id);

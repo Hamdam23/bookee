@@ -45,7 +45,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public AppUser getUser(String userName){
+    public AppUser getUserByUsername(String userName){
         AppUser user = userRepository.findAppUserByUserName(userName).orElseThrow(()
             -> new RuntimeException("User not found!")
         );

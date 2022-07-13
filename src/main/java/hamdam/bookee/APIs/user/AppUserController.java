@@ -46,7 +46,7 @@ public class AppUserController {
 
     @GetMapping("/api/v1/users/{name}")
     public AppUser getUserByName(@PathVariable String name){
-        return userService.getUser(name);
+        return userService.getUserByUsername(name);
     }
 
     @GetMapping("/api/v1/users")
@@ -75,7 +75,7 @@ public class AppUserController {
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(refresh_token);
                 String username = decodedJWT.getSubject();
-                AppUser user = userService.getUser(username);
+                AppUser user = userService.getUserByUsername(username);
                 String access_token = JWT.create()
                         .withSubject(user.getUserName())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
