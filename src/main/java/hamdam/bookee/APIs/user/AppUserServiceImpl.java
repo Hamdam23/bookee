@@ -1,5 +1,10 @@
 package hamdam.bookee.APIs.user;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.image.Image;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.image.ImageRepository;
@@ -14,10 +19,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MimeTypeUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 @RequiredArgsConstructor
@@ -27,15 +38,20 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /*Endi bu Service class'da biz loadUserByUsername method'ni Override qilib,
+    * uni config qilamiz.*/
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        /*username orqali AppUser'ni topib olamiz.*/
         AppUser user = userRepository.findAppUserByUserName(username).orElseThrow(()
                 -> new RuntimeException("User not found!")
         );
         Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRoles().getRoleName());
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().getRoleName());
         authority.add(simpleGrantedAuthority);
-        return new User(user.getName(), user.getPassword(), authority);
+        /*this is custom spring.security.core.User class
+        * we have to give a collection of authorities*/
+        return new User(user.getUserName(), user.getPassword(), authority);
     }
 
     @Override
@@ -92,8 +108,47 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 -> new RuntimeException("User not found!")
         );
         AppRole appRole = roleRepository.findAppRoleByRoleName(appUserRoleDTO.getRoleName());
-        user.setRoles(appRole);
+        user.setRole(appRole);
         userRepository.save(user);
         return user;
+    }
+
+    @Override
+    public void generateRefreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                String refresh_token = authorizationHeader.substring("Bearer ".length());
+                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                JWTVerifier verifier = JWT.require(algorithm).build();
+                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                String username = decodedJWT.getSubject();
+                AppUser user = getUserByUsername(username);
+                String access_token = JWT.create()
+                        .withSubject(user.getUserName())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+                        .withIssuer(request.getRequestURL().toString())
+                        .withClaim("role", user.getRole().getRoleName())
+                        .sign(algorithm);
+
+                Map<String, String> tokens = new HashMap<>();
+                tokens.put("access_token", access_token);
+                tokens.put("refresh_token", refresh_token);
+                response.setContentType(APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+
+            } catch (Exception exception) {
+                response.setHeader("error", exception.getMessage());
+                response.setStatus(FORBIDDEN.value());
+                Map<String, String> error = new HashMap<>();
+                error.put("error_message", exception.getMessage());
+                response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), error);
+            }
+
+        } else {
+            throw new RuntimeException("Refresh token is missing!");
+        }
     }
 }

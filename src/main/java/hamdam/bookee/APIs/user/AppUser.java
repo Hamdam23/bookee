@@ -27,7 +27,7 @@ public class AppUser {
     private Image userImage;
 
     @ManyToOne
-    private AppRole roles;
+    private AppRole role;
 
     public AppUser(AppUserDTO dto){
         this.setName(dto.getName());

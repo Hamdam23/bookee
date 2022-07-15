@@ -2,6 +2,9 @@ package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.image.UserImageDTO;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 public interface AppUserService {
@@ -12,4 +15,5 @@ public interface AppUserService {
     void deleteUser(long id);
     void setImageToUser(long id, UserImageDTO imageDTO);
     AppUser setRoleToUser(long id, AppUserRoleDTO appUserRoleDTO);
+    void generateRefreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }
