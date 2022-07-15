@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.image.file;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +11,13 @@ import java.util.Date;
 
 @Service
 public class FileSystemRepository {
-    // TODO: 13/07/22 handle npe
-    // TODO: 13/07/22 custom path
-    String RESOURCES_DIR = FileSystemRepository.class.getResource("/").getPath();
+    // TODO: 13/07/22 handle npe -> problem removed;)
+    // TODO: 13/07/22 custom path -> Status:DONE on 15/07/22
+    @Value("${file_upload_path}")
+    private String path;
 
     public String writeFile(byte[] content, String imageName) throws Exception {
-        Path newFile = Paths.get(RESOURCES_DIR + imageName);
+        Path newFile = Paths.get(path + imageName);
         Files.createDirectories(newFile.getParent());
 
         Files.write(newFile, content);
