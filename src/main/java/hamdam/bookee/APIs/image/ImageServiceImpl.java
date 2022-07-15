@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-public class ImageServiceImpl implements ImageService{
+public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final FileSystemRepository fileSystemRepository;
 
@@ -26,9 +26,15 @@ public class ImageServiceImpl implements ImageService{
 
     @Override
     public Image uploadImage(MultipartFile file) throws Exception {
-        String fileNameWithOutExt = FilenameUtils.removeExtension(file.getOriginalFilename()).replace(" ", "-");
+        String fileNameWithoutExt = FilenameUtils.removeExtension(file.getOriginalFilename());
+        if (fileNameWithoutExt == null) {
+            fileNameWithoutExt = "";
+        } else {
+            fileNameWithoutExt = fileNameWithoutExt.replace(" ", "-");
+        }
+        //check for null and empty
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        String name = fileNameWithOutExt + "-" + new Date().getTime() + "." + extension;
+        String name = fileNameWithoutExt + "-" + new Date().getTime() + "." + extension;
         String location = fileSystemRepository.writeFile(file.getBytes(), name);
 
         return imageRepository.save(new Image(name, location));
@@ -36,8 +42,8 @@ public class ImageServiceImpl implements ImageService{
 
     @Override
     public FileSystemResource downloadImage(String name) {
-        Image image = imageRepository.findImageByImageName(name).orElseThrow(()
-            -> new RuntimeException("Image with name: " + name + " not found")
+        Image image = imageRepository.findByImageName(name).orElseThrow(()
+                -> new RuntimeException("Image with name: " + name + " not found")
         );
         return fileSystemRepository.readFile(image.getLocation());
     }

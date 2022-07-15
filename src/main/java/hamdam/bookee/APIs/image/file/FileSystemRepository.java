@@ -10,6 +10,8 @@ import java.util.Date;
 
 @Service
 public class FileSystemRepository {
+    // TODO: 13/07/22 handle npe
+    // TODO: 13/07/22 custom path
     String RESOURCES_DIR = FileSystemRepository.class.getResource("/").getPath();
 
     public String writeFile(byte[] content, String imageName) throws Exception {
@@ -22,9 +24,9 @@ public class FileSystemRepository {
     }
 
     public FileSystemResource readFile(String location) {
-        try{
+        try {
             return new FileSystemResource(Paths.get(location));
-        } catch (Exception exception){
+        } catch (Exception exception) {
             throw new RuntimeException("Image not found");
         }
     }
