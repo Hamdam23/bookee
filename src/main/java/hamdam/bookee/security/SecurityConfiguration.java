@@ -2,9 +2,14 @@ package hamdam.bookee.security;
 
 import hamdam.bookee.filter.CustomAuthenticationFilter;
 import hamdam.bookee.filter.CustomAuthorizationFilter;
+import hamdam.bookee.tools.exeptions.CustomAuthenticationFailureHandler;
+import hamdam.bookee.tools.exeptions.RestAccessDeniedHandler;
+import hamdam.bookee.tools.exeptions.RestAuthenticationEntryPoint;
+import hamdam.bookee.tools.exeptions.RestAuthenticationFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,9 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -40,7 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     //Authorization
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //disabling working with cookies and sessions
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
@@ -49,8 +53,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 
         //securing URLs
-        /*permitAll - Specifies that all security roles are allowed to invoke the specified method(s)*/
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/v1/users/**", "/api/v1/images/**").permitAll();
+        // TODO only admins can set role to users not working.
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/v1/users/set-role-to-user/{userId}").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/v1/users/**", "/api/v1/images/**").
+                permitAll().anyRequest().authenticated().
+                and().
+                exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint());
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
@@ -60,4 +68,26 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
+    @Bean
+    RestAccessDeniedHandler accessDeniedHandler() {
+        return new RestAccessDeniedHandler();
+    }
+
+    @Bean
+    RestAuthenticationEntryPoint authenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
+    }
+
+//    @Bean
+//    AuthenticationFailureHandler authenticationFailureHandler() {
+//        return new CustomAuthenticationFailureHandler();
+
+//    }
+
+//    @Bean
+//    public AuthenticationFailureHandler authenticationFailureHandler()
+//    {
+//        return new RestAuthenticationFailureHandler();
+//    }
 }

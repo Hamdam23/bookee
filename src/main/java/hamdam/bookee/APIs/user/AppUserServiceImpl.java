@@ -10,7 +10,9 @@ import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleRepository;
+import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,7 +41,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     /*Endi bu Service class'da biz loadUserByUsername method'ni Override qilib,
-    * uni config qilamiz.*/
+     * uni config qilamiz.*/
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         /*username orqali AppUser'ni topib olamiz.*/
@@ -50,33 +52,38 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().getRoleName());
         authority.add(simpleGrantedAuthority);
         /*this is custom spring.security.core.User class
-        * we have to give a collection of authorities*/
+         * we have to give a collection of authorities*/
         return new User(user.getUserName(), user.getPassword(), authority);
     }
 
     @Override
-    public AppUser addUser(AppUserDTO user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(new AppUser(user));
+    public AppUser addUser(AppUserDTO userDTO) {
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        AppUser appUser = new AppUser(userDTO);
+
+        AppRole role = roleRepository.findAppRoleByRoleName("APP_USER");
+        appUser.setRole(role);
+        userRepository.save(appUser);
+        return appUser;
     }
 
     @Override
-    public AppUser getUserByUsername(String userName){
+    public AppUser getUserByUsername(String userName) {
         AppUser user = userRepository.findAppUserByUserName(userName).orElseThrow(()
-            -> new RuntimeException("User not found!")
+                -> new RuntimeException("User not found!")
         );
         return user;
     }
 
     @Override
-    public List<AppUser> getAllUsers(){
+    public List<AppUser> getAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
-    public AppUser updateUser(AppUser newUser, long id){
+    public AppUser updateUser(AppUser newUser, long id) {
         AppUser user = userRepository.findById(id).orElseThrow(()
-        -> new RuntimeException("User not found!")
+                -> new RuntimeException("User not found!")
         );
         user.setName(newUser.getName());
         user.setPassword(newUser.getPassword());
@@ -90,9 +97,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public void setImageToUser(long id, UserImageDTO imageDTO){
+    public void setImageToUser(long id, UserImageDTO imageDTO) {
         Image image = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
-        -> new RuntimeException("Image not found!")
+                -> new RuntimeException("Image not found!")
         );
         AppUser user = userRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("User not found!")

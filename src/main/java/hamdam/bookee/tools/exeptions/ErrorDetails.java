@@ -3,13 +3,16 @@ package hamdam.bookee.tools.exeptions;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @AllArgsConstructor
 @Getter
+@Setter
 public class ErrorDetails {
     private HttpStatus status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
@@ -21,5 +24,10 @@ public class ErrorDetails {
         this.timestamp = timestamp;
         this.message = message;
         this.details = details;
+    }
+
+    public ErrorDetails(HttpStatus status, String message) {
+        this.status = status;
+        this.message = message;
     }
 }

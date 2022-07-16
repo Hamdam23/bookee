@@ -15,7 +15,7 @@ import java.util.List;
 public class AppUserController {
     private final AppUserService userService;
 
-    @PostMapping("/v1/users")
+    @PostMapping("/v1/users/post")
     public AppUser addUser(@RequestBody AppUserDTO user){
         return userService.addUser(user);
     }

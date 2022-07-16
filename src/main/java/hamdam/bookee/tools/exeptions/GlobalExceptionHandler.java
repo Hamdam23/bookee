@@ -26,13 +26,4 @@ public class GlobalExceptionHandler {
                 webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
-
-    @ExceptionHandler(UnAuthorizedException.class)
-    public ResponseEntity<ErrorDetails> handleUnAuthorizedException(UnAuthorizedException exception,
-                                                                    WebRequest webRequest){
-        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.UNAUTHORIZED, LocalDateTime.now(), exception.getMessage(),
-                webRequest.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
-    }
-
 }

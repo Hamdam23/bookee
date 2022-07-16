@@ -3,8 +3,8 @@ package hamdam.bookee.APIs.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import hamdam.bookee.APIs.image.Image;
 import hamdam.bookee.APIs.role.AppRole;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import hamdam.bookee.APIs.role.AppRoleDTO;
+import lombok.*;
 
 import javax.persistence.*;
 
