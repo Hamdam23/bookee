@@ -1,4 +1,4 @@
-package hamdam.bookee.tools.exeptions;
+package hamdam.bookee.tools.exeptions.trash;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;

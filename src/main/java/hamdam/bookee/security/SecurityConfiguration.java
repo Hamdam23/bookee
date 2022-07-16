@@ -2,10 +2,8 @@ package hamdam.bookee.security;
 
 import hamdam.bookee.filter.CustomAuthenticationFilter;
 import hamdam.bookee.filter.CustomAuthorizationFilter;
-import hamdam.bookee.tools.exeptions.CustomAuthenticationFailureHandler;
-import hamdam.bookee.tools.exeptions.RestAccessDeniedHandler;
-import hamdam.bookee.tools.exeptions.RestAuthenticationEntryPoint;
-import hamdam.bookee.tools.exeptions.RestAuthenticationFailureHandler;
+import hamdam.bookee.tools.exeptions.MyAccessDeniedHandler;
+import hamdam.bookee.tools.exeptions.MyAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -54,7 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         //securing URLs
         // TODO only admins can set role to users not working.
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/v1/users/set-role-to-user/{userId}").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-role-to-user/**").hasAuthority("APP_ADMIN");
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/v1/users/**", "/api/v1/images/**").
                 permitAll().anyRequest().authenticated().
                 and().
@@ -70,14 +67,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    RestAccessDeniedHandler accessDeniedHandler() {
-        return new RestAccessDeniedHandler();
+    MyAccessDeniedHandler accessDeniedHandler() {
+        return new MyAccessDeniedHandler();
     }
 
+//    @Bean
+//    RestAccessDeniedHandler accessDeniedHandler() {
+//        return new RestAccessDeniedHandler();
+//    }
+
     @Bean
-    RestAuthenticationEntryPoint authenticationEntryPoint() {
-        return new RestAuthenticationEntryPoint();
+    MyAuthenticationEntryPoint authenticationEntryPoint() {
+        return new MyAuthenticationEntryPoint();
     }
+
+//    @Bean
+//    RestAuthenticationEntryPoint authenticationEntryPoint() {
+//        return new RestAuthenticationEntryPoint();
+//    }
 
 //    @Bean
 //    AuthenticationFailureHandler authenticationFailureHandler() {

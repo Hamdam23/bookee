@@ -1,6 +1,7 @@
-package hamdam.bookee.tools.exeptions;
+package hamdam.bookee.tools.exeptions.trash;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hamdam.bookee.tools.exeptions.ErrorDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
