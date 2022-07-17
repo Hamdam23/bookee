@@ -4,25 +4,20 @@ import hamdam.bookee.APIs.image.file.FileSystemRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final FileSystemRepository fileSystemRepository;
-
-    @Override
-    public Image getImageByID(long id) {
-        Image image = imageRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Image", "id", id));
-        return image;
-    }
 
     @Override
     public Image uploadImage(MultipartFile file) throws Exception {
@@ -46,5 +41,28 @@ public class ImageServiceImpl implements ImageService {
                 -> new RuntimeException("Image with name: " + name + " not found")
         );
         return fileSystemRepository.readFile(image.getLocation());
+    }
+
+    @Override
+    public Image getImageByID(long id) {
+        return imageRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Image", "id", id));
+    }
+
+    @Override
+    public List<ImageDTO> getAllImages() {
+        List<Image> images = imageRepository.findAll();
+        List<ImageDTO> imageDTOS = new ArrayList<>();
+        for (Image image : images) {
+            ImageDTO imageDTO = new ImageDTO();
+            BeanUtils.copyProperties(image, imageDTO);
+            imageDTOS.add(imageDTO);
+        }
+        return imageDTOS;
+    }
+
+    @Override
+    public void deleteImageById(long id) {
+        imageRepository.deleteById(id);
     }
 }

@@ -12,7 +12,6 @@ import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,7 +60,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         AppUser appUser = new AppUser(userDTO);
 
-        AppRole role = roleRepository.findAppRoleByRoleName("APP_USER");
+        AppRole role = roleRepository.findAppRoleByRoleName("ROLE_USER");
         appUser.setRole(role);
         userRepository.save(appUser);
         return appUser;
@@ -69,10 +68,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public AppUser getUserByUsername(String userName) {
-        AppUser user = userRepository.findAppUserByUserName(userName).orElseThrow(()
+        return userRepository.findAppUserByUserName(userName).orElseThrow(()
                 -> new RuntimeException("User not found!")
         );
-        return user;
     }
 
     @Override
@@ -92,6 +90,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public void deleteUser(long id) {
+        imageRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("User", "id", id)
+        );
         userRepository.deleteById(id);
     }
 
@@ -99,10 +100,10 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Transactional
     public void setImageToUser(long id, UserImageDTO imageDTO) {
         Image image = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
-                -> new RuntimeException("Image not found!")
+                -> new ResourceNotFoundException("Image", "id", id)
         );
         AppUser user = userRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("User not found!")
+                -> new ResourceNotFoundException("User", "id", imageDTO.getImageId())
         );
         user.setUserImage(image);
         userRepository.save(user);
@@ -153,7 +154,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), error);
             }
-
         } else {
             throw new RuntimeException("Refresh token is missing!");
         }

@@ -18,8 +18,8 @@ public class AppRole {
 
     private String roleName;
 
-    public AppRole(AppRoleDTO dto){
-        this.roleName= dto.getRoleName();
+    public AppRole(AppRoleDTO dto) {
+        this.roleName = dto.getRoleName();
     }
 
 }

@@ -10,10 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class GenreDTO {
-
     private String name;
-
     private String description;
-
     private List<Long> books;
 }

@@ -26,8 +26,10 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public void addGenre(GenreDTO genre) {
-        genreRepository.save(new GenreEntity(genre));
+    public void addGenre(GenreDTO dto) {
+        GenreEntity entity = new GenreEntity();
+        BeanUtils.copyProperties(dto, entity);
+        genreRepository.save(entity);
     }
 
     @Override

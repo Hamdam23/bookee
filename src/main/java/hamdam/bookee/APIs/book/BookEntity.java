@@ -2,6 +2,7 @@ package hamdam.bookee.APIs.book;
 
 import hamdam.bookee.APIs.genre.GenreEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "books")
 public class BookEntity {
 
@@ -46,8 +48,5 @@ public class BookEntity {
 
     public BookEntity(Long id) {
         this.id = id;
-    }
-
-    public BookEntity() {
     }
 }

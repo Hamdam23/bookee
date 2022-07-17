@@ -52,7 +52,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         //securing URLs
         // TODO only admins can set role to users not working.
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-role-to-user/**").hasAuthority("APP_ADMIN");
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/v1/users/**", "/api/v1/images/**").
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**",
+                        "/api/v1/users/**", "/api/v1/images/**", "/api/v1/set-image-to-user/**").
                 permitAll().anyRequest().authenticated().
                 and().
                 exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint());
@@ -71,30 +73,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new MyAccessDeniedHandler();
     }
 
-//    @Bean
-//    RestAccessDeniedHandler accessDeniedHandler() {
-//        return new RestAccessDeniedHandler();
-//    }
-
     @Bean
     MyAuthenticationEntryPoint authenticationEntryPoint() {
         return new MyAuthenticationEntryPoint();
     }
-
-//    @Bean
-//    RestAuthenticationEntryPoint authenticationEntryPoint() {
-//        return new RestAuthenticationEntryPoint();
-//    }
-
-//    @Bean
-//    AuthenticationFailureHandler authenticationFailureHandler() {
-//        return new CustomAuthenticationFailureHandler();
-
-//    }
-
-//    @Bean
-//    public AuthenticationFailureHandler authenticationFailureHandler()
-//    {
-//        return new RestAuthenticationFailureHandler();
-//    }
 }

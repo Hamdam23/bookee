@@ -7,7 +7,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AppRoleServiceImpl implements AppRoleService{
+public class AppRoleServiceImpl implements AppRoleService {
     private final AppRoleRepository appRoleRepository;
 
     @Override

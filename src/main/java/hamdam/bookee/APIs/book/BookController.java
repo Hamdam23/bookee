@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,12 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    @PostMapping
+    public ResponseEntity<String> addBook(@RequestBody BookDTO book) {
+        bookService.addBook(book);
+        return ResponseEntity.ok().body("Book successfully saved!");
+    }
+
     @GetMapping
     public List<BookEntity> getAllBooks() {
         return bookService.getAllBooks();
@@ -26,19 +33,16 @@ public class BookController {
         return bookService.getBookById(id);
     }
 
-    @PostMapping
-    public void addBook(@RequestBody BookDTO book) {
-        bookService.addBook(book);
-    }
-
-    @PutMapping("/{id}")
-    public void updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
         bookService.updateBook(newBook, id);
+        return ResponseEntity.ok().body("Book with id: " + id + " successfully updated!");
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Long id) {
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
+        return ResponseEntity.ok().body("Book with id: " + id + " successfully deleted!");
     }
 }
 

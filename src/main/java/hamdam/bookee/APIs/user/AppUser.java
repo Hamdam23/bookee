@@ -23,11 +23,11 @@ public class AppUser {
     @JsonIgnore
     private String password;
 
-    @OneToOne
-    private Image userImage;
-
     @ManyToOne
     private AppRole role;
+
+    @OneToOne
+    private Image userImage;
 
     public AppUser(AppUserDTO dto){
         this.setName(dto.getName());

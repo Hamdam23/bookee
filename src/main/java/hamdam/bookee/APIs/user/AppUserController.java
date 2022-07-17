@@ -2,6 +2,9 @@ package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.image.UserImageDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,8 +29,10 @@ public class AppUserController {
     }
 
     @PatchMapping("/v1/users/set-image-to-user/{id}")
-    public void setImageToUser(@PathVariable long id, @RequestBody UserImageDTO dto){
+    public ResponseEntity<String> setImageToUser(@PathVariable long id, @RequestBody UserImageDTO dto){
         userService.setImageToUser(id, dto);
+        return ResponseEntity.ok().body("Image with id: " + dto.getImageId() +
+                " is successfully set to User with id: " + id + ".");
     }
 
     @GetMapping("/v1/users/{name}")
@@ -46,8 +51,9 @@ public class AppUserController {
     }
 
     @DeleteMapping("/v1/users/{id}")
-    public void deleteUser(@PathVariable long id){
+    public ResponseEntity<String> deleteUser(@PathVariable long id){
         userService.deleteUser(id);
+        return ResponseEntity.ok().body("Successfully deleted the User with id: " + id + ".");
     }
 
     @GetMapping("/token/refresh")

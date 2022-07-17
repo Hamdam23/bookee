@@ -10,17 +10,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class BookDTO {
-
     private String name;
-
     private String tagline;
-
     private String description;
-
     private String author;
-
     private Integer rating;
-
     private List<Long> genres;
-
 }

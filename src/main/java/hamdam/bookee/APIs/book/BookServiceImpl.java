@@ -14,20 +14,19 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     @Override
+    public void addBook(BookDTO book) {
+        bookRepository.save(new BookEntity(book));
+    }
+
+    @Override
     public List<BookEntity> getAllBooks() {
         return bookRepository.findAll();
     }
 
     @Override
     public BookEntity getBookById(Long id) {
-        BookEntity book = bookRepository.findById(id).orElseThrow(()
+        return bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
-        return book;
-    }
-
-    @Override
-    public void addBook(BookDTO book) {
-        bookRepository.save(new BookEntity(book));
     }
 
     @Override
