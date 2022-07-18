@@ -23,6 +23,12 @@ public class GenreController {
         return ResponseEntity.ok().body("Genre successfully saved!");
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
+        service.updateGenre(id, genre);
+        return ResponseEntity.ok().body("Genre with id: " + id + " successfully updated!");
+    }
+
     @GetMapping
     public List<GenreEntity> getAllGenres() {
         return service.getAllGenres();
@@ -31,12 +37,6 @@ public class GenreController {
     @GetMapping("/{id}")
     public GenreEntity getGenreByID(@PathVariable Long id) {
         return service.getGenreByID(id);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
-        service.updateGenre(id, genre);
-        return ResponseEntity.ok().body("Genre with id: " + id + " successfully updated!");
     }
 
     @DeleteMapping("/{id}")

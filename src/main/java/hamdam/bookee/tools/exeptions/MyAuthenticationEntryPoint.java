@@ -14,6 +14,6 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         //TODO customise exception message
-        response.getWriter().write("Login failed: " + authException.getMessage());
+        response.getWriter().write("💩 Login failed: " + authException.getMessage());
     }
 }

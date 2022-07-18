@@ -51,10 +51,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         //securing URLs
         // TODO only admins can set role to users not working.
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users").hasAuthority("APP_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-role-to-user/**").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-image-to-user/**").hasAnyAuthority("APP_USER", "APP_AUTHOR", "APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/users/**").hasAuthority("APP_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority("APP_ADMIN");
+
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/books").hasAnyAuthority("APP_AUTHOR", "APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/books/**").hasAnyAuthority("APP_AUTHOR", "APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/books").hasAnyAuthority("APP_USER", "APP_AUTHOR", "APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/books/**").hasAnyAuthority("APP_USER", "APP_AUTHOR", "APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/books/**").hasAnyAuthority("APP_AUTHOR", "APP_ADMIN");
+
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/genres/**").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/genres").hasAnyAuthority("APP_USER", "APP_AUTHOR", "APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/genres/**").hasAnyAuthority("APP_USER", "APP_AUTHOR", "APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/genres/**").hasAuthority("APP_ADMIN");
+
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**",
-                        "/api/v1/users/**", "/api/v1/images/**", "/api/v1/set-image-to-user/**").
+                        "/api/v1/images/**").
                 permitAll().anyRequest().authenticated().
                 and().
                 exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint());

@@ -23,6 +23,12 @@ public class BookController {
         return ResponseEntity.ok().body("Book successfully saved!");
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
+        bookService.updateBook(newBook, id);
+        return ResponseEntity.ok().body("Book with id: " + id + " successfully updated!");
+    }
+
     @GetMapping
     public List<BookEntity> getAllBooks() {
         return bookService.getAllBooks();
@@ -31,12 +37,6 @@ public class BookController {
     @GetMapping("/{id}")
     public BookEntity getBookByID(@PathVariable Long id) {
         return bookService.getBookById(id);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
-        bookService.updateBook(newBook, id);
-        return ResponseEntity.ok().body("Book with id: " + id + " successfully updated!");
     }
 
     @DeleteMapping("/{id}")
