@@ -39,19 +39,14 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /*Endi bu Service class'da biz loadUserByUsername method'ni Override qilib,
-     * uni config qilamiz.*/
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        /*username orqali AppUser'ni topib olamiz.*/
         AppUser user = userRepository.findAppUserByUserName(username).orElseThrow(()
                 -> new RuntimeException("User not found!")
         );
         Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().getRoleName());
         authority.add(simpleGrantedAuthority);
-        /*this is custom spring.security.core.User class
-         * we have to give a collection of authorities*/
         return new User(user.getUserName(), user.getPassword(), authority);
     }
 

@@ -23,23 +23,14 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    /*UserDetailsService - faqat birgina
-    * UserDetails loadUserByUsername(String username) method'iga ega interface.
-    * Hozircha bu yerda auth'ga kerakli userDetailsService'ni beramiz va
-    * loadUserByUsername method'ini AppUserService'da Override qilib config qilamiz.*/
     private final UserDetailsService userDetailsService;
-    /*BCryptPasswordEncoder - bu shunchaki Password encoder ni extend qilgan class.
-    * Va encode qilishni bir turi.*/
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    //Authentication
-    /*AuthenticationManagerBuilder - ?*/
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
-    //Authorization
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -57,6 +48,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority("APP_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/users/**").hasAuthority("APP_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority("APP_ADMIN");
+
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/roles").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/roles").hasAuthority("APP_ADMIN");
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/roles/**").hasAuthority("APP_ADMIN");
 
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/books").hasAnyAuthority("APP_AUTHOR", "APP_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/books/**").hasAnyAuthority("APP_AUTHOR", "APP_ADMIN");
