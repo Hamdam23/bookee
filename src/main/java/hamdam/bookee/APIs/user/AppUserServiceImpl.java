@@ -41,13 +41,16 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = userRepository.findAppUserByUserName(username).orElseThrow(()
-                -> new RuntimeException("User not found!")
-        );
+        //TODO here, when User is not found Exception does not work anyway,because Security EntryPoint Ex. will execute.
+        //AppUser user = userRepository.findAppUserByUserName(username).orElseThrow(()
+        //-> new RuntimeException("User not found!")
+        //);
+        Optional<AppUser> user = userRepository.findAppUserByUserName(username);
         Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().getRoleName());
+        //TODO Here is where it catches the exception.
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.get().getRole().getRoleName());
         authority.add(simpleGrantedAuthority);
-        return new User(user.getUserName(), user.getPassword(), authority);
+        return new User(user.get().getUserName(), user.get().getPassword(), authority);
     }
 
     @Override
