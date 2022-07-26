@@ -10,7 +10,8 @@ public class AuthenticationFilterConfigurer extends AbstractHttpConfigurer<Authe
     @Override
     public void configure(HttpSecurity http) {
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-        UsernamePasswordAuthenticationFilter authenticationFilter = new UsernamePasswordAuthenticationFilter(authenticationManager);
+        // Provide your custom authentication filter here. Not UsernamePasswordAuthenticationFilter (it is from security package)
+        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager);
         authenticationFilter.setFilterProcessesUrl("/api/login");
         http.addFilter(authenticationFilter);
     }

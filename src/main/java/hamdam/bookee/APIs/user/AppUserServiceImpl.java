@@ -58,6 +58,13 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         AppUser appUser = new AppUser(userDTO);
 
+        // todo security authorization (not authentication - login) not working because of this line
+        //         there default role is set ro ROLE_USER, but in securing endpoints in SecurityConfiguration
+        //          the required role is APP_USER. You can simply fix this by using only one of them
+
+        // IMHO: this inconsistency with role names is appearing because AppRole in your project is neither fully dynamic,
+        // nor fully static. You are using entity (and db table) for saving roles, but giving role names to security statically
+        // Possible solution: use fully static roles as in Progee-API or use fully dynamic roles as in edVantage
         AppRole role = roleRepository.findAppRoleByRoleName("ROLE_USER");
         appUser.setRole(role);
         userRepository.save(appUser);
