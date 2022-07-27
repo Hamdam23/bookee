@@ -6,12 +6,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.image.Image;
-import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.image.ImageRepository;
+import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
@@ -62,7 +64,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         //         there default role is set ro ROLE_USER, but in securing endpoints in SecurityConfiguration
         //          the required role is APP_USER. You can simply fix this by using only one of them
 
-        // IMHO: this inconsistency with role names is appearing because AppRole in your project is neither fully dynamic,
+        // TODO IMHO(Farrukh): this inconsistency with role names is appearing because AppRole in your project is neither fully dynamic,
         // nor fully static. You are using entity (and db table) for saving roles, but giving role names to security statically
         // Possible solution: use fully static roles as in Progee-API or use fully dynamic roles as in edVantage
         AppRole role = roleRepository.findAppRoleByRoleName("ROLE_USER");
@@ -142,12 +144,11 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                         .withSubject(user.getUserName())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("role", user.getRole().getRoleName())
+                        .withClaim("roles", Collections.singletonList(user.getRole().getRoleName()))
                         .sign(algorithm);
 
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", access_token);
-                tokens.put("refresh_token", refresh_token);
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
