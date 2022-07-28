@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -48,11 +49,17 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         //-> new RuntimeException("User not found!")
         //);
         Optional<AppUser> user = userRepository.findAppUserByUserName(username);
-        Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
+//        Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
         //TODO Here is where it catches the exception.
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.get().getRole().getRoleName());
-        authority.add(simpleGrantedAuthority);
-        return new User(user.get().getUserName(), user.get().getPassword(), authority);
+//        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.get().getRole().getRoleName());
+//        authority.add(simpleGrantedAuthority);
+        return new User(
+                user.get().getUserName(),
+                user.get().getPassword(),
+                user.get().getRole().getPermissions().stream().map(
+                        permission -> new SimpleGrantedAuthority(permission.name())
+                ).collect(Collectors.toList())
+        );
     }
 
     @Override
@@ -67,7 +74,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         // TODO IMHO(Farrukh): this inconsistency with role names is appearing because AppRole in your project is neither fully dynamic,
         // nor fully static. You are using entity (and db table) for saving roles, but giving role names to security statically
         // Possible solution: use fully static roles as in Progee-API or use fully dynamic roles as in edVantage
-        AppRole role = roleRepository.findAppRoleByRoleName("ROLE_USER");
+        AppRole role = roleRepository.findFirstByIsDefault(true).orElseThrow(
+                () -> new RuntimeException("There is no default role for users")
+        );
         appUser.setRole(role);
         userRepository.save(appUser);
         return appUser;
@@ -118,11 +127,13 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public AppUser setRoleToUser(long id, AppUserRoleDTO appUserRoleDTO) {
+    public AppUser setRoleToUser(long id, AppUserRoleDTO roleDTO) {
         AppUser user = userRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("User not found!")
         );
-        AppRole appRole = roleRepository.findAppRoleByRoleName(appUserRoleDTO.getRoleName());
+        AppRole appRole = roleRepository.findById(roleDTO.getRoleId()).orElseThrow(
+                () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
+        );
         user.setRole(appRole);
         userRepository.save(user);
         return user;
@@ -144,7 +155,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                         .withSubject(user.getUserName())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", Collections.singletonList(user.getRole().getRoleName()))
+                        .withClaim("permissions", user.getRole().getPermissions().stream().map(Enum::name).collect(Collectors.toList()))
                         .sign(algorithm);
 
                 Map<String, String> tokens = new HashMap<>();
