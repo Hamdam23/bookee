@@ -26,6 +26,7 @@ public class SecurityConfiguration {
 
         //securing URLs
         // TODO only admins can set role to users not working.
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users/post").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-image-to-user/**").fullyAuthenticated();
 
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/books/**").hasAuthority(Permission.GET_BOOK.name());
