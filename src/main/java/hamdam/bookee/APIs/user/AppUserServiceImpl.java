@@ -26,6 +26,7 @@ import org.springframework.util.MimeTypeUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -69,6 +70,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         // Possible solution: use fully static roles as in Progee-API or use fully dynamic roles as in edVantage
         AppRole role = roleRepository.findAppRoleByRoleName("ROLE_USER");
         appUser.setRole(role);
+        appUser.setCreatedAt(LocalDateTime.now());
         userRepository.save(appUser);
         return appUser;
     }
@@ -82,7 +84,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public List<AppUser> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
@@ -92,6 +94,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         );
         user.setName(newUser.getName());
         user.setPassword(newUser.getPassword());
+        user.setUpdateAt(LocalDateTime.now());
         return user;
     }
 
@@ -113,6 +116,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 -> new ResourceNotFoundException("User", "id", imageDTO.getImageId())
         );
         user.setUserImage(image);
+        user.setUpdateAt(LocalDateTime.now());
         userRepository.save(user);
     }
 
@@ -122,8 +126,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         AppUser user = userRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("User not found!")
         );
-        AppRole appRole = roleRepository.findAppRoleByRoleName(appUserRoleDTO.getRoleName());
+        AppRole appRole = roleRepository.findAppRoleById(appUserRoleDTO.getRoleId());
         user.setRole(appRole);
+        user.setUpdateAt(LocalDateTime.now());
         userRepository.save(user);
         return user;
     }

@@ -35,6 +35,11 @@ public class AppUserController {
                 " is successfully set to User with id: " + id + ".");
     }
 
+    @PatchMapping("/v1/users/update/{id}")
+    public AppUser updateUser(@RequestBody AppUser user, @PathVariable long id){
+        return userService.updateUser(user, id);
+    }
+
     @GetMapping("/v1/users/{name}")
     public AppUser getUserByName(@PathVariable String name){
         return userService.getUserByUsername(name);
@@ -43,11 +48,6 @@ public class AppUserController {
     @GetMapping("/v1/users")
     public List<AppUser> getAllUsers(){
         return userService.getAllUsers();
-    }
-
-    @PatchMapping("/v1/users/update/{id}")
-    public AppUser updateUser(@RequestBody AppUser user, @PathVariable long id){
-        return userService.updateUser(user, id);
     }
 
     @DeleteMapping("/v1/users/{id}")
