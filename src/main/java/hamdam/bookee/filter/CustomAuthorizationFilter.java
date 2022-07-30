@@ -31,10 +31,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         //TODO filterChain.doFilter(request, response); is not working properly.
         if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh") || request.getServletPath().equals("/api/v1/users/post")) {
             filterChain.doFilter(request, response);
-            log.info("r", request.getServletPath());
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
-            log.info("r", request.getServletPath());
             try {
                 //getting token from authorization
                 String token = authorizationHeader.substring("Bearer ".length());

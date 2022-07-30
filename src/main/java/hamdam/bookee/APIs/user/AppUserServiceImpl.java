@@ -26,6 +26,7 @@ import org.springframework.util.MimeTypeUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,6 +79,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 () -> new RuntimeException("There is no default role for users")
         );
         appUser.setRole(role);
+        appUser.setCreatedAt(LocalDateTime.now());
         userRepository.save(appUser);
         return appUser;
     }
@@ -91,7 +93,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public List<AppUser> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
@@ -101,6 +103,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         );
         user.setName(newUser.getName());
         user.setPassword(newUser.getPassword());
+        user.setUpdateAt(LocalDateTime.now());
         return user;
     }
 
@@ -122,6 +125,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 -> new ResourceNotFoundException("User", "id", imageDTO.getImageId())
         );
         user.setUserImage(image);
+        user.setUpdateAt(LocalDateTime.now());
         userRepository.save(user);
     }
 
@@ -135,6 +139,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
         );
         user.setRole(appRole);
+        user.setUpdateAt(LocalDateTime.now());
         userRepository.save(user);
         return user;
     }
