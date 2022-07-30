@@ -13,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static hamdam.bookee.filter.AuthenticationFilterConfigurer.configureAuthenticationFilter;
+import static hamdam.bookee.tools.constants.Endpoints.API_REFRESH_TOKEN;
+import static hamdam.bookee.tools.constants.Endpoints.API_REGISTER;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -53,8 +55,8 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/roles/**").hasAuthority(Permission.UPDATE_ROLE.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/roles/**").hasAuthority(Permission.DELETE_ROLE.name());
 
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh",
-                        "/api/v1/images/**", "/api/v1/users/post").
+        http.authorizeRequests().antMatchers(API_REGISTER, "/api/login/**", API_REFRESH_TOKEN,
+                        "/api/v1/images/**").
                 permitAll().anyRequest().authenticated().and().
                 exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(entryPoint);
         http.apply(configureAuthenticationFilter());

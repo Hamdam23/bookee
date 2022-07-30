@@ -5,6 +5,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static hamdam.bookee.tools.constants.Endpoints.API_LOGIN;
+
 public class AuthenticationFilterConfigurer extends AbstractHttpConfigurer<AuthenticationFilterConfigurer, HttpSecurity> {
 
     @Override
@@ -12,7 +14,7 @@ public class AuthenticationFilterConfigurer extends AbstractHttpConfigurer<Authe
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
         // Provide your custom authentication filter here. Not UsernamePasswordAuthenticationFilter (it is from security package)
         CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager);
-        authenticationFilter.setFilterProcessesUrl("/api/login");
+        authenticationFilter.setFilterProcessesUrl(API_LOGIN);
         http.addFilter(authenticationFilter);
     }
 

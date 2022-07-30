@@ -1,10 +1,5 @@
 package hamdam.bookee.APIs.user;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.image.Image;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
@@ -18,11 +13,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MimeTypeUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,7 +38,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
     private final ImageRepository imageRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -93,7 +89,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public List<AppUser> getAllUsers() {
-        return userRepository.findAllByOrderByCreatedAtDesc();
+        return userRepository.findAllByOrderByTimeStampDesc();
     }
 
     @Override
@@ -103,7 +99,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         );
         user.setName(newUser.getName());
         user.setPassword(newUser.getPassword());
-        user.setUpdateAt(LocalDateTime.now());
         return user;
     }
 
@@ -125,7 +120,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 -> new ResourceNotFoundException("User", "id", imageDTO.getImageId())
         );
         user.setUserImage(image);
-        user.setUpdateAt(LocalDateTime.now());
         userRepository.save(user);
     }
 
@@ -139,7 +133,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
         );
         user.setRole(appRole);
-        user.setUpdateAt(LocalDateTime.now());
         userRepository.save(user);
         return user;
     }
