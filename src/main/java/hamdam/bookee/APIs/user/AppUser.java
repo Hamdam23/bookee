@@ -2,11 +2,10 @@ package hamdam.bookee.APIs.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import hamdam.bookee.APIs.auth.AuthUserDTO;
 import hamdam.bookee.APIs.image.Image;
 import hamdam.bookee.APIs.role.AppRole;
-import hamdam.bookee.APIs.role.AppRoleDTO;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -25,10 +24,8 @@ public class AppUser {
     private String userName;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    LocalDateTime createdAt = LocalDateTime.now();
-
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    LocalDateTime updateAt;
+    @UpdateTimestamp
+    LocalDateTime timeStamp;
 
     @JsonIgnore
     private String password;
@@ -39,7 +36,7 @@ public class AppUser {
     @OneToOne
     private Image userImage;
 
-    public AppUser(AppUserDTO dto){
+    public AppUser(AuthUserDTO dto){
         this.setName(dto.getName());
         this.setUserName(dto.getUserName());
         this.setPassword(dto.getPassword());

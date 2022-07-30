@@ -12,6 +12,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static hamdam.bookee.filter.AuthenticationFilterConfigurer.configureAuthenticationFilter;
+import static hamdam.bookee.tools.constants.Endpoints.API_REFRESH_TOKEN;
+import static hamdam.bookee.tools.constants.Endpoints.API_REGISTER;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -24,8 +26,6 @@ public class SecurityConfiguration {
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
         //securing URLs
-        // TODO only admins can set role to users not working.
-//        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users").hasAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-role-to-user/**").hasAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-image-to-user/**").hasAnyAuthority("ROLE_USER", "ROLE_AUTHOR", "ROLE_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority("ROLE_ADMIN");
@@ -48,8 +48,8 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/genres/**").hasAnyAuthority("ROLE_USER", "ROLE_AUTHOR", "ROLE_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/genres/**").hasAuthority("ROLE_ADMIN");
 
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh",
-                        "/api/v1/images/**", "/api/v1/users/post").
+        http.authorizeRequests().antMatchers(API_REGISTER, "/api/login/**", API_REFRESH_TOKEN,
+                        "/api/v1/images/**").
                 permitAll().anyRequest().authenticated().and().
                 exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(entryPoint);
         http.apply(configureAuthenticationFilter());
