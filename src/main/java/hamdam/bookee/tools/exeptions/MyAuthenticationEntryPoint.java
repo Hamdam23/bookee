@@ -25,9 +25,9 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException {
         //TODO customise exception message
         if (userRepository.existsByUserName(request.getParameter("username"))) {
-            response.getWriter().write("💩 Login failed: password");
+            response.getWriter().write("💩 Login failed: Invalid password!");
         } else {
-            response.getWriter().write("💩 Login failed: username");
+            response.getWriter().write("💩 Login failed: Invalid username!");
         }
     }
 }
