@@ -1,20 +1,18 @@
 package hamdam.bookee;
 
+import hamdam.bookee.APIs.auth.AuthService;
+import hamdam.bookee.APIs.auth.AuthUserDTO;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleDTO;
 import hamdam.bookee.APIs.role.AppRoleService;
 import hamdam.bookee.APIs.role.Permission;
 import hamdam.bookee.APIs.user.AppUser;
-import hamdam.bookee.APIs.user.AppUserDTO;
 import hamdam.bookee.APIs.user.AppUserRoleDTO;
 import hamdam.bookee.APIs.user.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Set;
 
@@ -25,6 +23,7 @@ import static hamdam.bookee.APIs.role.Permission.*;
 public class BookeeApplication implements CommandLineRunner {
 
     private final AppRoleService roleService;
+    private final AuthService authService;
     private final AppUserService userService;
 
     public static void main(String[] args) {
@@ -61,9 +60,9 @@ public class BookeeApplication implements CommandLineRunner {
                     UPDATE_USER
             )));
 
-            AppUser hamdam = userService.addUser(new AppUserDTO("Hamdam", "hamdam_x", "123"));
-            AppUser farrukh = userService.addUser(new AppUserDTO("Farrukh", "farrukh_kh", "123"));
-            AppUser userov = userService.addUser(new AppUserDTO("Userov", "user_ov", "123"));
+            AppUser hamdam = authService.addUser(new AuthUserDTO("Hamdam", "hamdam_x", "123"));
+            AppUser farrukh = authService.addUser(new AuthUserDTO("Farrukh", "farrukh_kh", "123"));
+            AppUser userov = authService.addUser(new AuthUserDTO("Userov", "user_ov", "123"));
 
             userService.setRoleToUser(hamdam.getId(), new AppUserRoleDTO(author.getId()));
             userService.setRoleToUser(farrukh.getId(), new AppUserRoleDTO(admin.getId()));
