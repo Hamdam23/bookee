@@ -24,6 +24,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         //TODO customise exception message
+        System.out.println(request.getServletPath());
         if (userRepository.existsByUserName(request.getParameter("username"))) {
             response.getWriter().write("💩 Login failed: Invalid password!");
         } else {

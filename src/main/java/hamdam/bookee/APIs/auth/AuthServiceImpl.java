@@ -73,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
                 String access_token = JWT.create()
                         .withSubject(user.getUserName())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-                        .withIssuer(request.getRequestURL().toString())
+//                        .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", Collections.singletonList(user.getRole().getRoleName()))
                         .sign(algorithm);
 

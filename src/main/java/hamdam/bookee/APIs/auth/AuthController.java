@@ -18,10 +18,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(API_REGISTER)
-    public AppUser addUser(@RequestBody AuthUserDTO user){
+    public AppUser register(@RequestBody AuthUserDTO user) {
         return authService.addUser(user);
     }
 
+    // TODO: 31/07/22 required: void ni yoqotish
+    // TODO: 31/07/22 optional: replace request with header only
     @GetMapping(API_REFRESH_TOKEN)
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         authService.generateRefreshToken(request, response);

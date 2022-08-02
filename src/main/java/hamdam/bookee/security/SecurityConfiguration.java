@@ -19,9 +19,12 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, MyAuthenticationEntryPoint entryPoint) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            MyAuthenticationEntryPoint entryPoint,
+            MyAccessDeniedHandler accessDeniedHandler
+    ) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
@@ -51,15 +54,10 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(API_REGISTER, "/api/login/**", API_REFRESH_TOKEN,
                         "/api/v1/images/**").
                 permitAll().anyRequest().authenticated().and().
-                exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(entryPoint);
+                exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(entryPoint);
         http.apply(configureAuthenticationFilter());
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    MyAccessDeniedHandler accessDeniedHandler() {
-        return new MyAccessDeniedHandler();
     }
 
 //    @Bean
