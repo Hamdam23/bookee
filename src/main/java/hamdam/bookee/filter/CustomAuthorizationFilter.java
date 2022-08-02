@@ -17,10 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static hamdam.bookee.tools.constants.Endpoints.*;
 import static java.util.Arrays.stream;
@@ -44,10 +41,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(token);
                 String username = decodedJWT.getSubject();
-                String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+                List<String> permissions = decodedJWT.getClaim("permissions").asList(String.class);
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                stream(roles).forEach(role -> {
-                    authorities.add(new SimpleGrantedAuthority(role));
+                permissions.forEach(permission -> {
+                    authorities.add(new SimpleGrantedAuthority(permission));
                 });
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);

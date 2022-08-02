@@ -16,6 +16,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,11 +39,17 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         //-> new RuntimeException("User not found!")
         //);
         Optional<AppUser> user = userRepository.findAppUserByUserName(username);
-        Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
+//        Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
         //TODO Here is where it catches the exception.
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.get().getRole().getRoleName());
-        authority.add(simpleGrantedAuthority);
-        return new User(user.get().getUserName(), user.get().getPassword(), authority);
+//        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.get().getRole().getRoleName());
+//        authority.add(simpleGrantedAuthority);
+        return new User(
+                user.get().getUserName(),
+                user.get().getPassword(),
+                user.get().getRole().getPermissions().stream().map(
+                        permission -> new SimpleGrantedAuthority(permission.name())
+                ).collect(Collectors.toList())
+        );
     }
 
     @Override
@@ -88,11 +97,13 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public AppUser setRoleToUser(long id, AppUserRoleDTO appUserRoleDTO) {
+    public AppUser setRoleToUser(long id, AppUserRoleDTO roleDTO) {
         AppUser user = userRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("User not found!")
         );
-        AppRole appRole = roleRepository.findAppRoleById(appUserRoleDTO.getRoleId());
+        AppRole appRole = roleRepository.findById(roleDTO.getRoleId()).orElseThrow(
+                () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
+        );
         user.setRole(appRole);
         userRepository.save(user);
         return user;

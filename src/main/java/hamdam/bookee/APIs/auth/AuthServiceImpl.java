@@ -17,10 +17,10 @@ import org.springframework.util.MimeTypeUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -46,7 +46,9 @@ public class AuthServiceImpl implements AuthService {
         // TODO IMHO(Farrukh): this inconsistency with role names is appearing because AppRole in your project is neither fully dynamic,
         // nor fully static. You are using entity (and db table) for saving roles, but giving role names to security statically
         // Possible solution: use fully static roles as in Progee-API or use fully dynamic roles as in edVantage
-        AppRole role = roleRepository.findAppRoleByRoleName("ROLE_USER");
+        AppRole role = roleRepository.findFirstByIsDefault(true).orElseThrow(
+                () -> new RuntimeException("There is no default role for users")
+        );
         appUser.setRole(role);
         userRepository.save(appUser);
         return appUser;
@@ -74,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
                         .withSubject(user.getUserName())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
 //                        .withIssuer(request.getRequestURL().toString())
-                        .withClaim("roles", Collections.singletonList(user.getRole().getRoleName()))
+                        .withClaim("permissions", user.getRole().getPermissions().stream().map(Enum::name).collect(Collectors.toList()))
                         .sign(algorithm);
 
                 Map<String, String> tokens = new HashMap<>();
