@@ -15,6 +15,6 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
         response.setStatus(403);
-        response.getWriter().write("💩 Forbidden: " + accessDeniedException.getMessage());
+        response.getWriter().write("Forbidden: " + accessDeniedException.getMessage());
     }
 }

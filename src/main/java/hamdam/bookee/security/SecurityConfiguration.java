@@ -65,9 +65,4 @@ public class SecurityConfiguration {
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-//    @Bean
-//    MyAuthenticationEntryPoint authenticationEntryPoint(AppUserRepository userRepository) {
-//        return new MyAuthenticationEntryPoint(userRepository);
-//    }
 }

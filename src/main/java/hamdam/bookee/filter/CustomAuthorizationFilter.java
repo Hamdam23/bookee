@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static hamdam.bookee.tools.constants.Endpoints.*;
-import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 

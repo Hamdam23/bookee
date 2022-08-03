@@ -1,6 +1,5 @@
 package hamdam.bookee.tools.exeptions;
 
-import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.AuthenticationException;

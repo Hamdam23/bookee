@@ -56,7 +56,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withClaim("permissions", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
 
-        //TODO getBytes() damasamam ishlidi "secret"
+        //TODO "secret" works as a String itself even if I don't apply getBytes()
         Algorithm refAlgorithm = Algorithm.HMAC384("secret");
         String refresh_token = JWT.create()
                 .withSubject(user.getUsername())
