@@ -30,7 +30,6 @@ public class SecurityConfiguration {
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
         //securing URLs
-        // TODO only admins can set role to users not working.
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users/post").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-image-to-user/**").fullyAuthenticated();
 

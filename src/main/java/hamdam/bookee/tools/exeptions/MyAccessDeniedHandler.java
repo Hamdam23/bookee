@@ -1,6 +1,5 @@
 package hamdam.bookee.tools.exeptions;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;

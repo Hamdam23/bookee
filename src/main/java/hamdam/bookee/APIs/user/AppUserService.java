@@ -16,4 +16,6 @@ public interface AppUserService {
     void setImageToUser(long id, UserImageDTO imageDTO);
 
     AppUser setRoleToUser(long id, AppUserRoleDTO appUserRoleDTO);
+
+    boolean invalidPassword(String username);
 }

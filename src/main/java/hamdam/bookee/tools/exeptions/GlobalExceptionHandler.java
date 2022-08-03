@@ -23,8 +23,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,
                                                                         WebRequest webRequest) {
         ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND, LocalDateTime.now(), exception.getMessage(),
-                //TODO "details": "uri=/api/v1/books/44;client=0:0:0:0:0:0:0:1;user=robb"
-                // WebRequest 'false' is used to avoid unnecessary message
                 webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }

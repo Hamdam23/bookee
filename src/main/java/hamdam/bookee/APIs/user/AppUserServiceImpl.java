@@ -109,4 +109,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         return user;
     }
 
+    @Override
+    public boolean invalidPassword(String username) {
+        return userRepository.existsByUserName(username);
+    }
+
 }

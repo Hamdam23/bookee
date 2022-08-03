@@ -33,7 +33,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final long millis = System.currentTimeMillis();
 
     private final Date acc_t_expiryDate = new Date(millis + 3600000); // 1 hour = 3600000
-    private final Date ref_t_expiryDate = new Date(millis + 3600000 * 48);
+    private final Date ref_t_expiryDate = new Date(millis + 3600000 * 24 * 20); // 20 days
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
