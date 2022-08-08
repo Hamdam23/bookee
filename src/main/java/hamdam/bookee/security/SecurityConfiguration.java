@@ -1,5 +1,6 @@
 package hamdam.bookee.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.Permission;
 import hamdam.bookee.filter.CustomAuthorizationFilter;
 import hamdam.bookee.tools.exeptions.MyAccessDeniedHandler;
