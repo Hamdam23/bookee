@@ -1,7 +1,8 @@
 package hamdam.bookee.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.Permission;
+import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.filter.AuthenticationFilterConfigurer;
 import hamdam.bookee.filter.CustomAuthorizationFilter;
 import hamdam.bookee.tools.exeptions.MyAccessDeniedHandler;
 import hamdam.bookee.tools.exeptions.MyAuthenticationEntryPoint;
@@ -11,9 +12,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static hamdam.bookee.filter.AuthenticationFilterConfigurer.configureAuthenticationFilter;
 import static hamdam.bookee.tools.constants.Endpoints.API_REFRESH_TOKEN;
 import static hamdam.bookee.tools.constants.Endpoints.API_REGISTER;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -25,12 +26,13 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(
             HttpSecurity http,
             MyAuthenticationEntryPoint entryPoint,
-            MyAccessDeniedHandler accessDeniedHandler
+            MyAccessDeniedHandler accessDeniedHandler,
+            AuthenticationFilterConfigurer authenticationFilterConfigurer,
+            CustomAuthorizationFilter authenticationFilter
     ) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
-        //securing URLs
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users/post").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-image-to-user/**").fullyAuthenticated();
 
@@ -62,8 +64,8 @@ public class SecurityConfiguration {
                         "/api/v1/images/**").
                 permitAll().anyRequest().authenticated().and().
                 exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(entryPoint);
-        http.apply(configureAuthenticationFilter());
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.apply(authenticationFilterConfigurer);
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

@@ -5,10 +5,15 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hamdam.bookee.APIs.role.Permission;
+import hamdam.bookee.APIs.user.AppUser;
+import hamdam.bookee.APIs.user.AppUserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,8 +28,11 @@ import static hamdam.bookee.tools.constants.Endpoints.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
+@Component
 @Slf4j
+@RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+    private final AppUserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -38,10 +46,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(token);
                 String username = decodedJWT.getSubject();
-                List<String> permissions = decodedJWT.getClaim("permissions").asList(String.class);
+                Optional<AppUser> user = userRepository.findAppUserByUserName(username);
+                Set<Permission> permissions = user.get().getRole().getPermissions();
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 permissions.forEach(permission -> {
-                    authorities.add(new SimpleGrantedAuthority(permission));
+                    authorities.add(new SimpleGrantedAuthority(permission.name()));
                 });
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);

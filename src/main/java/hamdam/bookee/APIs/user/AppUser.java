@@ -21,6 +21,7 @@ public class AppUser {
 
     private String name;
 
+    @Column(unique = true)
     private String userName;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")

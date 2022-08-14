@@ -14,13 +14,11 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    //TODO replace repo with service Status: DONE on 03.08.2022
     private final AppUserService userService;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        //TODO customise exception message DONE on 03.08.2022
         if (userService.invalidPassword(request.getParameter("username"))) {
             response.getWriter().write("Login failed: Invalid password!");
         } else {
