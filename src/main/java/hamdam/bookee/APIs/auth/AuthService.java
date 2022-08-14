@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface AuthService {
-    AppUser addUser(AuthUserDTO user);
+    AppUser registerUser(RegistrationRequest user);
 
-    void generateRefreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }

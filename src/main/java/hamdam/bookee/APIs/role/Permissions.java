@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.role;
 
-public enum Permission {
+public enum Permissions {
 
     GET_BOOK,
     CREATE_BOOK,

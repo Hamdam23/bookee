@@ -2,7 +2,7 @@ package hamdam.bookee.APIs.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import hamdam.bookee.APIs.auth.AuthUserDTO;
+import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.Image;
 import hamdam.bookee.APIs.role.AppRole;
 import lombok.*;
@@ -37,7 +37,7 @@ public class AppUser {
     @OneToOne
     private Image userImage;
 
-    public AppUser(AuthUserDTO dto){
+    public AppUser(RegistrationRequest dto){
         this.setName(dto.getName());
         this.setUserName(dto.getUserName());
         this.setPassword(dto.getPassword());

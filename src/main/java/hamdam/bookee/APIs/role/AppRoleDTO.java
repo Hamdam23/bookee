@@ -14,5 +14,5 @@ public class AppRoleDTO {
     private String roleName;
     @JsonProperty("is_default")
     private boolean isDefault;
-    private Set<Permission> permissions;
+    private Set<Permissions> permissions;
 }

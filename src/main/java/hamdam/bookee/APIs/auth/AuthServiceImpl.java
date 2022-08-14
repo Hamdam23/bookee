@@ -1,7 +1,6 @@
 package hamdam.bookee.APIs.auth;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +8,7 @@ import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public AppUser addUser(AuthUserDTO userDTO) {
+    public AppUser registerUser(RegistrationRequest userDTO) {
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         AppUser appUser = new AppUser(userDTO);
         AppRole role = roleRepository.findFirstByIsDefault(true).orElseThrow(
@@ -53,23 +53,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void generateRefreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+//                Algorithm checkerAlgorithm = Algorithm.HMAC384("secret".getBytes());
+//                JWTVerifier verifier = JWT.require(checkerAlgorithm).build();
+//                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                DecodedJWT decodedJWT = TokenProvider.verifyToken(refresh_token, false);
                 String username = decodedJWT.getSubject();
                 AppUser user = getUserByUsername(username);
+
+                Algorithm senderAlgorithm = Algorithm.HMAC256("secret".getBytes());
                 String access_token = JWT.create()
                         .withSubject(user.getUserName())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-//                        .withIssuer(request.getRequestURL().toString())
                         .withClaim("permissions", user.getRole().getPermissions().stream().map(Enum::name).collect(Collectors.toList()))
-                        .sign(algorithm);
+                        .sign(senderAlgorithm);
 
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", access_token);

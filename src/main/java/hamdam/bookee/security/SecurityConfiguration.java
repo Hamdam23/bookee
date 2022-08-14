@@ -1,7 +1,6 @@
 package hamdam.bookee.security;
 
-import hamdam.bookee.APIs.role.Permission;
-import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.filter.AuthenticationFilterConfigurer;
 import hamdam.bookee.filter.CustomAuthorizationFilter;
 import hamdam.bookee.tools.exeptions.MyAccessDeniedHandler;
@@ -12,10 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static hamdam.bookee.tools.constants.Endpoints.API_REFRESH_TOKEN;
+import static hamdam.bookee.tools.constants.Endpoints.API_TOKEN_REFRESH;
 import static hamdam.bookee.tools.constants.Endpoints.API_REGISTER;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -36,31 +34,31 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users/post").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-image-to-user/**").fullyAuthenticated();
 
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/books/**").hasAuthority(Permission.GET_BOOK.name());
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/books/**").hasAuthority(Permission.CREATE_BOOK.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/books/**").hasAuthority(Permission.UPDATE_BOOK.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/books/**").hasAuthority(Permission.UPDATE_BOOK.name());
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/books/**").hasAuthority(Permission.DELETE_BOOK.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/books/**").hasAuthority(Permissions.GET_BOOK.name());
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/books/**").hasAuthority(Permissions.CREATE_BOOK.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/books/**").hasAuthority(Permissions.UPDATE_BOOK.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/books/**").hasAuthority(Permissions.UPDATE_BOOK.name());
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/books/**").hasAuthority(Permissions.DELETE_BOOK.name());
 
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/genres/**").hasAuthority(Permission.GET_GENRE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/genres/**").hasAuthority(Permission.CREATE_GENRE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/genres/**").hasAuthority(Permission.UPDATE_GENRE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/genres/**").hasAuthority(Permission.UPDATE_GENRE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/genres/**").hasAuthority(Permission.DELETE_GENRE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/genres/**").hasAuthority(Permissions.GET_GENRE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/genres/**").hasAuthority(Permissions.CREATE_GENRE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/genres/**").hasAuthority(Permissions.UPDATE_GENRE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/genres/**").hasAuthority(Permissions.UPDATE_GENRE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/genres/**").hasAuthority(Permissions.DELETE_GENRE.name());
 
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/users/**").hasAuthority(Permission.GET_USER.name());
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users/**").hasAuthority(Permission.CREATE_USER.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/users/**").hasAuthority(Permission.UPDATE_USER.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/**").hasAuthority(Permission.UPDATE_USER.name());
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority(Permission.DELETE_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/users/**").hasAuthority(Permissions.GET_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users/**").hasAuthority(Permissions.CREATE_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/users/**").hasAuthority(Permissions.UPDATE_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/**").hasAuthority(Permissions.UPDATE_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority(Permissions.DELETE_USER.name());
 
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/roles/**").hasAuthority(Permission.GET_ROLE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/roles/**").hasAuthority(Permission.CREATE_ROLE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/roles/**").hasAuthority(Permission.UPDATE_ROLE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/roles/**").hasAuthority(Permission.UPDATE_ROLE.name());
-        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/roles/**").hasAuthority(Permission.DELETE_ROLE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/roles/**").hasAuthority(Permissions.GET_ROLE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/roles/**").hasAuthority(Permissions.CREATE_ROLE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PUT, "/api/v1/roles/**").hasAuthority(Permissions.UPDATE_ROLE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/roles/**").hasAuthority(Permissions.UPDATE_ROLE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.DELETE, "/api/v1/roles/**").hasAuthority(Permissions.DELETE_ROLE.name());
 
-        http.authorizeRequests().antMatchers(API_REGISTER, "/api/login/**", API_REFRESH_TOKEN,
+        http.authorizeRequests().antMatchers(API_REGISTER, "/api/login/**", API_TOKEN_REFRESH,
                         "/api/v1/images/**").
                 permitAll().anyRequest().authenticated().and().
                 exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(entryPoint);

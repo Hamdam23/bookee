@@ -24,7 +24,7 @@ public class AppRole {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(value = EnumType.STRING)
-    private Set<Permission> permissions = Collections.emptySet();
+    private Set<Permissions> permissions = Collections.emptySet();
 
     public AppRole(AppRoleDTO dto) {
         this.roleName = dto.getRoleName();

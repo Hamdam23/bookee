@@ -1,22 +1,8 @@
 package hamdam.bookee;
 
-import hamdam.bookee.APIs.auth.AuthService;
-import hamdam.bookee.APIs.auth.AuthUserDTO;
-import hamdam.bookee.APIs.role.AppRole;
-import hamdam.bookee.APIs.role.AppRoleDTO;
-import hamdam.bookee.APIs.role.AppRoleService;
-import hamdam.bookee.APIs.role.Permission;
-import hamdam.bookee.APIs.user.AppUser;
-import hamdam.bookee.APIs.user.AppUserRoleDTO;
-import hamdam.bookee.APIs.user.AppUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.Set;
-
-import static hamdam.bookee.APIs.role.Permission.*;
 
 @SpringBootApplication
 @RequiredArgsConstructor

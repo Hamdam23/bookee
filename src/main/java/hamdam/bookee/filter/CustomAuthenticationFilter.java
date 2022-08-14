@@ -3,8 +3,10 @@ package hamdam.bookee.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hamdam.bookee.APIs.auth.TokenResponse;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.tools.token.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,33 +56,36 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         UserDetails user = (UserDetails) authResult.getPrincipal();
-        String userName = user.getUsername();
-        String role = userRepository.findAppUserByUserName(userName).get().getName();
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-        String access_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(acc_t_expiryDate)
-                .withIssuer(request.getRequestURL().toString())
-                .withClaim(USER_NAME, userName)
-                .sign(algorithm);
-
-        //TODO "secret" HMAC384 itself works on .getBytes() method
-        Algorithm refAlgorithm = Algorithm.HMAC384("secret");
-        String refresh_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(ref_t_expiryDate)
-                .withIssuer(request.getRequestURL().toString())
-                .withClaim(USER_NAME, userName)
-                .sign(refAlgorithm);
-
-        LinkedHashMap<String, Object> tokens = new LinkedHashMap<>();
-        tokens.put("access_token", access_token);
-        tokens.put("access token expires at", String.valueOf(acc_t_expiryDate));
-        tokens.put("refresh_token", refresh_token);
-        tokens.put("refresh token expires at", String.valueOf(ref_t_expiryDate));
-        tokens.put("role", role);
-        tokens.put("permissions", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+        TokenResponse tokenResponse = TokenProvider.generateToken(user, userRepository);
+        TokenProvider.sendToken(tokenResponse, response);
+//        log.error("user-user-details: ", user, ";");
+//        String userName = user.getUsername();
+//        log.error("user-app-user", userName, ";");
+//
+//        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+//        String access_token = JWT.create()
+//                .withSubject(user.getUsername())
+//                .withExpiresAt(acc_t_expiryDate)
+//                .withClaim(USER_NAME, userName)
+//                .sign(algorithm);
+//
+//        Algorithm refAlgorithm = Algorithm.HMAC384("secret".getBytes());
+//        String refresh_token = JWT.create()
+//                .withSubject(user.getUsername())
+//                .withExpiresAt(ref_t_expiryDate)
+//                .withClaim(USER_NAME, userName)
+//                .sign(refAlgorithm);
+//
+//        String role = userRepository.findAppUserByUserName(userName).get().getRole().getRoleName();
+//
+//        LinkedHashMap<String, Object> tokens = new LinkedHashMap<>();
+//        tokens.put("access_token", access_token);
+//        tokens.put("access token expires at", String.valueOf(acc_t_expiryDate));
+//        tokens.put("refresh_token", refresh_token);
+//        tokens.put("refresh token expires at", String.valueOf(ref_t_expiryDate));
+//        tokens.put("role", role);
+//        tokens.put("permissions", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+//        response.setContentType(APPLICATION_JSON_VALUE);
+//        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 }
