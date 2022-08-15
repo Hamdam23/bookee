@@ -1,17 +1,13 @@
 package hamdam.bookee.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import hamdam.bookee.APIs.auth.TokenResponse;
-import hamdam.bookee.APIs.role.AppRole;
+import hamdam.bookee.APIs.auth.TokensResponse;
+import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -20,11 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.stream.Collectors;
-
-import static hamdam.bookee.tools.constants.ConstantFields.USER_NAME;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import java.util.Optional;
 
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -35,11 +27,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
     }
-
-    private final long millis = System.currentTimeMillis();
-
-    private final Date acc_t_expiryDate = new Date(millis + 3600000); // 1 hour = 3600000
-    private final Date ref_t_expiryDate = new Date(millis + 3600000 * 24 * 20); // 20 days
+//
+//    private final long millis = System.currentTimeMillis();
+//
+//    private final Date acc_t_expiryDate = new Date(millis + 3600000); // 1 hour = 3600000
+//    private final Date ref_t_expiryDate = new Date(millis + 3600000 * 24 * 20); // 20 days
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -56,8 +48,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         UserDetails user = (UserDetails) authResult.getPrincipal();
-        TokenResponse tokenResponse = TokenProvider.generateToken(user, userRepository);
-        TokenProvider.sendToken(tokenResponse, response);
+        TokensResponse tokenResponse = TokenProvider.generateTokens(user, userRepository);
+        TokenProvider.sendTokens(tokenResponse, response);
 //        log.error("user-user-details: ", user, ";");
 //        String userName = user.getUsername();
 //        log.error("user-app-user", userName, ";");

@@ -10,6 +10,7 @@ import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
@@ -64,19 +65,23 @@ public class AuthServiceImpl implements AuthService {
 //                DecodedJWT decodedJWT = verifier.verify(refresh_token);
                 DecodedJWT decodedJWT = TokenProvider.verifyToken(refresh_token, false);
                 String username = decodedJWT.getSubject();
-                AppUser user = getUserByUsername(username);
+                // TODO 15.08.2022 here it throes exception, because username is null
+                UserDetails user = (UserDetails)getUserByUsername(username);
 
-                Algorithm senderAlgorithm = Algorithm.HMAC256("secret".getBytes());
-                String access_token = JWT.create()
-                        .withSubject(user.getUserName())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-                        .withClaim("permissions", user.getRole().getPermissions().stream().map(Enum::name).collect(Collectors.toList()))
-                        .sign(senderAlgorithm);
+                AccessTResponse accessTResponse = TokenProvider.generateAToken(user, userRepository);
+                TokenProvider.sendAToken(accessTResponse, response);
 
-                Map<String, String> tokens = new HashMap<>();
-                tokens.put("access_token", access_token);
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+//                Algorithm senderAlgorithm = Algorithm.HMAC256("secret".getBytes());
+//                String access_token = JWT.create()
+//                        .withSubject(user.getUserName())
+//                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+//                        .withClaim("permissions", user.getRole().getPermissions().stream().map(Enum::name).collect(Collectors.toList()))
+//                        .sign(senderAlgorithm);
+//
+//                Map<String, String> tokens = new HashMap<>();
+//                tokens.put("access_token", access_token);
+//                response.setContentType(APPLICATION_JSON_VALUE);
+//                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
             } catch (Exception exception) {
                 response.setHeader("error", exception.getMessage());

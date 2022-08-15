@@ -6,17 +6,16 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hamdam.bookee.APIs.auth.TokenResponse;
+import hamdam.bookee.APIs.auth.AccessTResponse;
+import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRole;
+import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.Date;
 import java.util.Map;
 
@@ -26,8 +25,11 @@ public class TokenProvider {
     private static final Algorithm accessAlgorithm = Algorithm.HMAC256("secret".getBytes());
     private static final Algorithm refreshAlgorithm = Algorithm.HMAC384("secret".getBytes());
 
-    public static DecodedJWT verifyToken(String token, boolean isAccessToken) {
+    private static final long millis = System.currentTimeMillis();
+    private static final Date accTExpiry = new Date(millis + 3600000); // 1 hour = 3600000
+    private static final Date refTExpiry = new Date(millis + 3600000 * 24 * 20); // 20 days
 
+    public static DecodedJWT verifyToken(String token, boolean isAccessToken) {
         JWTVerifier verifier;
         if (isAccessToken) {
             verifier = JWT.require(accessAlgorithm).build();
@@ -37,38 +39,58 @@ public class TokenProvider {
         return verifier.verify(token);
     }
 
-    public static TokenResponse generateToken(UserDetails user, AppUserRepository userRepository){
-        long millis = System.currentTimeMillis();
-        Date acc_t_expiryDate = new Date(millis + 3600000); // 1 hour = 3600000
-        Date ref_t_expiryDate = new Date(millis + 3600000 * 24 * 20); // 20 days
-
+    public static TokensResponse generateTokens(UserDetails user, AppUserRepository userRepository){
         AppRole role = userRepository.findAppUserByUserName(user.getUsername()).get().getRole();
 
-        String access_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(acc_t_expiryDate)
-                .withClaim(ROLE, role.getRoleName())
-                .sign(accessAlgorithm);
-
-        String refresh_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(ref_t_expiryDate)
-                .withClaim(ROLE, role.getRoleName())
-                .sign(refreshAlgorithm);
-
-        return new TokenResponse(
-                access_token,
-                acc_t_expiryDate,
-                refresh_token,
-                ref_t_expiryDate,
+        return new TokensResponse(
+                buildAccessToken(user, role),
+                accTExpiry,
+                buildRefreshToken(user, role),
+                refTExpiry,
                 role.getRoleName(),
                 role.getPermissions()
         );
     }
 
-    public static void sendToken(TokenResponse tokenResponse, HttpServletResponse response) throws IOException {
+    public static AccessTResponse generateAToken(UserDetails user, AppUserRepository userRepository){
+        AppRole role = userRepository.findAppUserByUserName(user.getUsername()).get().getRole();
+
+        return new AccessTResponse(
+                buildAccessToken(user, role),
+                accTExpiry
+        );
+    }
+
+    public static String buildAccessToken(UserDetails user, AppRole role){
+
+        return JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(accTExpiry)
+                .withClaim(ROLE, role.getRoleName())
+                .sign(accessAlgorithm);
+    }
+
+    public static String buildRefreshToken(UserDetails user, AppRole role){
+
+        return JWT.create()
+                .withSubject(user.getPassword())
+                .withExpiresAt(refTExpiry)
+                .withClaim(ROLE, role.getRoleName())
+                .sign(refreshAlgorithm);
+    }
+
+    public static void sendTokens(TokensResponse tokensResponse, HttpServletResponse response) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        Map<String, Object> data = new ObjectMapper().convertValue(tokenResponse,
+        Map<String, Object> data = new ObjectMapper().convertValue(tokensResponse,
+                new TypeReference<>() {
+                }
+        );
+        new ObjectMapper().writeValue(response.getOutputStream(), data);
+    }
+
+    public static void sendAToken(AccessTResponse accessTResponse, HttpServletResponse response) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        Map<String, Object> data = new ObjectMapper().convertValue(accessTResponse,
                 new TypeReference<>() {
                 }
         );
