@@ -73,7 +73,7 @@ public class TokenProvider {
     public static String buildRefreshToken(UserDetails user, AppRole role){
 
         return JWT.create()
-                .withSubject(user.getPassword())
+                .withSubject(user.getUsername())
                 .withExpiresAt(refTExpiry)
                 .withClaim(ROLE, role.getRoleName())
                 .sign(refreshAlgorithm);
