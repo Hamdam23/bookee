@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.auth.AccessTResponse;
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRole;
-import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,7 +38,7 @@ public class TokenProvider {
         return verifier.verify(token);
     }
 
-    public static TokensResponse generateTokens(UserDetails user, AppUserRepository userRepository){
+    public static TokensResponse generateTokens(UserDetails user, AppUserRepository userRepository) {
         AppRole role = userRepository.findAppUserByUserName(user.getUsername()).get().getRole();
 
         return new TokensResponse(
@@ -52,7 +51,7 @@ public class TokenProvider {
         );
     }
 
-    public static AccessTResponse generateAToken(UserDetails user, AppUserRepository userRepository){
+    public static AccessTResponse generateAToken(UserDetails user, AppUserRepository userRepository) {
         AppRole role = userRepository.findAppUserByUserName(user.getUsername()).get().getRole();
 
         return new AccessTResponse(
@@ -61,7 +60,7 @@ public class TokenProvider {
         );
     }
 
-    public static String buildAccessToken(UserDetails user, AppRole role){
+    public static String buildAccessToken(UserDetails user, AppRole role) {
 
         return JWT.create()
                 .withSubject(user.getUsername())
@@ -70,7 +69,7 @@ public class TokenProvider {
                 .sign(accessAlgorithm);
     }
 
-    public static String buildRefreshToken(UserDetails user, AppRole role){
+    public static String buildRefreshToken(UserDetails user, AppRole role) {
 
         return JWT.create()
                 .withSubject(user.getUsername())

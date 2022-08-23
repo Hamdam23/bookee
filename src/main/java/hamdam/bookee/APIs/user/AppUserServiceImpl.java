@@ -19,10 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,15 +30,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //TODO here, when User is not found Exception does not work anyway,because Security EntryPoint Ex. will execute.
-        //AppUser user = userRepository.findAppUserByUserName(username).orElseThrow(()
-        //-> new RuntimeException("User not found!")
-        //);
         Optional<AppUser> user = userRepository.findAppUserByUserName(username);
-//        Collection<SimpleGrantedAuthority> authority = new ArrayList<>();
-        //TODO Here is where it catches the exception.
-//        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.get().getRole().getRoleName());
-//        authority.add(simpleGrantedAuthority);
         return new User(
                 user.get().getUserName(),
                 user.get().getPassword(),

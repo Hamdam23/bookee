@@ -1,13 +1,12 @@
 package hamdam.bookee.APIs.auth;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.user.AppUserServiceImpl;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,14 +17,11 @@ import org.springframework.util.MimeTypeUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
+    private final AppUserServiceImpl appUserServiceImpl;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -65,8 +62,7 @@ public class AuthServiceImpl implements AuthService {
 //                DecodedJWT decodedJWT = verifier.verify(refresh_token);
                 DecodedJWT decodedJWT = TokenProvider.verifyToken(refresh_token, false);
                 String username = decodedJWT.getSubject();
-                // TODO 15.08.2022 here it throes exception, because username is null
-                UserDetails user = (UserDetails)getUserByUsername(username);
+                UserDetails user = appUserServiceImpl.loadUserByUsername(username);
 
                 AccessTResponse accessTResponse = TokenProvider.generateAToken(user, userRepository);
                 TokenProvider.sendAToken(accessTResponse, response);
