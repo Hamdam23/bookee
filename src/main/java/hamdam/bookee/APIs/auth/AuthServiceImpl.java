@@ -7,6 +7,7 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserServiceImpl;
+import hamdam.bookee.tools.exeptions.RefreshTokenMissingException;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,12 +43,6 @@ public class AuthServiceImpl implements AuthService {
         appUser.setRole(role);
         userRepository.save(appUser);
         return appUser;
-    }
-
-    public AppUser getUserByUsername(String userName) {
-        return userRepository.findAppUserByUserName(userName).orElseThrow(()
-                -> new RuntimeException("User not found!")
-        );
     }
 
     @Override
@@ -88,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
                 new ObjectMapper().writeValue(response.getOutputStream(), error);
             }
         } else {
-            throw new RuntimeException("Refresh token is missing!");
+            throw new RefreshTokenMissingException("Refresh token is missing!");
         }
     }
 }

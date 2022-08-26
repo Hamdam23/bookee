@@ -18,7 +18,7 @@ public class Image {
 
     private String imageName;
 
-    private String location;
+    private String  location;
 
     public Image(String imageName, String location) {
         this.imageName = imageName;
