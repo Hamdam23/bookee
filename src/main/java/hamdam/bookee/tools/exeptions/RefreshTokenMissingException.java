@@ -4,19 +4,14 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.time.LocalDateTime;
-
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 @Getter
-public class RefreshTokenMissingException extends ErrorDetails {
+public class RefreshTokenMissingException extends ApiException {
 
     private final String message;
 
     public RefreshTokenMissingException(String message) {
-        super(
-                HttpStatus.NOT_FOUND,
-                message
-        );
+        super(HttpStatus.BAD_REQUEST, message);
         this.message = message;
     }
 }
