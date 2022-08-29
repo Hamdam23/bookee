@@ -26,7 +26,7 @@ public class AppUser {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @UpdateTimestamp
-    LocalDateTime timeStamp;
+    private LocalDateTime timeStamp;
 
     @JsonIgnore
     private String password;

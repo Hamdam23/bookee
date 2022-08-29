@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,13 +10,10 @@ import static hamdam.bookee.tools.constants.Endpoints.API_BOOK;
 
 @RestController
 @RequestMapping(API_BOOK)
+@RequiredArgsConstructor
 public class BookController {
 
     private final BookServiceImpl bookService;
-
-    public BookController(BookServiceImpl bookService) {
-        this.bookService = bookService;
-    }
 
     @PostMapping
     public ResponseEntity<String> addBook(@RequestBody BookDTO book) {

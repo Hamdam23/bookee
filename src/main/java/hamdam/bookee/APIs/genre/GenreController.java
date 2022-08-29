@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.genre;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,13 +10,10 @@ import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 
 @RestController
 @RequestMapping(API_GENRE)
+@RequiredArgsConstructor
 public class GenreController {
 
     private final GenreService service;
-
-    public GenreController(GenreServiceImpl service) {
-        this.service = service;
-    }
 
     @PostMapping
     public ResponseEntity<String> addGenre(@RequestBody GenreDTO genre) {

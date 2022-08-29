@@ -8,4 +8,5 @@ public final class Endpoints {
     public static final String API_BOOK = "/api/v1/books";
     public static final String API_GENRE = "/api/v1/genres";
     public static final String API_IMAGE = "/api/v1/images";
+    public static final String API_ROLE_REQUEST = "/api/v1/role-request";
 }
