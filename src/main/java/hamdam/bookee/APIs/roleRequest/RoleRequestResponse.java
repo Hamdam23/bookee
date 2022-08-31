@@ -2,11 +2,13 @@ package hamdam.bookee.APIs.roleRequest;
 
 import hamdam.bookee.APIs.image.Image;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
 public class RoleRequestResponse {
     private Long id;
     private String name;
@@ -23,6 +25,14 @@ public class RoleRequestResponse {
         this.userRole = entity.getUser().getRole().getRoleName();
         this.userImage = entity.getUser().getUserImage();
         this.requestedRole = requestedRole;
+        BeanUtils.copyProperties(entity, this);
+    }
+
+    public RoleRequestResponse(RequestEntity entity){
+        this.name = entity.getUser().getName();
+        this.userName = entity.getUser().getUserName();
+        this.userRole = entity.getUser().getRole().getRoleName();
+        this.userImage = entity.getUser().getUserImage();
         BeanUtils.copyProperties(entity, this);
     }
 }

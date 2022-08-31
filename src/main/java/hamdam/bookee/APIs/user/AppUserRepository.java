@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findAppUserByUserName(String userName);
 
+    Optional<AppUser> findAppUserById(Long id);
+
     List<AppUser> findAllByOrderByTimeStampDesc();
 
     boolean existsByUserName(String username);
