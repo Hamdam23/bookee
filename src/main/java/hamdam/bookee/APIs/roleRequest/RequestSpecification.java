@@ -9,7 +9,7 @@ public final class RequestSpecification {
     public static Specification<RequestEntity> filter(Long userId, State state) {
         Specification<RequestEntity> specification = Specification
                 .where(userId == null ? null : getRequestsByUserId(userId)
-                        .and(state == null ? null : getRequestsByState(state)));
+                .and(state == null ? null : getRequestsByState(state)));
 
         return specification;
     }
@@ -23,7 +23,7 @@ public final class RequestSpecification {
 
     public static Specification<RequestEntity> getRequestsByState(State state){
         return ((root, query, criteriaBuilder) -> {
-            return root.get("state").equals(state.name());
+            return criteriaBuilder.equal(root.get("state"), state);
         });
     }
 }

@@ -47,15 +47,12 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<RoleRequestResponse> getAllRoleRequests(ReviewState reviewState, Long userId, HttpServletRequest request) {
+    public List<RoleRequestResponse> getAllRoleRequests(ReviewState reviewState, HttpServletRequest request) {
         List<RequestEntity> responseList;
-
-        AppUser appUser = userRepository.findAppUserById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("User", "username", userId));
 
         AppUser requestedUser = getUser(request);
         if (requestedUser.getRole().getRoleName().equals("admin")) {
-            responseList = checkReviewState(appUser, reviewState);
+            responseList = checkReviewState(reviewState);
         } else if (requestedUser.getRole().getRoleName().equals("user")) {
             List<RequestEntity> requestEntities;
             if (reviewState.getState() == null) {
@@ -109,7 +106,20 @@ public class RequestServiceImpl implements RequestService {
         return new RoleRequestResponse(requestEntity, "author");
     }
 
-    private List<RequestEntity> checkReviewState(AppUser appUser, ReviewState reviewState){
+    @Override
+    public void deleteRequest(Long id, HttpServletRequest request) {
+        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Role Request", "id", id));
+
+        AppUser user = getUser(request);
+        if (user.getRole().getRoleName().equals("admin")){
+            requestRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("sho'rda bir exception yazibarish garak, 'admin bo'lmasang poydasi yo'q' dayan!");
+        }
+    }
+
+    private List<RequestEntity> checkReviewState(ReviewState reviewState){
         List<RequestEntity> responseList = new ArrayList<>();
 
         if (reviewState.getState() == null) {
@@ -130,9 +140,8 @@ public class RequestServiceImpl implements RequestService {
         DecodedJWT decodedJWT = TokenProvider.verifyToken(token, true);
         String username = decodedJWT.getSubject();
 
-        AppUser user = userRepository.findAppUserByUserName(username).orElseThrow(
+        return userRepository.findAppUserByUserName(username).orElseThrow(
                 () -> new ResourceNotFoundException("User", "username", username));
-        return user;
     }
 
     private void validateUsersRole(AppUser user) {

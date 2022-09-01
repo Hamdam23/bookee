@@ -7,7 +7,9 @@ public interface RequestService {
 
     RoleRequestResponse postRoleRequest(RequestRole requestRole, HttpServletRequest request);
 
-    List<RoleRequestResponse> getAllRoleRequests(ReviewState reviewState, Long userId, HttpServletRequest request);
+    List<RoleRequestResponse> getAllRoleRequests(ReviewState reviewState, HttpServletRequest request);
 
     RoleRequestResponse reviewRequest(Long id, ReviewState reviewState, HttpServletRequest request);
+
+    void deleteRequest(Long id, HttpServletRequest request);
 }
