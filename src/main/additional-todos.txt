@@ -12,3 +12,4 @@
 12. Validations in request DTOs
 13. for delete requests whether return full json response or empty response (but with 204), not plain text
 14. for post/put/patch (modification) requests return full json response of updated/created object
+15. add not null, size, not blank etc. in all entities and DTOs

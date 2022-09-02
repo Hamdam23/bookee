@@ -18,12 +18,14 @@ public class GenreController {
     @PostMapping
     public ResponseEntity<String> addGenre(@RequestBody GenreDTO genre) {
         service.addGenre(genre);
+        // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Genre successfully saved!");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
         service.updateGenre(id, genre);
+        // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Genre with id: " + id + " successfully updated!");
     }
 
@@ -40,6 +42,7 @@ public class GenreController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGenre(@PathVariable Long id) {
         service.deleteGenre(id);
+        // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Genre with id: " + id + " successfully deleted!");
     }
 }

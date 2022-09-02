@@ -20,6 +20,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public GenreEntity getGenreByID(Long id) {
+        // TODO: 9/2/22 Local variable 'genre' is redundant
         GenreEntity genre = genreRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Genre", "id", id));
         return genre;
@@ -27,6 +28,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public void addGenre(GenreDTO dto) {
+        // TODO: 9/2/22 use GenreDTO as constructor argument
         GenreEntity entity = new GenreEntity();
         BeanUtils.copyProperties(dto, entity);
         genreRepository.save(entity);
@@ -37,7 +39,9 @@ public class GenreServiceImpl implements GenreService {
         GenreEntity oldGenre = genreRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Genre", "id", id));
 
+        // TODO: 9/2/22 do yo really need 3 genre related object: oldGenre, newGenre, genre(DTO)?
         GenreEntity newGenre = new GenreEntity(genre);
+        // TODO: 9/2/22 why calling copyProperties?
         BeanUtils.copyProperties(genre, oldGenre);
 
         oldGenre.setBooks(newGenre.getBooks());
@@ -46,6 +50,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public void deleteGenre(Long id) {
+        // TODO: 9/2/22 existsById is enough
         genreRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Genre", "id", id));
         genreRepository.deleteById(id);

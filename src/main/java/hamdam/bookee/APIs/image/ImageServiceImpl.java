@@ -65,6 +65,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImageById(long id) {
+        // TODO: 9/2/22 check image id
         imageRepository.deleteById(id);
     }
 }
