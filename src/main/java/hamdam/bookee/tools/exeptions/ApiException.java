@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 public class ApiException extends RuntimeException {
 
     private HttpStatus status;
+    // TODO: 9/2/22 do you really need JsonFormat here, why?
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private String message;
 }

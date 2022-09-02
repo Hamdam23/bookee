@@ -3,3 +3,4 @@
 3. Code comments, README, etc.
 4. API documentation
 5. Downloadable Postman collection
+6. Project packaging

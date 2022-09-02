@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // TODO: 9/2/22 method name is not clear, what is it for?
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception exception) {
         ErrorResponse errorResponse = new ErrorResponse(
