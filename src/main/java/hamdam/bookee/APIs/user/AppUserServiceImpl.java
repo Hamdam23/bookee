@@ -31,7 +31,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<AppUser> user = userRepository.findAppUserByUserName(username);
+        // TODO: 9/2/22 write mapper method/class for AppUser <-> User
         return new User(
+                // TODO: 9/2/22 handle get() call
                 user.get().getUserName(),
                 user.get().getPassword(),
                 user.get().getRole().getPermissions().stream().map(
@@ -43,6 +45,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     public AppUser getUserByUsername(String userName) {
         return userRepository.findAppUserByUserName(userName).orElseThrow(()
+                // TODO: 9/2/22 custom exception
                 -> new RuntimeException("User not found!")
         );
     }
@@ -54,7 +57,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public AppUser updateUser(AppUser newUser, long id) {
+        // TODO: 9/2/22 code duplication
         AppUser user = userRepository.findById(id).orElseThrow(()
+                // TODO: 9/2/22 custom exception
                 -> new RuntimeException("User not found!")
         );
         user.setName(newUser.getName());
@@ -64,6 +69,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public void deleteUser(long id) {
+        // TODO: 9/2/22 searching for image or user? imageRepository? why?
         imageRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", id)
         );
@@ -76,6 +82,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         Image image = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                 -> new ResourceNotFoundException("Image", "id", id)
         );
+        // TODO: 9/2/22 code duplication
         AppUser user = userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", imageDTO.getImageId())
         );
@@ -93,10 +100,12 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
         );
         user.setRole(appRole);
+        // TODO: 9/2/22 you can return value from repository method call
         userRepository.save(user);
         return user;
     }
 
+    // TODO: 9/2/22 needs rename (and maybe some docs)
     @Override
     public boolean invalidPassword(String username) {
         return userRepository.existsByUserName(username);

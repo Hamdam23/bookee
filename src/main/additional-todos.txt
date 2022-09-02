@@ -8,3 +8,5 @@
 8. handle Optional.get() warnings
 9. don't use @Data lombok annotation in entities
 10. roleRequest package needs big refactor/rename/new-features/logic-changes etc.
+11. If role of user in the project (AppRole) is implemented as dynamic, use it as dynamic everywhere
+12. Validations in request DTOs

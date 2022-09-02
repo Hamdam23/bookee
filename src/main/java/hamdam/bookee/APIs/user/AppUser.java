@@ -34,6 +34,7 @@ public class AppUser {
     @ManyToOne
     private AppRole role;
 
+    // TODO: 9/2/22 name & json
     @OneToOne
     private Image userImage;
 
