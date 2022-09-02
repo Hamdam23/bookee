@@ -26,14 +26,19 @@ import static hamdam.bookee.tools.constants.Endpoints.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
+// TODO: 9/2/22 it is better not to use Custom prefix for naming, name must describe logic/implementation of filtering process
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final AppUserRepository userRepository;
 
+
+
+    // TODO: 9/2/22 line length is too long, split it
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // TODO: 9/2/22 use shouldNotFilter() method to check if request is not for filtering
         if (request.getServletPath().equals(API_REGISTER) || request.getServletPath().equals(API_LOGIN) || request.getServletPath().equals(API_TOKEN_REFRESH)) {
             filterChain.doFilter(request, response);
         } else {
@@ -43,16 +48,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 DecodedJWT decodedJWT = TokenProvider.verifyToken(token, true);
                 String username = decodedJWT.getSubject();
                 Optional<AppUser> user = userRepository.findAppUserByUserName(username);
+                // TODO: 9/2/22 handle get() call
                 Set<Permissions> permissions = user.get().getRole().getPermissions();
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                permissions.forEach(permission -> {
-                    authorities.add(new SimpleGrantedAuthority(permission.name()));
-                });
+                permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.name())));
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 filterChain.doFilter(request, response);
             } catch (Exception exception) {
+                // TODO: 9/2/22 don't write to response only error_message, write full ErrorResponse object
                 log.error("Error logging in(token): {}", exception.getMessage());
                 response.setStatus(FORBIDDEN.value());
                 Map<String, String> error = new HashMap<>();
