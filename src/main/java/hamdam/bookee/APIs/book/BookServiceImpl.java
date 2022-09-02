@@ -29,6 +29,7 @@ public class BookServiceImpl implements BookService {
                 -> new ResourceNotFoundException("Book", "id", id));
     }
 
+    // TODO: 9/2/22 see todos in GenreServiceImpl:updateGenre
     @Override
     public void updateBook(BookDTO book, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
@@ -43,6 +44,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteBook(Long id) {
+        // TODO: 9/2/22 existsById is enough
         bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
 
