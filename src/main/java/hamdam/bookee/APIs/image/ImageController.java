@@ -20,6 +20,7 @@ import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 public class ImageController {
     private final ImageService imageService;
 
+    // TODO: 9/2/22 why additional "/upload" ?
     @PostMapping("/upload")
     public Image uploadImage(@MyValidFile @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
@@ -43,6 +44,7 @@ public class ImageController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteImage(@PathVariable long id) {
         imageService.deleteImageById(id);
+        // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Image with id: " + id + " successfully deleted!");
     }
 }

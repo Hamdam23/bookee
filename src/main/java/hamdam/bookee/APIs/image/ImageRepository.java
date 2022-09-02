@@ -7,5 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
+    // TODO: 9/2/22 in some repositories: findSomethingBySomethingName(), in others: findBySomethingName. write as only one of them
     Optional<Image> findByImageName(String name);
 }
