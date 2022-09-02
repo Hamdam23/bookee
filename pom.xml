@@ -18,7 +18,7 @@
     <description>Some desc</description>
 
     <properties>
-        <!-- todo user properties for all dependency versions-->
+        <!-- todo use properties for all dependency versions-->
         <java.version>11</java.version>
     </properties>
 
