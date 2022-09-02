@@ -31,9 +31,8 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+    // TODO: 9/2/22 user service, not repository
     private final AppUserRepository userRepository;
-
-
 
     // TODO: 9/2/22 line length is too long, split it
     @Override

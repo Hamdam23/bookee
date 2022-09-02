@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegistrationRequest {
     private String name;
+    // TODO: 9/2/22 use snake_case for json properties
     private String userName;
     private String password;
 }

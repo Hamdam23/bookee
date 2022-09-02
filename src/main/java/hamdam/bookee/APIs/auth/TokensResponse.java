@@ -15,10 +15,12 @@ import java.util.Set;
 public class TokensResponse {
     @JsonProperty("access_token")
     private String accessToken;
+    // TODO: 9/2/22 naming & json name
     @JsonProperty("access_token_expires_at")
     private Date accessTokenExpiry;
     @JsonProperty("refresh_token")
     private String refreshToken;
+    // TODO: 9/2/22 naming & json name
     @JsonProperty("refresh_token_expires_at")
     private Date refreshTokenExpiry;
     @JsonProperty("role")
