@@ -21,6 +21,7 @@ public class RequestController {
         return ResponseEntity.ok().body(requestService.postRoleRequest(requestRole, request));
     }
 
+    // TODO: 9/2/22 why ReviewState, for filtering purposes it is better to use request params
     @GetMapping
     public List<RoleRequestResponse> getAllRoleRequests(@RequestBody ReviewState reviewState,
                                                         HttpServletRequest request) {
@@ -35,6 +36,7 @@ public class RequestController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteRequest(@PathVariable Long id, HttpServletRequest request){
         requestService.deleteRequest(id, request);
+        // TODO: 9/2/22 return full json response, not plain text
         return ResponseEntity.ok().body("Role Request with id: [" + id + "] is successfully deleted.");
     }
 }

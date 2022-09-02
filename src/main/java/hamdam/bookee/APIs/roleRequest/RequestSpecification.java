@@ -7,6 +7,7 @@ import javax.persistence.criteria.Join;
 
 public final class RequestSpecification {
     public static Specification<RequestEntity> filter(Long userId, State state) {
+        // TODO: 9/2/22 Local variable 'specification' is redundant
         Specification<RequestEntity> specification = Specification
                 .where(userId == null ? null : getRequestsByUserId(userId)
                 .and(state == null ? null : getRequestsByState(state)));

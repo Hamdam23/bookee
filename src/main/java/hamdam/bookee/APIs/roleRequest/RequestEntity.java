@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+// TODO: 9/2/22 naming
 @Entity
 @Getter
 @Setter
@@ -18,10 +19,13 @@ public class RequestEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // TODO: 9/2/22 maybe default value is also user_id (or app_user_id), why do you need @JoinColumn
     @OneToOne
     @JoinColumn(name = "user_id")
     private AppUser user;
 
+    // TODO: 9/2/22 AppUser contains AppRole, why you need this property
+    // TODO: 9/2/22 if it is for requested role, then rename property or add comment
     @OneToOne
     private AppRole role;
 
