@@ -12,6 +12,7 @@ public class AppRoleServiceImpl implements AppRoleService {
 
     @Override
     public AppRole addRole(AppRoleDTO appRole) {
+        // TODO: 9/2/22 check if role name is unique
         return appRoleRepository.save(new AppRole(appRole));
     }
 
