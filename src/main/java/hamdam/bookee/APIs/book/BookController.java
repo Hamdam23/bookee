@@ -1,6 +1,10 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.tools.paging.CustomPage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +32,8 @@ public class BookController {
     }
 
     @GetMapping
-    public List<BookEntity> getAllBooks() {
-        return bookService.getAllBooks();
+    public CustomPage<BookEntity> getAllBooks(Pageable pageable) {
+        return new CustomPage<>(bookService.getAllBooks(pageable));
     }
 
     @GetMapping("/{id}")

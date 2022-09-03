@@ -27,11 +27,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
     }
-//
-//    private final long millis = System.currentTimeMillis();
-//
-//    private final Date acc_t_expiryDate = new Date(millis + 3600000); // 1 hour = 3600000
-//    private final Date ref_t_expiryDate = new Date(millis + 3600000 * 24 * 20); // 20 days
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -40,8 +35,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         log.info("Username is: {}", username);
         log.info("Password is: {}", password);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        // AuthenticationManager ga Authentication barish garak, va
-        // UsernamePasswordAuthenticationToken Authentication ni implement qiladi
         return authenticationManager.authenticate(authenticationToken);
     }
 
@@ -50,26 +43,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         UserDetails user = (UserDetails) authResult.getPrincipal();
         TokensResponse tokenResponse = TokenProvider.generateTokens(user, userRepository);
         TokenProvider.sendTokens(tokenResponse, response);
-//        log.error("user-user-details: ", user, ";");
-//        String userName = user.getUsername();
-//        log.error("user-app-user", userName, ";");
-//
-//        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-//        String access_token = JWT.create()
-//                .withSubject(user.getUsername())
-//                .withExpiresAt(acc_t_expiryDate)
-//                .withClaim(USER_NAME, userName)
-//                .sign(algorithm);
-//
-//        Algorithm refAlgorithm = Algorithm.HMAC384("secret".getBytes());
-//        String refresh_token = JWT.create()
-//                .withSubject(user.getUsername())
-//                .withExpiresAt(ref_t_expiryDate)
-//                .withClaim(USER_NAME, userName)
-//                .sign(refAlgorithm);
-//
-//        String role = userRepository.findAppUserByUserName(userName).get().getRole().getRoleName();
-//
 //        LinkedHashMap<String, Object> tokens = new LinkedHashMap<>();
 //        tokens.put("access_token", access_token);
 //        tokens.put("access token expires at", String.valueOf(acc_t_expiryDate));

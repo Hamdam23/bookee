@@ -3,6 +3,9 @@ package hamdam.bookee.APIs.book;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +22,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookEntity> getAllBooks() {
-        return bookRepository.findAll();
+    public Page<BookEntity> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 
     @Override
