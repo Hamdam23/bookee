@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ public class TokenProvider {
     private static final long millis = System.currentTimeMillis();
     private static final Date accTExpiry = new Date(millis + 3600000); // 1 hour = 3600000
     private static final Date refTExpiry = new Date(millis + 3600000 * 24 * 20); // 20 days
+    private static final DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 
     public static DecodedJWT verifyToken(String token, boolean isAccessToken) {
         JWTVerifier verifier;
@@ -43,9 +46,9 @@ public class TokenProvider {
 
         return new TokensResponse(
                 buildAccessToken(user, role),
-                accTExpiry,
+                formatter.format(accTExpiry),
                 buildRefreshToken(user, role),
-                refTExpiry,
+                formatter.format(refTExpiry),
                 role.getRoleName(),
                 role.getPermissions()
         );
@@ -56,7 +59,7 @@ public class TokenProvider {
 
         return new AccessTResponse(
                 buildAccessToken(user, role),
-                accTExpiry
+                formatter.format(accTExpiry)
         );
     }
 

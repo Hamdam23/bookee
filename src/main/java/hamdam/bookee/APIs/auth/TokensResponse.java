@@ -16,11 +16,11 @@ public class TokensResponse {
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("access_token_expires_at")
-    private Date accessTokenExpiry;
+    private String accessTokenExpiry;
     @JsonProperty("refresh_token")
     private String refreshToken;
     @JsonProperty("refresh_token_expires_at")
-    private Date refreshTokenExpiry;
+    private String refreshTokenExpiry;
     @JsonProperty("role")
     private String role;
     @JsonProperty("permissions")

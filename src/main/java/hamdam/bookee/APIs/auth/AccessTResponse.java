@@ -14,5 +14,5 @@ public class AccessTResponse {
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("access_token_expires_at")
-    private Date accessTokenExpiry;
+    private String accessTokenExpiry;
 }
