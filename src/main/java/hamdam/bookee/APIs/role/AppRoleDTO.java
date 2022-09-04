@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppRoleDTO {
+    // TODO: 9/2/22 name & json
     private String roleName;
     @JsonProperty("is_default")
     private boolean isDefault;

@@ -24,11 +24,13 @@ public class BookEntity {
 
     private String description;
 
+    // TODO: 9/2/22 make author AppUser, not string
     private String author;
 
+    // TODO: 9/2/22 it is better to make rating float/double
     private Integer rating;
 
-    @ManyToMany()
+    @ManyToMany
     @JoinTable(name = "book_genre",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
@@ -36,6 +38,7 @@ public class BookEntity {
     private List<GenreEntity> genres = new ArrayList<>();
 
     public BookEntity(BookDTO bookDTO) {
+        // TODO: 9/2/22 use BeanUtils.copyProperties()
         this.name = bookDTO.getName();
         this.tagline = bookDTO.getTagline();
         this.description = bookDTO.getDescription();

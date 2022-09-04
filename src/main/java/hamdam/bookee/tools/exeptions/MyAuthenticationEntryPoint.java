@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+// TODO: 9/2/22 AuthenticationEntryPoint must be moved to security related package
 @Component
 @RequiredArgsConstructor
 public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -19,6 +20,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
+        // TODO: 9/2/22 return json response, not plain text
         if (userService.invalidPassword(request.getParameter("username"))) {
             response.getWriter().write("Login failed: Invalid password!");
         } else {

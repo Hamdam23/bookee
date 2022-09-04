@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findAppUserByUserName(String userName);
 
+    // TODO: 9/2/22 there is default findById for this logic
     Optional<AppUser> findAppUserById(Long id);
 
     List<AppUser> findAllByOrderByTimeStampDesc();

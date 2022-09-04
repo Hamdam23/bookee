@@ -26,11 +26,13 @@ public class SecurityConfiguration {
             MyAuthenticationEntryPoint entryPoint,
             MyAccessDeniedHandler accessDeniedHandler,
             AuthenticationFilterConfigurer authenticationFilterConfigurer,
+            // TODO: 9/2/22 naming
             CustomAuthorizationFilter authenticationFilter
     ) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
+        // TODO: 9/2/22 use constants for endpoints
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/v1/users/post").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, "/api/v1/users/set-image-to-user/**").fullyAuthenticated();
 

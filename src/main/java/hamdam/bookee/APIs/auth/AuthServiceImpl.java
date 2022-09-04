@@ -30,17 +30,22 @@ public class AuthServiceImpl implements AuthService {
 
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
+    // TODO: 9/2/22 don't use implementation of bean when injecting dependency
     private final AppUserServiceImpl appUserServiceImpl;
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    // TODO: 9/2/22 naming: userDTO
     public AppUser registerUser(RegistrationRequest userDTO) {
+        // TODO: 9/2/22 set encoded password to AppUser, not to RegistrationRequest
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         AppUser appUser = new AppUser(userDTO);
         AppRole role = roleRepository.findFirstByIsDefault(true).orElseThrow(
+                // TODO: 9/2/22 use custom exception
                 () -> new RuntimeException("There is no default role for users")
         );
         appUser.setRole(role);
+        // TODO: 9/2/22 you can return value which is being returned by repository method
         userRepository.save(appUser);
         return appUser;
     }
@@ -49,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
+        // TODO: 9/2/22 code duplication: CustomAuthorizationFilter:doFilterInternal
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
@@ -75,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
 //                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
             } catch (Exception exception) {
+                // TODO: 9/2/22 response must be full ErrorResponse object
                 response.setHeader("error", exception.getMessage());
                 response.setStatus(FORBIDDEN.value());
                 Map<String, String> error = new HashMap<>();
@@ -83,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
                 new ObjectMapper().writeValue(response.getOutputStream(), error);
             }
         } else {
+            // TODO: 9/2/22 why do you need to write error message there?
             throw new RefreshTokenMissingException("Refresh token is missing!");
         }
     }

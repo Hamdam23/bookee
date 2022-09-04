@@ -12,6 +12,7 @@ public interface ImageService {
 
     Image getImageByID(long id);
 
+    // TODO: 9/2/22 why it returns ImageDTO, but byId returns Image itself?
     List<ImageDTO> getAllImages();
 
     void deleteImageById(long id);

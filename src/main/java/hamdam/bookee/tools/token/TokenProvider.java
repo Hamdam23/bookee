@@ -23,11 +23,16 @@ import java.util.Map;
 
 import static hamdam.bookee.tools.constants.ConstantFields.ROLE;
 
+// TODO: 9/2/22 naming class as TokenProvider which contains only static methods is not a good idea
 public class TokenProvider {
+
+    // TODO: 9/2/22 get secret from environment variable
     private static final Algorithm accessAlgorithm = Algorithm.HMAC256("secret".getBytes());
     private static final Algorithm refreshAlgorithm = Algorithm.HMAC384("secret".getBytes());
 
+    // TODO: 9/2/22 don't instantiate millis field here (needs discussion)
     private static final long millis = System.currentTimeMillis();
+    // TODO: 9/2/22 needs better name
     private static final Date accTExpiry = new Date(millis + 3600000); // 1 hour = 3600000
     private static final Date refTExpiry = new Date(millis + 3600000 * 24 * 20); // 20 days
     private static final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -42,7 +47,9 @@ public class TokenProvider {
         return verifier.verify(token);
     }
 
+    // TODO: 9/2/22 do you need UserDetails here or only username?
     public static TokensResponse generateTokens(UserDetails user, AppUserRepository userRepository) {
+        // TODO: 9/2/22 remove get() call
         AppRole role = userRepository.findAppUserByUserName(user.getUsername()).get().getRole();
 
         return new TokensResponse(
@@ -55,7 +62,9 @@ public class TokenProvider {
         );
     }
 
+    // TODO: 9/2/22 needs better name
     public static AccessTResponse generateAToken(UserDetails user, AppUserRepository userRepository) {
+        // TODO: 9/2/22 remove get() call
         AppRole role = userRepository.findAppUserByUserName(user.getUsername()).get().getRole();
 
         return new AccessTResponse(
@@ -64,6 +73,7 @@ public class TokenProvider {
         );
     }
 
+    // TODO: 9/2/22 needs better name
     public static String buildAccessToken(UserDetails user, AppRole role) {
 
         return JWT.create()
@@ -73,6 +83,7 @@ public class TokenProvider {
                 .sign(accessAlgorithm);
     }
 
+    // TODO: 9/2/22 needs better name
     public static String buildRefreshToken(UserDetails user, AppRole role) {
 
         return JWT.create()

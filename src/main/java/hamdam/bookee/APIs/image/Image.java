@@ -16,9 +16,10 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    // TODO: 9/2/22 name & json
     private String imageName;
 
-    private String  location;
+    private String location;
 
     public Image(String imageName, String location) {
         this.imageName = imageName;

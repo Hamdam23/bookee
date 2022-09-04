@@ -22,12 +22,14 @@ public class BookController {
     @PostMapping
     public ResponseEntity<String> addBook(@RequestBody BookDTO book) {
         bookService.addBook(book);
+        // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Book successfully saved!");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
         bookService.updateBook(newBook, id);
+        // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Book with id: " + id + " successfully updated!");
     }
 
@@ -44,6 +46,7 @@ public class BookController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
+        // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Book with id: " + id + " successfully deleted!");
     }
 }

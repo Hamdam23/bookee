@@ -17,6 +17,7 @@ public class BookeeApplication {
         SpringApplication.run(BookeeApplication.class, args);
     }
 
+    // TODO: 9/2/22 this data initialization may be replaced by a migration script
 //    @Override
 //    public void run(String... args) {
 //        try {

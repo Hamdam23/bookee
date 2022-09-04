@@ -1,6 +1,7 @@
 package hamdam.bookee.tools.constants;
 
 public final class Endpoints {
+    // TODO: 9/2/22 why there is v1 in some endpoints, and there isn't in others?
     public static final String API_REGISTER = "/api/register";
     public static final String API_LOGIN = "/api/login";
     public static final String API_TOKEN_REFRESH = "/api/token/refresh";

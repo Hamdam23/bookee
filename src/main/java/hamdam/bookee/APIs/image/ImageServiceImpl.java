@@ -38,6 +38,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public FileSystemResource downloadImage(String name) {
         Image image = imageRepository.findByImageName(name).orElseThrow(()
+                // TODO: 9/2/22 custom exception
                 -> new RuntimeException("Image with name: " + name + " not found")
         );
         return fileSystemRepository.readFile(image.getLocation());
@@ -53,6 +54,7 @@ public class ImageServiceImpl implements ImageService {
     public List<ImageDTO> getAllImages() {
         List<Image> images = imageRepository.findAll();
         List<ImageDTO> imageDTOS = new ArrayList<>();
+        // TODO: 9/2/22 why manual forEach? there is Stream API, use mapping!
         for (Image image : images) {
             ImageDTO imageDTO = new ImageDTO();
             BeanUtils.copyProperties(image, imageDTO);
@@ -63,6 +65,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImageById(long id) {
+        // TODO: 9/2/22 check image id
         imageRepository.deleteById(id);
     }
 }

@@ -9,5 +9,6 @@ import java.io.IOException;
 public interface AuthService {
     AppUser registerUser(RegistrationRequest user);
 
+    // TODO: 9/2/22 why request and response objects in Service (logic) layer?
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }
