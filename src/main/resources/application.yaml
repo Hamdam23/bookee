@@ -1,0 +1,31 @@
+#db stuff
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/bookee"
+    username: "postgres"
+    password: "postgres"
+
+#hibernate stuff
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        ddl-auto: update
+        format_sql: true
+    show-sql: true
+#todo set format-sql to true for more readable sql = DONE(04.09.22)
+
+  #file stuff
+  servlet:
+    multipart:
+      max-file-size: 20MB
+
+#todo imho, file path must be read from ENV variable
+#todo also, test this on deployment (heroku)
+file_upload_path: "/home/hamdam/Pictures/bookee/"
+
+server:
+  error:
+    include-stacktrace: never
+
+#todo I recommend using YAML for this = DONE(04.09.22)
