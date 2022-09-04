@@ -11,6 +11,7 @@ import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +30,7 @@ public class TokenProvider {
     private static final long millis = System.currentTimeMillis();
     private static final Date accTExpiry = new Date(millis + 3600000); // 1 hour = 3600000
     private static final Date refTExpiry = new Date(millis + 3600000 * 24 * 20); // 20 days
-    private static final DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+    private static final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     public static DecodedJWT verifyToken(String token, boolean isAccessToken) {
         JWTVerifier verifier;

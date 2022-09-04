@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Documented
-@Retention(RUNTIME)
 @Target({PARAMETER})
+@Retention(RUNTIME)
+@Documented
 @Constraint(validatedBy = MyEmptyFileValidator.class)
 public @interface MyValidFile {
 
