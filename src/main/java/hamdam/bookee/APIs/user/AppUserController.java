@@ -16,12 +16,12 @@ public class AppUserController {
 
     // TODO: 9/2/22 order of methods
 
-    @PatchMapping("/v1/users/set-role-to-user/{userId}")
+    @PatchMapping("/users/set-role-to-user/{userId}")
     public AppUser addRoleToUser(@PathVariable long userId, @RequestBody AppUserRoleDTO appUserRoleDTO){
         return userService.setRoleToUser(userId, appUserRoleDTO);
     }
 
-    @PatchMapping("/v1/users/set-image-to-user/{id}")
+    @PatchMapping("/users/set-image-to-user/{id}")
     public ResponseEntity<String> setImageToUser(@PathVariable long id, @RequestBody UserImageDTO dto){
         userService.setImageToUser(id, dto);
         // TODO: 9/2/22 return full json response
@@ -30,22 +30,22 @@ public class AppUserController {
     }
 
     // TODO: 9/2/22 use DTO for request body
-    @PatchMapping("/v1/users/update/{id}")
+    @PatchMapping("/users/update/{id}")
     public AppUser updateUser(@RequestBody AppUser user, @PathVariable long id){
         return userService.updateUser(user, id);
     }
 
-    @GetMapping("/v1/users/{name}")
+    @GetMapping("/users/{name}")
     public AppUser getUserByName(@PathVariable String name){
         return userService.getUserByUsername(name);
     }
 
-    @GetMapping("/v1/users")
+    @GetMapping("/users")
     public List<AppUser> getAllUsers(){
         return userService.getAllUsers();
     }
 
-    @DeleteMapping("/v1/users/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable long id){
         userService.deleteUser(id);
         // TODO: 9/2/22 return full json response

@@ -11,6 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUserRoleDTO {
-    @JsonProperty("role_id")
     private long roleId;
 }

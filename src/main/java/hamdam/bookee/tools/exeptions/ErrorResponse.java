@@ -33,4 +33,10 @@ public class ErrorResponse {
         this.details = details;
         this.timestamp = LocalDateTime.now();
     }
+
+    public ErrorResponse(HttpStatus status, String message, LocalDateTime timestamp) {
+        this.status = status;
+        this.timestamp = timestamp;
+        this.message = message;
+    }
 }

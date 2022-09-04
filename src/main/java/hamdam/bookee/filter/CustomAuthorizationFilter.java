@@ -62,7 +62,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 Map<String, String> error = new HashMap<>();
                 error.put("error_message", exception.getMessage());
                 response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
+//                new ObjectMapper().writeValue(response.getOutputStream(), error);
             }
         }
     }

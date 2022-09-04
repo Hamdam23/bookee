@@ -6,8 +6,8 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
-import hamdam.bookee.tools.exeptions.InvalidRequestedRoleException;
-import hamdam.bookee.tools.exeptions.InvalidRoleRequestException;
+import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedRequestedRoleName;
+import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedUserOnRoleRequest;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -185,7 +185,7 @@ public class RequestServiceImpl implements RequestService {
         // TODO: 9/2/22 static use of AppRole!
         // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
         if (!user.getRole().getRoleName().equals("user")) {
-            throw new InvalidRoleRequestException();
+            throw new UnsupportedUserOnRoleRequest();
         }
     }
 
@@ -193,7 +193,7 @@ public class RequestServiceImpl implements RequestService {
         // TODO: 9/2/22 static use of AppRole!
         // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
         if (!role.equals("author")) {
-            throw new InvalidRequestedRoleException();
+            throw new UnsupportedRequestedRoleName();
         }
     }
 }

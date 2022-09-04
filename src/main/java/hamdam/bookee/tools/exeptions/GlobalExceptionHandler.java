@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     // TODO: 9/2/22 method name is not clear, what is it for?
+    //  Handling INTERNAL_SERVER_ERROR
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception exception) {
+    public ResponseEntity<ErrorResponse> handleInternalServerError(Exception exception) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now(),
