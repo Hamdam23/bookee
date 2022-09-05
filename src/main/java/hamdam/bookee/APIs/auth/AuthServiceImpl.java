@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
                 String username = decodedJWT.getSubject();
                 UserDetails user = appUserServiceImpl.loadUserByUsername(username);
 
-                AccessTResponse accessTResponse = TokenProvider.generateAToken(user, userRepository);
+                AccessTResponse accessTResponse = TokenProvider.generateAToken(user.getUsername(), userRepository);
                 TokenProvider.sendAToken(accessTResponse, response);
 
 //                Algorithm senderAlgorithm = Algorithm.HMAC256("secret".getBytes());
