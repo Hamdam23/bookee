@@ -58,7 +58,9 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_ROLE + "/**").hasAuthority(Permissions.UPDATE_ROLE.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_ROLE + "/**").hasAuthority(Permissions.DELETE_ROLE.name());
 
-        http.authorizeRequests().antMatchers(API_REGISTER, API_LOGIN + "/**", API_TOKEN_REFRESH,
+        http.authorizeRequests().antMatchers(API_REGISTER,
+                        API_LOGIN + "/**",
+                        API_TOKEN_REFRESH,
                         API_IMAGE + "/**").
                 permitAll().anyRequest().authenticated().and().
                 exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(entryPoint);

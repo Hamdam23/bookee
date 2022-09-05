@@ -11,7 +11,6 @@ import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,10 +30,8 @@ public class TokenProvider {
     private static final Algorithm refreshAlgorithm = Algorithm.HMAC384("secret".getBytes());
 
     // TODO: 9/2/22 don't instantiate millis field here (needs discussion)
-    private static final long millis = System.currentTimeMillis();
+
     // TODO: 9/2/22 needs better name
-    private static final Date accTExpiry = new Date(millis + 3600000); // 1 hour = 3600000
-    private static final Date refTExpiry = new Date(millis + 3600000 * 24 * 20); // 20 days
     private static final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     public static DecodedJWT verifyToken(String token, boolean isAccessToken) {
@@ -54,9 +51,9 @@ public class TokenProvider {
 
         return new TokensResponse(
                 buildAccessToken(user, role),
-                formatter.format(accTExpiry),
+                formatter.format(new Date(System.currentTimeMillis() + 3600000)),
                 buildRefreshToken(user, role),
-                formatter.format(refTExpiry),
+                formatter.format(new Date(System.currentTimeMillis() + 3600000 * 24 * 20)),
                 role.getRoleName(),
                 role.getPermissions()
         );
@@ -69,7 +66,7 @@ public class TokenProvider {
 
         return new AccessTResponse(
                 buildAccessToken(user, role),
-                formatter.format(accTExpiry)
+                formatter.format(System.currentTimeMillis())
         );
     }
 
@@ -78,7 +75,7 @@ public class TokenProvider {
 
         return JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(accTExpiry)
+                .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
                 .withClaim(ROLE, role.getRoleName())
                 .sign(accessAlgorithm);
     }
@@ -88,7 +85,7 @@ public class TokenProvider {
 
         return JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(refTExpiry)
+                .withExpiresAt(new Date(System.currentTimeMillis() + 3600000 * 24 * 20))
                 .withClaim(ROLE, role.getRoleName())
                 .sign(refreshAlgorithm);
     }

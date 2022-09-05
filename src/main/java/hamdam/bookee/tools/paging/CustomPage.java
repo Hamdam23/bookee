@@ -1,5 +1,6 @@
 package hamdam.bookee.tools.paging;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.domain.Page;
 
@@ -8,11 +9,12 @@ import java.util.List;
 @Data
 public class CustomPage<T> {
     List<T> content;
-    CustomPageable pageable;
+    @JsonProperty("pagination_settings")
+    CustomPageable paginationSettings;
 
     public CustomPage(Page<T> page) {
         this.content = page.getContent();
-        this.pageable = new CustomPageable(page.getPageable().getPageNumber(),
+        this.paginationSettings = new CustomPageable(page.getPageable().getPageNumber(),
                 getNextPage(page),
                 getPrevPage(page),
                 page.getPageable().getPageSize(),
