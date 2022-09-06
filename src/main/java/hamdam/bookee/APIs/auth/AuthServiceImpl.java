@@ -61,12 +61,12 @@ public class AuthServiceImpl implements AuthService {
 //                Algorithm checkerAlgorithm = Algorithm.HMAC384("secret".getBytes());
 //                JWTVerifier verifier = JWT.require(checkerAlgorithm).build();
 //                DecodedJWT decodedJWT = verifier.verify(refresh_token);
-                DecodedJWT decodedJWT = TokenProvider.verifyToken(refresh_token, false);
+                DecodedJWT decodedJWT = TokenProvider.decodeToken(refresh_token, false);
                 String username = decodedJWT.getSubject();
                 UserDetails user = appUserServiceImpl.loadUserByUsername(username);
 
-                AccessTResponse accessTResponse = TokenProvider.generateAToken(user.getUsername(), userRepository);
-                TokenProvider.sendAToken(accessTResponse, response);
+                AccessTokenResponse accessTokenResponse = TokenProvider.getAccessTokenResponse(user.getUsername(), userRepository);
+                TokenProvider.displayAccessTokenAsJson(accessTokenResponse, response);
 
 //                Algorithm senderAlgorithm = Algorithm.HMAC256("secret".getBytes());
 //                String access_token = JWT.create()

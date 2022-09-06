@@ -40,7 +40,7 @@ public class AppUser {
 
     public AppUser(RegistrationRequest dto){
         this.setName(dto.getName());
-        this.setUserName(dto.getUserName());
+        this.setUserName(dto.getUsername());
         this.setPassword(dto.getPassword());
     }
 }

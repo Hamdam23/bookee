@@ -2,7 +2,7 @@ package hamdam.bookee.security;
 
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.filter.AuthenticationFilterConfigurer;
-import hamdam.bookee.filter.CustomAuthorizationFilter;
+import hamdam.bookee.filter.AuthorizationFilter;
 import hamdam.bookee.tools.exeptions.MyAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class SecurityConfiguration {
             AccessDeniedExceptionHandler accessDeniedHandler,
             AuthenticationFilterConfigurer authenticationFilterConfigurer,
             // TODO: 9/2/22 naming
-            CustomAuthorizationFilter authenticationFilter
+            AuthorizationFilter authenticationFilter
     ) throws Exception {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);

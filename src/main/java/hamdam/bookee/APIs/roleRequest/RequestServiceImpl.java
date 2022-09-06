@@ -171,7 +171,7 @@ public class RequestServiceImpl implements RequestService {
         // TODO: 9/2/22 code duplication
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String token = authorizationHeader.substring("Bearer ".length());
-        DecodedJWT decodedJWT = TokenProvider.verifyToken(token, true);
+        DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
         String username = decodedJWT.getSubject();
 
         return userRepository.findAppUserByUserName(username).orElseThrow(
