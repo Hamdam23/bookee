@@ -12,4 +12,6 @@ public final class Endpoints {
     public static final String API_GENRE = "/api/genres";
     public static final String API_IMAGE = "/api/images";
     public static final String API_ROLE_REQUEST = "/api/role-request";
+
+    public static final String SET_IMAGE_TO_USER = "/set-image-to-user";
 }

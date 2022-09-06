@@ -1,4 +1,4 @@
-package hamdam.bookee.tools.exeptions;
+package hamdam.bookee.security;
 
 import hamdam.bookee.APIs.user.AppUserService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.io.IOException;
 // TODO: 9/2/22 AuthenticationEntryPoint must be moved to security related package
 @Component
 @RequiredArgsConstructor
-public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint {
 
     private final AppUserService userService;
 

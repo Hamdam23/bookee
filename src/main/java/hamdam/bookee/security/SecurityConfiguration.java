@@ -3,7 +3,6 @@ package hamdam.bookee.security;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.filter.AuthenticationFilterConfigurer;
 import hamdam.bookee.filter.AuthorizationFilter;
-import hamdam.bookee.tools.exeptions.MyAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +20,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http,
-            MyAuthenticationEntryPoint entryPoint,
+            AuthenticationEntryPointHandler entryPoint,
             AccessDeniedExceptionHandler accessDeniedHandler,
             AuthenticationFilterConfigurer authenticationFilterConfigurer,
             // TODO: 9/2/22 naming
@@ -32,7 +31,7 @@ public class SecurityConfiguration {
 
         // TODO: 9/2/22 use constants for endpoints
         http.authorizeRequests().antMatchers(HttpMethod.POST, API_USER + "/post").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + "/set-image-to-user/**").fullyAuthenticated();
+        http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + SET_IMAGE_TO_USER + "/**").fullyAuthenticated();
 
         http.authorizeRequests().antMatchers(HttpMethod.GET, API_BOOK + "/**").hasAuthority(Permissions.GET_BOOK.name());
         http.authorizeRequests().antMatchers(HttpMethod.POST, API_BOOK + "/**").hasAuthority(Permissions.CREATE_BOOK.name());

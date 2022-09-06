@@ -19,7 +19,7 @@ public class AuthenticationFilterConfigurer extends AbstractHttpConfigurer<Authe
     @Override
     public void configure(HttpSecurity http) {
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-        CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authenticationManager, userRepository);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, userRepository);
         authenticationFilter.setFilterProcessesUrl(API_LOGIN);
         http.addFilter(authenticationFilter);
     }
