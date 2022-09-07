@@ -19,13 +19,16 @@ public class AppRole {
 
     // TODO: 9/2/22 naming & json property
     @Column(unique = true, nullable = false)
+    @JsonProperty("role_name")
     private String roleName;
 
     // TODO: 9/2/22 set column to nullable false
+    @Column(nullable = false)
     @JsonProperty("is_default")
     private boolean isDefault = false;
 
     // TODO: 9/2/22 why eager?
+    //  I want to make all the permissions displayed when role is called
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();

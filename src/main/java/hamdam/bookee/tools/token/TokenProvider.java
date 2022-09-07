@@ -6,7 +6,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hamdam.bookee.APIs.auth.AccessTokenResponse;
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.user.AppUserRepository;
@@ -60,13 +59,13 @@ public class TokenProvider {
     }
 
     // TODO: 9/2/22 needs better name
-    public static AccessTokenResponse getAccessTokenResponse(String username, AppUserRepository userRepository) {
+    public static TokensResponse getAccessTokenResponse(String username, AppUserRepository userRepository) {
         // TODO: 9/2/22 remove get() call
         AppRole role = userRepository.findAppUserByUserName(username).orElseThrow(
                 () -> new ResourceNotFoundException("User", "username", username)
         ).getRole();
 
-        return new AccessTokenResponse(
+        return new TokensResponse(
                 createAccessToken(username, role),
                 DATE_FORMAT.format(System.currentTimeMillis())
         );
@@ -92,18 +91,9 @@ public class TokenProvider {
                 .sign(REFRESH_ALGORITHM);
     }
 
-    public static void displayTokensAsJson(TokensResponse tokensResponse, HttpServletResponse response) throws IOException {
+    public static void displayToken(TokensResponse tokensResponse, HttpServletResponse response) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         Map<String, Object> data = new ObjectMapper().convertValue(tokensResponse,
-                new TypeReference<>() {
-                }
-        );
-        new ObjectMapper().writeValue(response.getOutputStream(), data);
-    }
-
-    public static void displayAccessTokenAsJson(AccessTokenResponse accessTokenResponse, HttpServletResponse response) throws IOException {
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        Map<String, Object> data = new ObjectMapper().convertValue(accessTokenResponse,
                 new TypeReference<>() {
                 }
         );

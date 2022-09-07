@@ -7,6 +7,7 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserServiceImpl;
+import hamdam.bookee.tools.exeptions.role.NoDefaultRoleException;
 import hamdam.bookee.tools.exeptions.RefreshTokenMissingException;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -31,23 +32,23 @@ public class AuthServiceImpl implements AuthService {
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
     // TODO: 9/2/22 don't use implementation of bean when injecting dependency
+    //  because I need loadUserByUsername method, and AppUserService doesn't have such method
     private final AppUserServiceImpl appUserServiceImpl;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     // TODO: 9/2/22 naming: userDTO
-    public AppUser registerUser(RegistrationRequest userDTO) {
+    public AppUser registerUser(RegistrationRequest request) {
         // TODO: 9/2/22 set encoded password to AppUser, not to RegistrationRequest
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        AppUser appUser = new AppUser(userDTO);
+        AppUser appUser = new AppUser(request);
+        appUser.setPassword(passwordEncoder.encode(request.getPassword()));
         AppRole role = roleRepository.findFirstByIsDefault(true).orElseThrow(
                 // TODO: 9/2/22 use custom exception
-                () -> new RuntimeException("There is no default role for users")
+                () -> new NoDefaultRoleException("There is no default role for users")
         );
         appUser.setRole(role);
         // TODO: 9/2/22 you can return value which is being returned by repository method
-        userRepository.save(appUser);
-        return appUser;
+        return userRepository.save(appUser);
     }
 
     @Override
@@ -58,27 +59,12 @@ public class AuthServiceImpl implements AuthService {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
-//                Algorithm checkerAlgorithm = Algorithm.HMAC384("secret".getBytes());
-//                JWTVerifier verifier = JWT.require(checkerAlgorithm).build();
-//                DecodedJWT decodedJWT = verifier.verify(refresh_token);
                 DecodedJWT decodedJWT = TokenProvider.decodeToken(refresh_token, false);
                 String username = decodedJWT.getSubject();
                 UserDetails user = appUserServiceImpl.loadUserByUsername(username);
 
-                AccessTokenResponse accessTokenResponse = TokenProvider.getAccessTokenResponse(user.getUsername(), userRepository);
-                TokenProvider.displayAccessTokenAsJson(accessTokenResponse, response);
-
-//                Algorithm senderAlgorithm = Algorithm.HMAC256("secret".getBytes());
-//                String access_token = JWT.create()
-//                        .withSubject(user.getUserName())
-//                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-//                        .withClaim("permissions", user.getRole().getPermissions().stream().map(Enum::name).collect(Collectors.toList()))
-//                        .sign(senderAlgorithm);
-//
-//                Map<String, String> tokens = new HashMap<>();
-//                tokens.put("access_token", access_token);
-//                response.setContentType(APPLICATION_JSON_VALUE);
-//                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+                TokensResponse accessTokenResponse = TokenProvider.getAccessTokenResponse(user.getUsername(), userRepository);
+                TokenProvider.displayToken(accessTokenResponse, response);
 
             } catch (Exception exception) {
                 // TODO: 9/2/22 response must be full ErrorResponse object

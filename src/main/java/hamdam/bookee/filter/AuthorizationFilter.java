@@ -47,7 +47,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     // TODO: 9/2/22 line length is too long, split it
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
         String header = request.getHeader(AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
             throw new RefreshTokenMissingException("No JWT token found in request headers");
