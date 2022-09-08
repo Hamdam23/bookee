@@ -1,19 +1,20 @@
 #db stuff
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5432/bookee"
-    username: "postgres"
-    password: "postgres"
+    url: jdbc:postgresql://localhost:5432/bookee
+    username: postgres
+    password: postgres
 
 #hibernate stuff
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL95Dialect
-        ddl-auto: update
+        show_sql: true
         format_sql: true
-    show-sql: true
-#todo set format-sql to true for more readable sql = DONE(04.09.22)
+  #todo set format-sql to true for more readable sql = DONE(04.09.22)
 
   #file stuff
   servlet:
