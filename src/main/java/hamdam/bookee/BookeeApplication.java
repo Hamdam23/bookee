@@ -20,7 +20,7 @@ import static hamdam.bookee.APIs.role.Permissions.*;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-public class BookeeApplication  {
+public class BookeeApplication {
 
 //    implements CommandLineRunner
 //    private final AppRoleService roleService;
@@ -35,31 +35,12 @@ public class BookeeApplication  {
 //    @Override
 //    public void run(String... args) {
 //        try {
-//            AppRole author = roleService.addRole(new AppRoleDTO("author", false, Set.of(Permissions.values())));
+//            AppRole author = roleService.addRole(new AppRoleDTO("author", false, Set.of(AUTHOR)));
 //            AppRole admin = roleService.addRole(new AppRoleDTO("admin", false, Set.of(
-//                    GET_BOOK,
-//                    CREATE_BOOK,
-//                    UPDATE_BOOK,
-//                    DELETE_BOOK,
-//                    GET_GENRE,
-//                    CREATE_GENRE,
-//                    UPDATE_GENRE,
-//                    DELETE_GENRE,
-//                    GET_ROLE,
-//                    GET_USER,
-//                    CREATE_USER,
-//                    UPDATE_USER
+//                    ADMIN
 //            )));
 //            AppRole user = roleService.addRole(new AppRoleDTO("user", true, Set.of(
-//                    GET_BOOK,
-//                    CREATE_BOOK,
-//                    UPDATE_BOOK,
-//                    DELETE_BOOK,
-//                    GET_GENRE,
-//                    GET_ROLE,
-//                    GET_USER,
-//                    CREATE_USER,
-//                    UPDATE_USER
+//                    USER
 //            )));
 //
 //            AppUser hamdam = authService.registerUser(new RegistrationRequest("Hamdam", "hamdam_x", "123"));

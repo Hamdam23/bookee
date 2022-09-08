@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.user.AppUser;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class RequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +37,10 @@ public class RequestEntity {
 
     @Enumerated(EnumType.STRING)
     private State state;
+
+    public RequestEntity(AppUser user, AppRole role, State state) {
+        this.user = user;
+        this.role = role;
+        this.state = state;
+    }
 }

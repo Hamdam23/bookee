@@ -3,9 +3,12 @@ package hamdam.bookee.APIs.roleRequest;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleRepository;
+import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.tools.exeptions.NoCorrespondingPermissionException;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedStateValueException;
 import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedRequestedRoleName;
 import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedUserOnRoleRequest;
 import hamdam.bookee.tools.token.TokenProvider;
@@ -15,8 +18,11 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
+import static hamdam.bookee.APIs.role.Permissions.*;
+import static hamdam.bookee.APIs.roleRequest.State.ACCEPTED;
+import static hamdam.bookee.APIs.roleRequest.State.DECLINED;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
@@ -30,19 +36,22 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public RoleRequestResponse postRoleRequest(RequestRole requestRole, HttpServletRequest request) {
         // TODO: 9/2/22 why are you creating RequestEntity here? Create it where it needed with constructor arguments
-        RequestEntity requestEntity = new RequestEntity();
-
-        AppUser user = getUser(request);
-        validateUsersRole(user);
-
-        AppRole role = roleRepository.findByRoleName(requestRole.getRoleName()).orElseThrow(
-                () -> new ResourceNotFoundException("Role", "role-name", requestRole.getRoleName()));
-        validateRequestedRole(requestRole.getRoleName());
+        //  Done
 
         // TODO: 9/2/22 why using setters? use them as constructor arguments
-        requestEntity.setRole(role);
-        requestEntity.setUser(user);
-        requestEntity.setState(State.IN_PROGRESS);
+        //  Done
+
+        AppUser appUser = getUserByRequest(request);
+        AppRole role = roleRepository.findByRoleName(requestRole.getRoleName()).orElseThrow(
+                () -> new ResourceNotFoundException("Role", "role-name", requestRole.getRoleName()));
+        Set<Permissions> permissionsSet = getUserPermissions(appUser);
+
+        if (!permissionsSet.contains(USER)) {
+            throw new UnsupportedUserOnRoleRequest();
+        } else if (role.getPermissions().contains(ADMIN)) {
+            throw new UnsupportedRequestedRoleName();
+        }
+        RequestEntity requestEntity = new RequestEntity(appUser, role, State.IN_PROGRESS);
         requestRepository.save(requestEntity);
 
         return new RoleRequestResponse(requestEntity, requestRole.getRoleName());
@@ -52,105 +61,91 @@ public class RequestServiceImpl implements RequestService {
     // TODO: 9/2/22 method needs big code refactor
     // TODO: 9/2/22 add feature: admin (not user with roleName="admin", but user with appropriate permission) can see role requests of specific user or all users
     @Override
-    public List<RoleRequestResponse> getAllRoleRequests(ReviewState reviewState, HttpServletRequest request) {
+    public List<RoleRequestResponse> getAllRoleRequests(State reviewState, HttpServletRequest request) {
         List<RequestEntity> responseList;
-
-        AppUser requestedUser = getUser(request);
-        // TODO: 9/2/22 static use of AppRole!
-        // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        if (requestedUser.getRole().getRoleName().equals("admin")) {
-            // TODO: 9/2/22 do you really need if/else for calling checkReviewState
-            responseList = checkReviewState(reviewState);
-            // TODO: 9/2/22 static use of AppRole!
-            // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        } else if (requestedUser.getRole().getRoleName().equals("user")) {
-            List<RequestEntity> requestEntities;
-            if (reviewState.getState() == null) {
-                requestEntities = requestRepository.findAll();
-            } else {
-                requestEntities  = requestRepository.findAllByState(reviewState.getState());
-            }
-            // TODO: 9/2/22 why so many boilerplate code!
-            // TODO: 9/2/22 add and use repository custom methods!
-            List<RequestEntity> usersRequests = new ArrayList<>();
-            requestEntities.forEach(entity -> {
-                if (entity.getUser().getUserName().equals(requestedUser.getUserName())) {
-                    usersRequests.add(entity);
-                }
-            });
-            responseList = usersRequests;
+        if (reviewState == null) {
+            responseList = requestRepository.findAll();
         } else {
-            // TODO: 9/2/22 custom exception (with dynamic message, because AppRole is dynamic)
-            throw new RuntimeException("Only users with role [admin/user] have access for getting requests nigga.");
+            responseList = requestRepository.findAllByState(reviewState);
         }
 
+        AppUser appUser = getUserByRequest(request);
+        Set<Permissions> permissionsSet = getUserPermissions(appUser);
+        // change ADMIN permission -> MONITOR_ROLE_REQUEST
+        if (!permissionsSet.contains(ADMIN) && !responseList.isEmpty()) {
+            responseList = requestRepository.findAllByUser(appUser);
+        }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
-        responseList.forEach(entity -> {
-            // TODO: 9/2/22 static use of AppRole!
-            // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-            RoleRequestResponse response = new RoleRequestResponse(entity, "author");
-            requestResponses.add(response);
+        responseList.forEach(response -> {
+            RoleRequestResponse requestResponse = new RoleRequestResponse(response, response.getRole().getRoleName());
+            requestResponses.add(requestResponse);
         });
         return requestResponses;
     }
 
+    // TODO: 9/2/22 static use of AppRole!
+    // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
+    // TODO: 9/2/22 there must be other case(s) in switch
+    // TODO: 9/2/22 why .setState() call inside case?
+    // TODO: 9/2/22 handle get() call
     @Override
-    public RoleRequestResponse reviewRequest(Long id, ReviewState reviewState, HttpServletRequest request) {
-        if (reviewState.getState() == null){
-            throw new RuntimeException("State cannot be null");
-        }
-        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Role Request", "id", id));
+    public RoleRequestResponse reviewRequest(Long id, State reviewState, HttpServletRequest request) {
+        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Role request", "id", id)
+        );
+        AppUser appUser = getUserByRequest(request);
+        Set<Permissions> permissionsSet = getUserPermissions(appUser);
 
-        AppUser user = getUser(request);
-        // TODO: 9/2/22 static use of AppRole!
-        // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        if (!user.getRole().getRoleName().equals("admin")){
-            // TODO: 9/2/22 custom exception
-            throw new RuntimeException("sho'rda bir exception yazibarish garak, 'admin bo'lmasang poydasi yo'q' dayan!");
+        if (!permissionsSet.contains(ADMIN)) {
+            throw new NoCorrespondingPermissionException("You have to get corresponding permission to access the method!");
+        } else if (reviewState == null ||
+                (!reviewState.equals(ACCEPTED) &&
+                        !reviewState.equals(DECLINED))
+        ) {
+            throw new UnsupportedStateValueException("state can be either ACCEPTED or DECLINED");
         }
-        // TODO: 9/2/22 static use of AppRole!
-        // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        Optional<AppRole> role = roleRepository.findByRoleName("author");
-        // TODO: 9/2/22 there must be other case(s) in switch
-        switch (reviewState.getState()){
-            case ACCEPTED:
-                // TODO: 9/2/22 why .setState() call inside case?
-                requestEntity.setState(State.ACCEPTED);
-                // TODO: 9/2/22 handle get() call
-                requestEntity.getUser().setRole(role.get());
-                break;
-            case DECLINED:
-                // TODO: 9/2/22 why .setState() call inside case?
-                requestEntity.setState(State.DECLINED);
-                break;
+
+        AppUser user = requestEntity.getUser();
+        if (reviewState.equals(ACCEPTED)) {
+            requestEntity.setState(ACCEPTED);
+            user.setRole(requestEntity.getRole());
+        } else {
+            requestEntity.setState(DECLINED);
         }
         requestRepository.save(requestEntity);
         userRepository.save(user);
-        // TODO: 9/2/22 static use of AppRole!
-        // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        return new RoleRequestResponse(requestEntity, "author");
+        return new RoleRequestResponse(requestEntity, requestEntity.getRole().getRoleName());
     }
 
+    //
     @Override
     public void deleteRequest(Long id, HttpServletRequest request) {
         // TODO: 9/2/22 there is enough to call existsById()
-        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Role Request", "id", id));
+        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Role request", "id", id)
+        );
 
-        AppUser user = getUser(request);
-        // TODO: 9/2/22 static use of AppRole!
-        // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        if (user.getRole().getRoleName().equals("admin")){
+        AppUser appUser = getUserByRequest(request);
+        Set<Permissions> permissionsSet = getUserPermissions(appUser);
+        if (permissionsSet.contains(ADMIN)) {
             requestRepository.deleteById(id);
         } else {
-            // TODO: 9/2/22 custom exception
-            throw new RuntimeException("sho'rda bir exception yazibarish garak, 'admin bo'lmasang poydasi yo'q' dayan!");
+            if (roleRequestBelongUser(appUser, requestEntity)){
+                requestRepository.deleteById(id);
+            } else {
+                throw new NoCorrespondingPermissionException("You do not have permission to delete role request does not belong to you!");
+            }
         }
+
+        requestRepository.save(requestEntity);
+    }
+
+    private boolean roleRequestBelongUser(AppUser user, RequestEntity requestEntity){
+        return requestEntity.getUser().getId() == user.getId();
     }
 
     // TODO: 9/2/22 needs rename (!)
-    private List<RequestEntity> checkReviewState(ReviewState reviewState){
+    private List<RequestEntity> checkReviewState(ReviewState reviewState) {
         List<RequestEntity> responseList = new ArrayList<>();
 
         // TODO: why checking state value in else if? isn't it enough to pass state value to repository!
@@ -158,25 +153,25 @@ public class RequestServiceImpl implements RequestService {
             responseList = requestRepository.findAll();
         } else if (reviewState.getState().equals(State.IN_PROGRESS)) {
             responseList = requestRepository.findAllByState(State.IN_PROGRESS);
-        } else if (reviewState.getState().equals(State.ACCEPTED)) {
-            responseList = requestRepository.findAllByState(State.ACCEPTED);
+        } else if (reviewState.getState().equals(ACCEPTED)) {
+            responseList = requestRepository.findAllByState(ACCEPTED);
         } else if (reviewState.getState().equals(State.DECLINED)) {
             responseList = requestRepository.findAllByState(State.DECLINED);
         }
         return responseList;
     }
 
-    // TODO: 9/2/22 rename
-    private AppUser getUser(HttpServletRequest request){
-        // TODO: 9/2/22 code duplication
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        String token = authorizationHeader.substring("Bearer ".length());
-        DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
-        String username = decodedJWT.getSubject();
-
-        return userRepository.findAppUserByUserName(username).orElseThrow(
-                () -> new ResourceNotFoundException("User", "username", username));
-    }
+//    // TODO: 9/2/22 rename
+//    private AppUser getUser(HttpServletRequest request){
+//        // TODO: 9/2/22 code duplication
+//        String authorizationHeader = request.getHeader(AUTHORIZATION);
+//        String token = authorizationHeader.substring("Bearer ".length());
+//        DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
+//        String username = decodedJWT.getSubject();
+//
+//        return userRepository.findAppUserByUserName(username).orElseThrow(
+//                () -> new ResourceNotFoundException("User", "username", username));
+//    }
 
     // TODO: 9/2/22 only users with "user" role can change their role? why?
     // TODO: 9/2/22 what if, in future you will add to project new role: like expert reviewer of the books.
@@ -195,5 +190,20 @@ public class RequestServiceImpl implements RequestService {
         if (!role.equals("author")) {
             throw new UnsupportedRequestedRoleName();
         }
+    }
+
+    public AppUser getUserByRequest(HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        String token = authorizationHeader.substring("Bearer ".length());
+        DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
+        String username = decodedJWT.getSubject();
+
+        return userRepository.findAppUserByUserName(username).orElseThrow(
+                () -> new ResourceNotFoundException("User", "username", username));
+    }
+
+    public Set<Permissions> getUserPermissions(AppUser user) {
+        return user.getRole().getPermissions();
     }
 }

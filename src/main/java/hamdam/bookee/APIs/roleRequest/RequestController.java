@@ -23,13 +23,15 @@ public class RequestController {
 
     // TODO: 9/2/22 why ReviewState, for filtering purposes it is better to use request params
     @GetMapping
-    public List<RoleRequestResponse> getAllRoleRequests(@RequestBody ReviewState reviewState,
+    public List<RoleRequestResponse> getAllRoleRequests(@RequestParam(required = false) State reviewState,
                                                         HttpServletRequest request) {
         return requestService.getAllRoleRequests(reviewState, request);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<RoleRequestResponse> reviewRequest(@PathVariable Long id, @RequestBody ReviewState reviewState, HttpServletRequest request) {
+    public ResponseEntity<RoleRequestResponse> reviewRequest(@PathVariable Long id,
+                                                             @RequestParam State reviewState,
+                                                             HttpServletRequest request) {
         return ResponseEntity.ok().body(requestService.reviewRequest(id, reviewState, request));
     }
 
