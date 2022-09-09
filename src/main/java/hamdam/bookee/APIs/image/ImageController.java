@@ -24,7 +24,7 @@ public class ImageController {
 
     // TODO: 9/2/22 why additional "/upload" ?
     @PostMapping
-    public Image uploadImage(@MyValidFile @RequestParam MultipartFile file) throws Exception {
+    public ImagEntity uploadImage(@MyValidFile @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
     }
 

@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.APIs.image.Image;
+import hamdam.bookee.APIs.image.ImagEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRole;
@@ -76,12 +76,12 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     @Transactional
     public void setImageToUser(long id, UserImageDTO imageDTO) {
-        Image image = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
+        ImagEntity imagEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                 -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
         );
         // TODO: 9/2/22 code duplication
         AppUser user = getAppUserById(id);
-        user.setUserImage(image);
+        user.setUserImagEntity(imagEntity);
         userRepository.save(user);
     }
 

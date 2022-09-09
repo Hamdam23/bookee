@@ -17,11 +17,6 @@ public class BookDTO {
     private String tagline;
     private String description;
     private String author;
-    private Integer rating;
+    private Double rating;
     private List<Long> genres;
-
-    public BookDTO(Long id, String name){
-        this.id = id;
-        this.name = name;
-    }
 }

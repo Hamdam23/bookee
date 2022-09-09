@@ -1,10 +1,12 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.tools.exeptions.ResponseSettings;
 import hamdam.bookee.tools.paging.CustomPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,17 +22,15 @@ public class BookController {
     private final BookServiceImpl bookService;
 
     @PostMapping
-    public ResponseEntity<String> addBook(@RequestBody BookDTO book) {
-        bookService.addBook(book);
+    public ResponseEntity<ResponseSettings> addBook(@RequestBody BookDTO book) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Book successfully saved!");
+        return new ResponseEntity<>(bookService.addBook(book), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
-        bookService.updateBook(newBook, id);
+    public ResponseEntity<ResponseSettings> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Book with id: " + id + " successfully updated!");
+        return new ResponseEntity<>(bookService.updateBook(newBook, id), HttpStatus.OK);
     }
 
     @GetMapping
@@ -44,10 +44,9 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        bookService.deleteBook(id);
+    public ResponseEntity<ResponseSettings> deleteBook(@PathVariable Long id) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Book with id: " + id + " successfully deleted!");
+        return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.OK);
     }
 }
 

@@ -1,13 +1,19 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.genre.GenreEntity;
+import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exeptions.ResponseSettings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,10 +21,16 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final GenreRepository genreRepository;
 
     @Override
-    public void addBook(BookDTO book) {
+    public ResponseSettings addBook(BookDTO book) {
         bookRepository.save(new BookEntity(book));
+        return new ResponseSettings(
+                HttpStatus.OK,
+                LocalDateTime.now(),
+                "Book successfully saved!"
+        );
     }
 
     @Override
@@ -34,23 +46,38 @@ public class BookServiceImpl implements BookService {
 
     // TODO: 9/2/22 see todos in GenreServiceImpl:updateGenre
     @Override
-    public void updateBook(BookDTO book, Long id) {
+    public ResponseSettings updateBook(BookDTO book, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
-
         BeanUtils.copyProperties(book, oldBook);
 
-        BookEntity newBook = new BookEntity(book);
-        oldBook.setGenres(newBook.getGenres());
+        List<GenreEntity> genreEntities = new ArrayList<>();
+        book.getGenres().forEach(aLong -> {
+            GenreEntity genre = genreRepository.findById(id).orElseThrow(()
+                    -> new ResourceNotFoundException("Genre", "id", aLong));
+            genreEntities.add(genre);
+        });
+
+        oldBook.setGenres(genreEntities);
         bookRepository.save(oldBook);
+
+        return new ResponseSettings(
+                HttpStatus.OK,
+                LocalDateTime.now(),
+                "Book with id: " + id + " successfully updated!"
+        );
     }
 
     @Override
-    public void deleteBook(Long id) {
+    public ResponseSettings deleteBook(Long id) {
         // TODO: 9/2/22 existsById is enough
-        bookRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Book", "id", id));
-
+        bookRepository.existsById(id);
         bookRepository.deleteById(id);
+
+        return new ResponseSettings(
+                HttpStatus.OK,
+                LocalDateTime.now(),
+                "Book with id: " + id + " successfully deleted!"
+        );
     }
 }

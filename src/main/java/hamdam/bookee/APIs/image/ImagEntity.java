@@ -14,7 +14,7 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Image {
+public class ImagEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -25,7 +25,7 @@ public class Image {
 
     private String location;
 
-    public Image(String imageName, String location) {
+    public ImagEntity(String imageName, String location) {
         this.imageName = imageName;
         this.location = location;
     }

@@ -23,7 +23,7 @@ public class ImageServiceImpl implements ImageService {
     private final FileSystemRepository fileSystemRepository;
 
     @Override
-    public Image uploadImage(MultipartFile file) throws Exception {
+    public ImagEntity uploadImage(MultipartFile file) throws Exception {
         String fileNameWithoutExt = FilenameUtils.removeExtension(file.getOriginalFilename());
         if (fileNameWithoutExt == null) {
             fileNameWithoutExt = "";
@@ -35,16 +35,16 @@ public class ImageServiceImpl implements ImageService {
         String name = fileNameWithoutExt + "-" + new Date().getTime() + "." + extension;
         String location = fileSystemRepository.writeFile(file.getBytes(), name);
 
-        return imageRepository.save(new Image(name, location));
+        return imageRepository.save(new ImagEntity(name, location));
     }
 
     @Override
     public FileSystemResource downloadImage(String name) {
-        Image image = imageRepository.findByImageName(name).orElseThrow(()
+        ImagEntity imagEntity = imageRepository.findByImageName(name).orElseThrow(()
                 // TODO: 9/2/22 custom exception
                 -> new RuntimeException("Image with name: " + name + " not found")
         );
-        return fileSystemRepository.readFile(image.getLocation());
+        return fileSystemRepository.readFile(imagEntity.getLocation());
     }
 
     @Override
@@ -56,12 +56,12 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<ImageDTO> getAllImages() {
-        List<Image> images = imageRepository.findAll();
+        List<ImagEntity> imagEntities = imageRepository.findAll();
         List<ImageDTO> imageDTOS = new ArrayList<>();
         // TODO: 9/2/22 why manual forEach? there is Stream API, use mapping!
-        for (Image image : images) {
+        for (ImagEntity imagEntity : imagEntities) {
             ImageDTO imageDTO = new ImageDTO();
-            BeanUtils.copyProperties(image, imageDTO);
+            BeanUtils.copyProperties(imagEntity, imageDTO);
             imageDTOS.add(imageDTO);
         }
         return imageDTOS;
