@@ -1,6 +1,8 @@
 package hamdam.bookee.APIs.genre;
 
+import hamdam.bookee.tools.exeptions.ResponseSettings;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,36 +15,34 @@ import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 @RequiredArgsConstructor
 public class GenreController {
 
-    private final GenreService service;
+    private final GenreService genreService;
 
     @PostMapping
-    public ResponseEntity<String> addGenre(@RequestBody GenreDTO genre) {
-        service.addGenre(genre);
+    public ResponseEntity<ResponseSettings> addGenre(@RequestBody GenreDTO genre) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Genre successfully saved!");
+        return new ResponseEntity<>(genreService.addGenre(genre), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
-        service.updateGenre(id, genre);
+    public ResponseEntity<ResponseSettings> updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
+        genreService.updateGenre(id, genre);
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Genre with id: " + id + " successfully updated!");
+        return new ResponseEntity<>(genreService.updateGenre(id, genre), HttpStatus.OK);
     }
 
     @GetMapping
     public List<GenreEntity> getAllGenres() {
-        return service.getAllGenres();
+        return genreService.getAllGenres();
     }
 
     @GetMapping("/{id}")
     public GenreEntity getGenreByID(@PathVariable Long id) {
-        return service.getGenreByID(id);
+        return genreService.getGenreById(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGenre(@PathVariable Long id) {
-        service.deleteGenre(id);
+    public ResponseEntity<ResponseSettings> deleteGenre(@PathVariable Long id) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Genre with id: " + id + " successfully deleted!");
+        return new ResponseEntity<>(genreService.deleteGenre(id), HttpStatus.OK);
     }
 }

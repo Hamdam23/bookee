@@ -1,18 +1,20 @@
 package hamdam.bookee.APIs.genre;
 
+import hamdam.bookee.tools.exeptions.ResponseSettings;
+
 import java.util.List;
 
 public interface GenreService {
     List<GenreEntity> getAllGenres();
 
     // TODO: 9/2/22 not ID, Id :-)
-    GenreEntity getGenreByID(Long id);
+    GenreEntity getGenreById(Long id);
 
     // TODO: 9/2/22 why void?
-    void addGenre(GenreDTO genre);
+    ResponseSettings addGenre(GenreDTO genre);
 
     // TODO: 9/2/22 why void?
-    void updateGenre(Long id, GenreDTO genre);
+    ResponseSettings updateGenre(Long id, GenreDTO genre);
 
-    void deleteGenre(Long id);
+    ResponseSettings deleteGenre(Long id);
 }

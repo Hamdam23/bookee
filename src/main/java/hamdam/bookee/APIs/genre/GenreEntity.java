@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import hamdam.bookee.APIs.book.BookEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,11 +33,10 @@ public class GenreEntity {
 
     public GenreEntity(GenreDTO genreDTO) {
         // TODO: 9/2/22 user BeanUtils.copyProperties()
-        this.name = genreDTO.getName();
-        this.description = genreDTO.getDescription();
-        genreDTO.getBooks().forEach(
-                bookId -> this.books.add(new BookEntity(bookId))
-        );
+        BeanUtils.copyProperties(genreDTO, this);
+//        genreDTO.getBooks().forEach(
+//                bookId -> this.books.add(new BookEntity(bookId))
+//        );
     }
 
     public GenreEntity(Long id) {
