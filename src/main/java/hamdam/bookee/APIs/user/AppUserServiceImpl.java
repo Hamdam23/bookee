@@ -32,6 +32,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<AppUser> user = userRepository.findAppUserByUserName(username);
         // TODO: 9/2/22 write mapper method/class for AppUser <-> User
+        // TODO TODO
         return new User(
                 // TODO: 9/2/22 handle get() call
                 user.get().getUserName(),
@@ -43,10 +44,10 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public AppUser getUserByUsername(String userName) {
-        return userRepository.findAppUserByUserName(userName).orElseThrow(()
+    public AppUser getUserByUsername(String username) {
+        return userRepository.findAppUserByUserName(username).orElseThrow(()
                 // TODO: 9/2/22 custom exception
-                -> new RuntimeException("User not found!")
+                -> new ResourceNotFoundException("User", "username", username)
         );
     }
 
@@ -56,21 +57,17 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public AppUser updateUser(AppUser newUser, long id) {
+    public AppUser updateUser(AppUserDTO newUser, long id) {
         // TODO: 9/2/22 code duplication
-        AppUser user = userRepository.findById(id).orElseThrow(()
-                // TODO: 9/2/22 custom exception
-                -> new RuntimeException("User not found!")
-        );
+        AppUser user = getAppUserById(id);
         user.setName(newUser.getName());
-        user.setPassword(newUser.getPassword());
         return user;
     }
 
     @Override
     public void deleteUser(long id) {
         // TODO: 9/2/22 searching for image or user? imageRepository? why?
-        imageRepository.findById(id).orElseThrow(()
+        userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", id)
         );
         userRepository.deleteById(id);
@@ -80,12 +77,10 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Transactional
     public void setImageToUser(long id, UserImageDTO imageDTO) {
         Image image = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
-                -> new ResourceNotFoundException("Image", "id", id)
+                -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
         );
         // TODO: 9/2/22 code duplication
-        AppUser user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User", "id", imageDTO.getImageId())
-        );
+        AppUser user = getAppUserById(id);
         user.setUserImage(image);
         userRepository.save(user);
     }
@@ -94,21 +89,26 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Transactional
     public AppUser setRoleToUser(long id, AppUserRoleDTO roleDTO) {
         AppUser user = userRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("User not found!")
+                -> new ResourceNotFoundException("User", "id", id)
         );
         AppRole appRole = roleRepository.findById(roleDTO.getRoleId()).orElseThrow(
                 () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
         );
         user.setRole(appRole);
         // TODO: 9/2/22 you can return value from repository method call
-        userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
     // TODO: 9/2/22 needs rename (and maybe some docs)
     @Override
-    public boolean invalidPassword(String username) {
+    public boolean isPasswordInvalid(String username) {
         return userRepository.existsByUserName(username);
+    }
+
+    private AppUser getAppUserById(Long id){
+        return userRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("User", "id", id)
+        );
     }
 
 }

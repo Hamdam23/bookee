@@ -10,7 +10,8 @@ public interface AppUserService {
     List<AppUser> getAllUsers();
 
     // TODO: 9/2/22 don't use entity as update request argument
-    AppUser updateUser(AppUser newUser, long id);
+    //  fvck u
+    AppUser updateUser(AppUserDTO newUser, long id);
 
     void deleteUser(long id);
 
@@ -20,5 +21,5 @@ public interface AppUserService {
     AppUser setRoleToUser(long id, AppUserRoleDTO appUserRoleDTO);
 
     // TODO: 9/2/22 rename (!)
-    boolean invalidPassword(String username);
+    boolean isPasswordInvalid(String username);
 }

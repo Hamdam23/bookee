@@ -16,6 +16,22 @@ public class AppUserController {
 
     // TODO: 9/2/22 order of methods
 
+    @GetMapping("/users")
+    public List<AppUser> getAllUsers(){
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/users/{name}")
+    public AppUser getUserByName(@PathVariable String name){
+        return userService.getUserByUsername(name);
+    }
+
+    // TODO: 9/2/22 use DTO for request body
+    @PatchMapping("/users/update/{id}")
+    public AppUser updateUser(@RequestBody AppUserDTO user, @PathVariable long id){
+        return userService.updateUser(user, id);
+    }
+
     @PatchMapping("/users/set-role-to-user/{userId}")
     public AppUser addRoleToUser(@PathVariable long userId, @RequestBody AppUserRoleDTO appUserRoleDTO){
         return userService.setRoleToUser(userId, appUserRoleDTO);
@@ -27,22 +43,6 @@ public class AppUserController {
         // TODO: 9/2/22 return full json response
         return ResponseEntity.ok().body("Image with id: " + dto.getImageId() +
                 " is successfully set to User with id: " + id + ".");
-    }
-
-    // TODO: 9/2/22 use DTO for request body
-    @PatchMapping("/users/update/{id}")
-    public AppUser updateUser(@RequestBody AppUser user, @PathVariable long id){
-        return userService.updateUser(user, id);
-    }
-
-    @GetMapping("/users/{name}")
-    public AppUser getUserByName(@PathVariable String name){
-        return userService.getUserByUsername(name);
-    }
-
-    @GetMapping("/users")
-    public List<AppUser> getAllUsers(){
-        return userService.getAllUsers();
     }
 
     @DeleteMapping("/users/{id}")

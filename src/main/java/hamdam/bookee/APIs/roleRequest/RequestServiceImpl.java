@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static hamdam.bookee.APIs.role.Permissions.*;
@@ -106,12 +107,13 @@ public class RequestServiceImpl implements RequestService {
         }
 
         AppUser user = requestEntity.getUser();
+
+        requestEntity.setState(reviewState);
+
         if (reviewState.equals(ACCEPTED)) {
-            requestEntity.setState(ACCEPTED);
             user.setRole(requestEntity.getRole());
-        } else {
-            requestEntity.setState(DECLINED);
         }
+
         requestRepository.save(requestEntity);
         userRepository.save(user);
         return new RoleRequestResponse(requestEntity, requestEntity.getRole().getRoleName());
@@ -141,55 +143,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private boolean roleRequestBelongUser(AppUser user, RequestEntity requestEntity){
-        return requestEntity.getUser().getId() == user.getId();
-    }
-
-    // TODO: 9/2/22 needs rename (!)
-    private List<RequestEntity> checkReviewState(ReviewState reviewState) {
-        List<RequestEntity> responseList = new ArrayList<>();
-
-        // TODO: why checking state value in else if? isn't it enough to pass state value to repository!
-        if (reviewState.getState() == null) {
-            responseList = requestRepository.findAll();
-        } else if (reviewState.getState().equals(State.IN_PROGRESS)) {
-            responseList = requestRepository.findAllByState(State.IN_PROGRESS);
-        } else if (reviewState.getState().equals(ACCEPTED)) {
-            responseList = requestRepository.findAllByState(ACCEPTED);
-        } else if (reviewState.getState().equals(State.DECLINED)) {
-            responseList = requestRepository.findAllByState(State.DECLINED);
-        }
-        return responseList;
-    }
-
-//    // TODO: 9/2/22 rename
-//    private AppUser getUser(HttpServletRequest request){
-//        // TODO: 9/2/22 code duplication
-//        String authorizationHeader = request.getHeader(AUTHORIZATION);
-//        String token = authorizationHeader.substring("Bearer ".length());
-//        DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
-//        String username = decodedJWT.getSubject();
-//
-//        return userRepository.findAppUserByUserName(username).orElseThrow(
-//                () -> new ResourceNotFoundException("User", "username", username));
-//    }
-
-    // TODO: 9/2/22 only users with "user" role can change their role? why?
-    // TODO: 9/2/22 what if, in future you will add to project new role: like expert reviewer of the books.
-    // TODO: 9/2/22 can expert reviewer become author? why?
-    private void validateUsersRole(AppUser user) {
-        // TODO: 9/2/22 static use of AppRole!
-        // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        if (!user.getRole().getRoleName().equals("user")) {
-            throw new UnsupportedUserOnRoleRequest();
-        }
-    }
-
-    private void validateRequestedRole(String role) {
-        // TODO: 9/2/22 static use of AppRole!
-        // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-        if (!role.equals("author")) {
-            throw new UnsupportedRequestedRoleName();
-        }
+        return Objects.equals(requestEntity.getUser().getId(), user.getId());
     }
 
     public AppUser getUserByRequest(HttpServletRequest request) {
