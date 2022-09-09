@@ -1,8 +1,10 @@
 package hamdam.bookee.APIs.image;
 
 import hamdam.bookee.tools.annotations.MyValidFile;
+import hamdam.bookee.tools.exeptions.ResponseSettings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,7 +23,7 @@ public class ImageController {
     private final ImageService imageService;
 
     // TODO: 9/2/22 why additional "/upload" ?
-    @PostMapping("/upload")
+    @PostMapping
     public Image uploadImage(@MyValidFile @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
     }
@@ -32,7 +34,7 @@ public class ImageController {
     }
 
     @GetMapping("{id}")
-    public Image getImageByID(@PathVariable long id) {
+    public ImageDTO getImageByID(@PathVariable long id) {
         return imageService.getImageByID(id);
     }
 
@@ -42,9 +44,8 @@ public class ImageController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable long id) {
-        imageService.deleteImageById(id);
+    public ResponseEntity<ResponseSettings> deleteImage(@PathVariable long id) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Image with id: " + id + " successfully deleted!");
+        return new ResponseEntity<>(imageService.deleteImageById(id), HttpStatus.OK);
     }
 }

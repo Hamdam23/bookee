@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse {
+public class ResponseSettings {
 
     private HttpStatus status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
@@ -21,20 +21,14 @@ public class ErrorResponse {
     private String message;
     private String details;
 
-    public ErrorResponse(ApiException apiException) {
-        this.status = apiException.getStatus();
-        this.message = apiException.getMessage();
-        this.timestamp = LocalDateTime.now();
-    }
-
-    public ErrorResponse(ApiException apiException, String details) {
+    public ResponseSettings(ApiException apiException, String details) {
         this.status = apiException.getStatus();
         this.message = apiException.getMessage();
         this.details = details;
         this.timestamp = LocalDateTime.now();
     }
 
-    public ErrorResponse(HttpStatus status, String message, LocalDateTime timestamp) {
+    public ResponseSettings(HttpStatus status,LocalDateTime timestamp, String message) {
         this.status = status;
         this.timestamp = timestamp;
         this.message = message;

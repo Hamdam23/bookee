@@ -1,8 +1,7 @@
 package hamdam.bookee.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hamdam.bookee.tools.exeptions.ApiException;
-import hamdam.bookee.tools.exeptions.ErrorResponse;
+import hamdam.bookee.tools.exeptions.ResponseSettings;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -30,7 +29,7 @@ public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
         ObjectMapper mapper = new ObjectMapper();
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(403);
-        response.getWriter().write(mapper.writeValueAsString(new ErrorResponse(
-                HttpStatus.FORBIDDEN, "Access denied", LocalDateTime.now())));
+        response.getWriter().write(mapper.writeValueAsString(new ResponseSettings(
+                HttpStatus.FORBIDDEN, LocalDateTime.now(), "Access denied")));
     }
 }

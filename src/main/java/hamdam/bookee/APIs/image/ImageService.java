@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.image;
 
+import hamdam.bookee.tools.exeptions.ResponseSettings;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,10 +11,10 @@ public interface ImageService {
 
     FileSystemResource downloadImage(String location);
 
-    Image getImageByID(long id);
+    ImageDTO getImageByID(long id);
 
     // TODO: 9/2/22 why it returns ImageDTO, but byId returns Image itself?
     List<ImageDTO> getAllImages();
 
-    void deleteImageById(long id);
+    ResponseSettings deleteImageById(long id);
 }

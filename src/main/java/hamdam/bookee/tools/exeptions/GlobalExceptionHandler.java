@@ -14,22 +14,22 @@ public class GlobalExceptionHandler {
     // TODO: 9/2/22 method name is not clear, what is it for?
     //  Handling INTERNAL_SERVER_ERROR
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleInternalServerError(Exception exception) {
-        ErrorResponse errorResponse = new ErrorResponse(
+    public ResponseEntity<ResponseSettings> handleInternalServerError(Exception exception) {
+        ResponseSettings responseSettings = new ResponseSettings(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now(),
                 "Unknown error",
                 exception.getMessage()
         );
-        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+        return new ResponseEntity<>(responseSettings, responseSettings.getStatus());
     }
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ErrorResponse> handleApiException(
+    public ResponseEntity<ResponseSettings> handleApiException(
             ApiException exception,
             WebRequest webRequest
     ) {
-        ErrorResponse errorResponse = new ErrorResponse(exception, webRequest.getDescription(false));
-        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+        ResponseSettings responseSettings = new ResponseSettings(exception, webRequest.getDescription(false));
+        return new ResponseEntity<>(responseSettings, responseSettings.getStatus());
     }
 }
