@@ -29,7 +29,7 @@ public class BookServiceImpl implements BookService {
         return new ResponseSettings(
                 HttpStatus.OK,
                 LocalDateTime.now(),
-                "Book successfully saved!"
+                book.getName() + " book successfully saved!"
         );
     }
 

@@ -1,11 +1,11 @@
 package hamdam.bookee.APIs.genre;
 
 import hamdam.bookee.tools.exeptions.ResponseSettings;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface GenreService {
-    List<GenreEntity> getAllGenres();
+    Page<GenreEntity> getAllGenres(Pageable pageable);
 
     // TODO: 9/2/22 not ID, Id :-)
     GenreEntity getGenreById(Long id);

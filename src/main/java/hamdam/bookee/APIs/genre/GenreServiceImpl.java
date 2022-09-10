@@ -6,6 +6,8 @@ import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exeptions.ResponseSettings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +23,8 @@ public class GenreServiceImpl implements GenreService {
     private final BookRepository bookRepository;
 
     @Override
-    public List<GenreEntity> getAllGenres() {
-        return genreRepository.findAll();
+    public Page<GenreEntity> getAllGenres(Pageable pageable) {
+        return genreRepository.findAll(pageable);
     }
 
     @Override
@@ -40,7 +42,7 @@ public class GenreServiceImpl implements GenreService {
         return new ResponseSettings(
                 HttpStatus.OK,
                 LocalDateTime.now(),
-                "Genre successfully saved!"
+                dto.getName() + " genre successfully saved!"
         );
     }
 

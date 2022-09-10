@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,16 +58,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<ImageDTO> getAllImages() {
-        List<ImagEntity> imagEntities = imageRepository.findAll();
-        List<ImageDTO> imageDTOS = new ArrayList<>();
-        // TODO: 9/2/22 why manual forEach? there is Stream API, use mapping!
-        for (ImagEntity imagEntity : imagEntities) {
-            ImageDTO imageDTO = new ImageDTO();
-            BeanUtils.copyProperties(imagEntity, imageDTO);
-            imageDTOS.add(imageDTO);
-        }
-        return imageDTOS;
+    public Page<ImageDTO> getAllImages(Pageable pageable) {
+        return imageRepository.findAll(pageable).map(ImageDTO::new);
     }
 
     @Override

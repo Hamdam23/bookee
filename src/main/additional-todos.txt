@@ -14,3 +14,4 @@
 14. for post/put/patch (modification) requests return full json response of updated/created object
 15. add not null, unique, size, not blank etc. in all entities and DTOs
 16. implement password-change logic
+17. handle: if pageable size is more than totalElements it just gives empty list | implement NoContentForPageSize exception

@@ -1,13 +1,12 @@
-package hamdam.bookee.filter;
+package hamdam.bookee.security.filter;
 
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.AppUser;
-import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserService;
-import hamdam.bookee.tools.exeptions.RefreshTokenMissingException;
+import hamdam.bookee.tools.exeptions.jwtToken.RefreshTokenMissingException;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +25,8 @@ import java.io.IOException;
 import java.util.*;
 
 import static hamdam.bookee.tools.constants.Endpoints.*;
+import static hamdam.bookee.tools.token.TokenChecker.checkHeader;
+import static hamdam.bookee.tools.token.TokenProvider.getUsernameFromToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -52,13 +53,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         String header = request.getHeader(AUTHORIZATION);
-        if (header == null || !header.startsWith("Bearer ")) {
-            throw new RefreshTokenMissingException("No JWT token found in request headers");
-        }
+        checkHeader(header);
         try {
-            String token = header.substring("Bearer ".length());
-            DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
-            String username = decodedJWT.getSubject();
+//            String token = header.substring("Bearer ".length());
+//            DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
+            String username = getUsernameFromToken(header);
             AppUser user = appUserService.getUserByUsername(username);
             // TODO: 9/2/22 handle get() call
             Set<Permissions> permissions = user.getRole().getPermissions();
@@ -68,7 +67,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(username, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
-        } catch (SignatureVerificationException exception) {
+        } catch (Exception exception) {
             // TODO: 9/2/22 don't write to response only error_message, write full ErrorResponse object
             response.setStatus(FORBIDDEN.value());
             Map<String, String> error = new HashMap<>();
@@ -76,6 +75,5 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
             new ObjectMapper().writeValue(response.getOutputStream(), error);
         }
-//        }
     }
 }

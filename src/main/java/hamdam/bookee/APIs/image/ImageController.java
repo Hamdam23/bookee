@@ -2,8 +2,10 @@ package hamdam.bookee.APIs.image;
 
 import hamdam.bookee.tools.annotations.MyValidFile;
 import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +41,8 @@ public class ImageController {
     }
 
     @GetMapping
-    public List<ImageDTO> getAllImages() {
-        return imageService.getAllImages();
+    public PagedResponse<ImageDTO> getAllImages(Pageable pageable) {
+        return new PagedResponse<>(imageService.getAllImages(pageable));
     }
 
     @DeleteMapping("{id}")

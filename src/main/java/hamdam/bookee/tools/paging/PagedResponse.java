@@ -7,14 +7,14 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Data
-public class CustomPage<T> {
+public class PagedResponse<T> {
     List<T> content;
     @JsonProperty("pagination_settings")
-    CustomPageable paginationSettings;
+    PageableSettings paginationSettings;
 
-    public CustomPage(Page<T> page) {
+    public PagedResponse(Page<T> page) {
         this.content = page.getContent();
-        this.paginationSettings = new CustomPageable(page.getPageable().getPageNumber(),
+        this.paginationSettings = new PageableSettings(page.getPageable().getPageNumber(),
                 getNextPage(page),
                 getPrevPage(page),
                 page.getPageable().getPageSize(),

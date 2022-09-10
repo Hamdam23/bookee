@@ -1,7 +1,9 @@
 package hamdam.bookee.APIs.genre;
 
 import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +33,8 @@ public class GenreController {
     }
 
     @GetMapping
-    public List<GenreEntity> getAllGenres() {
-        return genreService.getAllGenres();
+    public PagedResponse<GenreEntity> getAllGenres(Pageable pageable) {
+        return new PagedResponse<>(genreService.getAllGenres(pageable));
     }
 
     @GetMapping("/{id}")

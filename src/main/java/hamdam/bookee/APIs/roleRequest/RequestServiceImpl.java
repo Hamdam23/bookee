@@ -6,7 +6,7 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.tools.exeptions.NoCorrespondingPermissionException;
+import hamdam.bookee.tools.exeptions.pemission.NoCorrespondingPermissionException;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedStateValueException;
 import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedRequestedRoleName;

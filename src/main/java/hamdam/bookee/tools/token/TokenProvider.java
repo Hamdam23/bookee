@@ -3,6 +3,9 @@ package hamdam.bookee.tools.token;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +13,8 @@ import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exeptions.jwtToken.JWTDecodeExceptionHandler;
+import hamdam.bookee.tools.exeptions.jwtToken.SignatureVerificationExceptionHandler;
 import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +44,18 @@ public class TokenProvider {
             verifier = JWT.require(REFRESH_ALGORITHM).build();
         }
         return verifier.verify(token);
+    }
+
+    public static String getUsernameFromToken(String header){
+        try {
+            String token = header.substring("Bearer ".length());
+            DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
+            return decodedJWT.getSubject();
+        } catch (JWTDecodeException | AlgorithmMismatchException jwtDecodeException) {
+            throw new JWTDecodeExceptionHandler(jwtDecodeException.getMessage());
+        } catch (SignatureVerificationException signatureVerificationException) {
+            throw new SignatureVerificationExceptionHandler(signatureVerificationException.getMessage());
+        }
     }
 
     // TODO: 9/2/22 do you need UserDetails here or only username?

@@ -1,4 +1,4 @@
-package hamdam.bookee.filter;
+package hamdam.bookee.security.filter;
 
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.user.AppUserRepository;

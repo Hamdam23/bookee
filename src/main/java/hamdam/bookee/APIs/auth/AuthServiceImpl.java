@@ -1,5 +1,7 @@
 package hamdam.bookee.APIs.auth;
 
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRole;
@@ -7,8 +9,9 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUser;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserServiceImpl;
+import hamdam.bookee.tools.exeptions.jwtToken.JWTDecodeExceptionHandler;
 import hamdam.bookee.tools.exeptions.role.NoDefaultRoleException;
-import hamdam.bookee.tools.exeptions.RefreshTokenMissingException;
+import hamdam.bookee.tools.exeptions.jwtToken.RefreshTokenMissingException;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +25,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static hamdam.bookee.tools.token.TokenChecker.checkHeader;
+import static hamdam.bookee.tools.token.TokenProvider.getUsernameFromToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -53,31 +58,27 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-
+        String header = request.getHeader(AUTHORIZATION);
         // TODO: 9/2/22 code duplication: CustomAuthorizationFilter:doFilterInternal
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                String refresh_token = authorizationHeader.substring("Bearer ".length());
-                DecodedJWT decodedJWT = TokenProvider.decodeToken(refresh_token, false);
-                String username = decodedJWT.getSubject();
-                UserDetails user = appUserServiceImpl.loadUserByUsername(username);
+        checkHeader(header);
 
-                TokensResponse accessTokenResponse = TokenProvider.getAccessTokenResponse(user.getUsername(), userRepository);
-                TokenProvider.displayToken(accessTokenResponse, response);
+        try {
+//            String refresh_token = header.substring("Bearer ".length());
+//            // TODO catch error "The Token's Signature resulted invalid when verified using the Algorithm: HmacSHA384"
+//            //  code 124
+//            DecodedJWT decodedJWT = TokenProvider.decodeToken(refresh_token, false);
+//            String username = decodedJWT.getSubject();
+            UserDetails user = appUserServiceImpl.loadUserByUsername(getUsernameFromToken(header));
 
-            } catch (Exception exception) {
-                // TODO: 9/2/22 response must be full ErrorResponse object
-                response.setHeader("error", exception.getMessage());
-                response.setStatus(FORBIDDEN.value());
-                Map<String, String> error = new HashMap<>();
-                error.put("error_message", exception.getMessage());
-                response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
-            }
-        } else {
-            // TODO: 9/2/22 why do you need to write error message there?
-            throw new RefreshTokenMissingException("Refresh token is missing!");
+            TokensResponse accessTokenResponse = TokenProvider.getAccessTokenResponse(user.getUsername(), userRepository);
+            TokenProvider.displayToken(accessTokenResponse, response);
+        } catch (Exception exception) {
+            response.setHeader("error", exception.getMessage());
+            response.setStatus(FORBIDDEN.value());
+            Map<String, String> error = new HashMap<>();
+            error.put("error_error_message", exception.getMessage());
+            response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+            new ObjectMapper().writeValue(response.getOutputStream(), error);
         }
     }
 }
