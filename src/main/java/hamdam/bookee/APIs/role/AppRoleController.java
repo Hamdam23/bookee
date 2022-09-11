@@ -14,12 +14,12 @@ public class AppRoleController {
     private final AppRoleService appRoleService;
 
     @PostMapping
-    public AppRole postRole(@RequestBody AppRoleDTO appRole) {
+    public AppRoleEntity postRole(@RequestBody AppRoleDTO appRole) {
         return appRoleService.addRole(appRole);
     }
 
     @GetMapping
-    public List<AppRole> getAllRoles() {
+    public List<AppRoleEntity> getAllRoles() {
         return appRoleService.getAllRoles();
     }
 

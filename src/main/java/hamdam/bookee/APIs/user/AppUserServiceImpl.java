@@ -3,7 +3,7 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.image.ImagEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
-import hamdam.bookee.APIs.role.AppRole;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AppUser> user = userRepository.findAppUserByUserName(username);
+        Optional<AppUserEntity> user = userRepository.findAppUserByUserName(username);
         // TODO: 9/2/22 write mapper method/class for AppUser <-> User
         // TODO TODO
         return new User(
@@ -44,7 +44,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public AppUser getUserByUsername(String username) {
+    public AppUserEntity getUserByUsername(String username) {
         return userRepository.findAppUserByUserName(username).orElseThrow(()
                 // TODO: 9/2/22 custom exception
                 -> new ResourceNotFoundException("User", "username", username)
@@ -52,14 +52,14 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public List<AppUser> getAllUsers() {
+    public List<AppUserEntity> getAllUsers() {
         return userRepository.findAllByOrderByTimeStampDesc();
     }
 
     @Override
-    public AppUser updateUser(AppUserDTO newUser, long id) {
+    public AppUserEntity updateUser(AppUserDTO newUser, long id) {
         // TODO: 9/2/22 code duplication
-        AppUser user = getAppUserById(id);
+        AppUserEntity user = getAppUserById(id);
         user.setName(newUser.getName());
         return user;
     }
@@ -80,21 +80,21 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
         );
         // TODO: 9/2/22 code duplication
-        AppUser user = getAppUserById(id);
+        AppUserEntity user = getAppUserById(id);
         user.setUserImagEntity(imagEntity);
         userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public AppUser setRoleToUser(long id, AppUserRoleDTO roleDTO) {
-        AppUser user = userRepository.findById(id).orElseThrow(()
+    public AppUserEntity setRoleToUser(long id, AppUserRoleDTO roleDTO) {
+        AppUserEntity user = userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", id)
         );
-        AppRole appRole = roleRepository.findById(roleDTO.getRoleId()).orElseThrow(
+        AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId()).orElseThrow(
                 () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
         );
-        user.setRole(appRole);
+        user.setRole(appRoleEntity);
         // TODO: 9/2/22 you can return value from repository method call
         return userRepository.save(user);
     }
@@ -105,7 +105,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         return userRepository.existsByUserName(username);
     }
 
-    private AppUser getAppUserById(Long id){
+    private AppUserEntity getAppUserById(Long id){
         return userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", id)
         );

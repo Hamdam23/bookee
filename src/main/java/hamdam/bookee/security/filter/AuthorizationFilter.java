@@ -1,13 +1,9 @@
 package hamdam.bookee.security.filter;
 
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.user.AppUser;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserService;
-import hamdam.bookee.tools.exeptions.jwtToken.RefreshTokenMissingException;
-import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,7 +54,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 //            String token = header.substring("Bearer ".length());
 //            DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
             String username = getUsernameFromToken(header);
-            AppUser user = appUserService.getUserByUsername(username);
+            AppUserEntity user = appUserService.getUserByUsername(username);
             // TODO: 9/2/22 handle get() call
             Set<Permissions> permissions = user.getRole().getPermissions();
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

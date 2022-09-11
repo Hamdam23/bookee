@@ -2,11 +2,10 @@ package hamdam.bookee;
 
 import hamdam.bookee.APIs.auth.AuthService;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
-import hamdam.bookee.APIs.role.AppRole;
 import hamdam.bookee.APIs.role.AppRoleDTO;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleService;
-import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.user.AppUser;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRoleDTO;
 import hamdam.bookee.APIs.user.AppUserService;
 import lombok.RequiredArgsConstructor;
@@ -35,17 +34,17 @@ public class BookeeApplication {
 //    @Override
 //    public void run(String... args) {
 //        try {
-//            AppRole author = roleService.addRole(new AppRoleDTO("author", false, Set.of(AUTHOR)));
-//            AppRole admin = roleService.addRole(new AppRoleDTO("admin", false, Set.of(
+//            AppRoleEntity author = roleService.addRole(new AppRoleDTO("author", false, Set.of(AUTHOR)));
+//            AppRoleEntity admin = roleService.addRole(new AppRoleDTO("admin", false, Set.of(
 //                    ADMIN
 //            )));
-//            AppRole user = roleService.addRole(new AppRoleDTO("user", true, Set.of(
+//            AppRoleEntity user = roleService.addRole(new AppRoleDTO("user", true, Set.of(
 //                    USER
 //            )));
 //
-//            AppUser hamdam = authService.registerUser(new RegistrationRequest("Hamdam", "hamdam_x", "123"));
-//            AppUser farrukh = authService.registerUser(new RegistrationRequest("Farrukh", "farrukh_kh", "123"));
-//            AppUser userx = authService.registerUser(new RegistrationRequest("Userx", "user_x", "123"));
+//            AppUserEntity hamdam = authService.registerUser(new RegistrationRequest("Hamdam", "hamdam_x", "123"));
+//            AppUserEntity farrukh = authService.registerUser(new RegistrationRequest("Farrukh", "farrukh_kh", "123"));
+//            AppUserEntity userx = authService.registerUser(new RegistrationRequest("Userx", "user_x", "123"));
 //
 //            userService.setRoleToUser(hamdam.getId(), new AppUserRoleDTO(author.getId()));
 //            userService.setRoleToUser(farrukh.getId(), new AppUserRoleDTO(admin.getId()));

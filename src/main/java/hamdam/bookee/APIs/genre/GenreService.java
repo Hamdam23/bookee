@@ -5,16 +5,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface GenreService {
-    Page<GenreEntity> getAllGenres(Pageable pageable);
+
+    // TODO: 9/2/22 why void?
+    GenreDTO addGenre(GenreDTO genre);
+
+    Page<GenreDTO> getAllGenres(Pageable pageable);
 
     // TODO: 9/2/22 not ID, Id :-)
-    GenreEntity getGenreById(Long id);
+    GenreDTO getGenreById(Long id);
 
     // TODO: 9/2/22 why void?
-    ResponseSettings addGenre(GenreDTO genre);
-
-    // TODO: 9/2/22 why void?
-    ResponseSettings updateGenre(Long id, GenreDTO genre);
+    GenreDTO updateGenre(Long id, GenreDTO genre);
 
     ResponseSettings deleteGenre(Long id);
 }

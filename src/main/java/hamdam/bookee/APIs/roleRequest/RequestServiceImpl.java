@@ -1,10 +1,10 @@
 package hamdam.bookee.APIs.roleRequest;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import hamdam.bookee.APIs.role.AppRole;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.user.AppUser;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exeptions.pemission.NoCorrespondingPermissionException;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
@@ -42,17 +42,17 @@ public class RequestServiceImpl implements RequestService {
         // TODO: 9/2/22 why using setters? use them as constructor arguments
         //  Done
 
-        AppUser appUser = getUserByRequest(request);
-        AppRole role = roleRepository.findByRoleName(requestRole.getRoleName()).orElseThrow(
+        AppUserEntity appUserEntity = getUserByRequest(request);
+        AppRoleEntity role = roleRepository.findByRoleName(requestRole.getRoleName()).orElseThrow(
                 () -> new ResourceNotFoundException("Role", "role-name", requestRole.getRoleName()));
-        Set<Permissions> permissionsSet = getUserPermissions(appUser);
+        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
 
         if (!permissionsSet.contains(USER)) {
             throw new UnsupportedUserOnRoleRequest();
         } else if (role.getPermissions().contains(ADMIN)) {
             throw new UnsupportedRequestedRoleName();
         }
-        RequestEntity requestEntity = new RequestEntity(appUser, role, State.IN_PROGRESS);
+        RequestEntity requestEntity = new RequestEntity(appUserEntity, role, State.IN_PROGRESS);
         requestRepository.save(requestEntity);
 
         return new RoleRequestResponse(requestEntity, requestRole.getRoleName());
@@ -70,11 +70,11 @@ public class RequestServiceImpl implements RequestService {
             responseList = requestRepository.findAllByState(reviewState);
         }
 
-        AppUser appUser = getUserByRequest(request);
-        Set<Permissions> permissionsSet = getUserPermissions(appUser);
+        AppUserEntity appUserEntity = getUserByRequest(request);
+        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
         // change ADMIN permission -> MONITOR_ROLE_REQUEST
         if (!permissionsSet.contains(ADMIN) && !responseList.isEmpty()) {
-            responseList = requestRepository.findAllByUser(appUser);
+            responseList = requestRepository.findAllByUser(appUserEntity);
         }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
         responseList.forEach(response -> {
@@ -94,8 +94,8 @@ public class RequestServiceImpl implements RequestService {
         RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
-        AppUser appUser = getUserByRequest(request);
-        Set<Permissions> permissionsSet = getUserPermissions(appUser);
+        AppUserEntity appUserEntity = getUserByRequest(request);
+        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
 
         if (!permissionsSet.contains(ADMIN)) {
             throw new NoCorrespondingPermissionException("You have to get corresponding permission to access the method!");
@@ -106,7 +106,7 @@ public class RequestServiceImpl implements RequestService {
             throw new UnsupportedStateValueException("state can be either ACCEPTED or DECLINED");
         }
 
-        AppUser user = requestEntity.getUser();
+        AppUserEntity user = requestEntity.getUser();
 
         requestEntity.setState(reviewState);
 
@@ -127,12 +127,12 @@ public class RequestServiceImpl implements RequestService {
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
 
-        AppUser appUser = getUserByRequest(request);
-        Set<Permissions> permissionsSet = getUserPermissions(appUser);
+        AppUserEntity appUserEntity = getUserByRequest(request);
+        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
         if (permissionsSet.contains(ADMIN)) {
             requestRepository.deleteById(id);
         } else {
-            if (roleRequestBelongUser(appUser, requestEntity)){
+            if (roleRequestBelongUser(appUserEntity, requestEntity)){
                 requestRepository.deleteById(id);
             } else {
                 throw new NoCorrespondingPermissionException("You do not have permission to delete role request does not belong to you!");
@@ -142,11 +142,11 @@ public class RequestServiceImpl implements RequestService {
         requestRepository.save(requestEntity);
     }
 
-    private boolean roleRequestBelongUser(AppUser user, RequestEntity requestEntity){
+    private boolean roleRequestBelongUser(AppUserEntity user, RequestEntity requestEntity){
         return Objects.equals(requestEntity.getUser().getId(), user.getId());
     }
 
-    public AppUser getUserByRequest(HttpServletRequest request) {
+    public AppUserEntity getUserByRequest(HttpServletRequest request) {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String token = authorizationHeader.substring("Bearer ".length());
@@ -157,7 +157,7 @@ public class RequestServiceImpl implements RequestService {
                 () -> new ResourceNotFoundException("User", "username", username));
     }
 
-    public Set<Permissions> getUserPermissions(AppUser user) {
+    public Set<Permissions> getUserPermissions(AppUserEntity user) {
         return user.getRole().getPermissions();
     }
 }

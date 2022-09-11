@@ -10,7 +10,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.auth.TokensResponse;
-import hamdam.bookee.APIs.role.AppRole;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exeptions.jwtToken.JWTDecodeExceptionHandler;
@@ -61,7 +61,7 @@ public class TokenProvider {
     // TODO: 9/2/22 do you need UserDetails here or only username?
     public static TokensResponse getTokenResponse(String username, AppUserRepository userRepository) {
         // TODO: 9/2/22 remove get() call
-        AppRole role = userRepository.findAppUserByUserName(username).orElseThrow(
+        AppRoleEntity role = userRepository.findAppUserByUserName(username).orElseThrow(
                 () -> new ResourceNotFoundException("User", "username", username)
         ).getRole();
 
@@ -78,7 +78,7 @@ public class TokenProvider {
     // TODO: 9/2/22 needs better name
     public static TokensResponse getAccessTokenResponse(String username, AppUserRepository userRepository) {
         // TODO: 9/2/22 remove get() call
-        AppRole role = userRepository.findAppUserByUserName(username).orElseThrow(
+        AppRoleEntity role = userRepository.findAppUserByUserName(username).orElseThrow(
                 () -> new ResourceNotFoundException("User", "username", username)
         ).getRole();
 
@@ -89,7 +89,7 @@ public class TokenProvider {
     }
 
     // TODO: 9/2/22 needs better name
-    public static String createAccessToken(String username, AppRole role) {
+    public static String createAccessToken(String username, AppRoleEntity role) {
 
         return JWT.create()
                 .withSubject(username)
@@ -99,7 +99,7 @@ public class TokenProvider {
     }
 
     // TODO: 9/2/22 needs better name
-    public static String createRefreshToken(String username, AppRole role) {
+    public static String createRefreshToken(String username, AppRoleEntity role) {
 
         return JWT.create()
                 .withSubject(username)

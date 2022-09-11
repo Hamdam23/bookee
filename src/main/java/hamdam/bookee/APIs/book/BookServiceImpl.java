@@ -75,7 +75,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
 
         return new ResponseSettings(
-                HttpStatus.OK,
+                HttpStatus.NO_CONTENT,
                 LocalDateTime.now(),
                 "Book with id: " + id + " successfully deleted!"
         );

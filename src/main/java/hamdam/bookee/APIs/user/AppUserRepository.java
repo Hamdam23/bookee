@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    Optional<AppUser> findAppUserByUserName(String userName);
+public interface AppUserRepository extends JpaRepository<AppUserEntity, Long> {
+    Optional<AppUserEntity> findAppUserByUserName(String userName);
 
     // TODO: 9/2/22 there is default findById for this logic
 
-    List<AppUser> findAllByOrderByTimeStampDesc();
+    List<AppUserEntity> findAllByOrderByTimeStampDesc();
 
     boolean existsByUserName(String username);
 }

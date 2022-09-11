@@ -1,7 +1,6 @@
 package hamdam.bookee.APIs.book;
 
 import hamdam.bookee.APIs.genre.GenreEntity;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

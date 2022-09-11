@@ -1,9 +1,11 @@
 package hamdam.bookee.APIs.genre;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hamdam.bookee.APIs.book.BookEntity;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
@@ -11,9 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "genres")
+@JsonIgnoreProperties(value = { "books" })
 public class GenreEntity {
 
     @Id
@@ -28,15 +32,12 @@ public class GenreEntity {
     //TODO when genre deleted corresponding book's genre should be set to "null"
     @ManyToMany(mappedBy = "genres")
     // TODO: 9/2/22 remove @JsonIgnore and user @JsonIgnoreProperties in Book
-    @JsonIgnore
+//    @JsonIgnore
     private List<BookEntity> books = new ArrayList<>();
 
     public GenreEntity(GenreDTO genreDTO) {
         // TODO: 9/2/22 user BeanUtils.copyProperties()
         BeanUtils.copyProperties(genreDTO, this);
-//        genreDTO.getBooks().forEach(
-//                bookId -> this.books.add(new BookEntity(bookId))
-//        );
     }
 
     public GenreEntity(Long id) {

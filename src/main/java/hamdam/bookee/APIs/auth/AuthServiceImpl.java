@@ -1,17 +1,12 @@
 package hamdam.bookee.APIs.auth;
 
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hamdam.bookee.APIs.role.AppRole;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.user.AppUser;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserServiceImpl;
-import hamdam.bookee.tools.exeptions.jwtToken.JWTDecodeExceptionHandler;
 import hamdam.bookee.tools.exeptions.role.NoDefaultRoleException;
-import hamdam.bookee.tools.exeptions.jwtToken.RefreshTokenMissingException;
 import hamdam.bookee.tools.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,17 +38,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     // TODO: 9/2/22 naming: userDTO
-    public AppUser registerUser(RegistrationRequest request) {
+    public AppUserEntity registerUser(RegistrationRequest request) {
         // TODO: 9/2/22 set encoded password to AppUser, not to RegistrationRequest
-        AppUser appUser = new AppUser(request);
-        appUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        AppRole role = roleRepository.findFirstByIsDefault(true).orElseThrow(
+        AppUserEntity appUserEntity = new AppUserEntity(request);
+        appUserEntity.setPassword(passwordEncoder.encode(request.getPassword()));
+        AppRoleEntity role = roleRepository.findFirstByIsDefault(true).orElseThrow(
                 // TODO: 9/2/22 use custom exception
                 () -> new NoDefaultRoleException("There is no default role for users")
         );
-        appUser.setRole(role);
+        appUserEntity.setRole(role);
         // TODO: 9/2/22 you can return value which is being returned by repository method
-        return userRepository.save(appUser);
+        return userRepository.save(appUserEntity);
     }
 
     @Override

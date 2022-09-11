@@ -1,7 +1,7 @@
 package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.image.ImagEntity;
-import hamdam.bookee.APIs.role.AppRole;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,6 +12,6 @@ public class AppUserDTO {
     private String name;
     private String userName;
     private LocalDateTime timeStamp;
-    private AppRole role;
+    private AppRoleEntity role;
     private ImagEntity userImagEntity;
 }

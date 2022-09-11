@@ -20,31 +20,31 @@ public class GenreController {
     private final GenreService genreService;
 
     @PostMapping
-    public ResponseEntity<ResponseSettings> addGenre(@RequestBody GenreDTO genre) {
+    public GenreDTO addGenre(@RequestBody GenreDTO genre) {
         // TODO: 9/2/22 return full json response
-        return new ResponseEntity<>(genreService.addGenre(genre), HttpStatus.OK);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<ResponseSettings> updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
-        genreService.updateGenre(id, genre);
-        // TODO: 9/2/22 return full json response
-        return new ResponseEntity<>(genreService.updateGenre(id, genre), HttpStatus.OK);
+        return genreService.addGenre(genre);
     }
 
     @GetMapping
-    public PagedResponse<GenreEntity> getAllGenres(Pageable pageable) {
+    public PagedResponse<GenreDTO> getAllGenres(Pageable pageable) {
         return new PagedResponse<>(genreService.getAllGenres(pageable));
     }
 
     @GetMapping("/{id}")
-    public GenreEntity getGenreByID(@PathVariable Long id) {
+    public GenreDTO getGenreByID(@PathVariable Long id) {
         return genreService.getGenreById(id);
+    }
+
+    @PatchMapping("/{id}")
+    public GenreDTO updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
+        genreService.updateGenre(id, genre);
+        // TODO: 9/2/22 return full json response
+        return genreService.updateGenre(id, genre);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseSettings> deleteGenre(@PathVariable Long id) {
         // TODO: 9/2/22 return full json response
-        return new ResponseEntity<>(genreService.deleteGenre(id), HttpStatus.OK);
+        return new ResponseEntity<>(genreService.deleteGenre(id), HttpStatus.NO_CONTENT);
     }
 }

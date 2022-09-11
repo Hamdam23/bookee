@@ -4,14 +4,15 @@
 4. API documentation
 5. Downloadable Postman collection
 6. Project packaging
-7. filter package vs security package
-8. handle Optional.get() warnings
-9. don't use @Data lombok annotation in entities
+-7. filter package vs security package
+-8. handle Optional.get() warnings
+-9. don't use @Data lombok annotation in entities
 10. roleRequest package needs big refactor/rename/new-features/logic-changes etc.
-11. If role of user in the project (AppRole) is implemented as dynamic, use it as dynamic everywhere
+-11. If role of user in the project (AppRole) is implemented as dynamic, use it as dynamic everywhere
 12. Validations in request DTOs
 13. for delete requests whether return full json response or empty response (but with 204), not plain text
 14. for post/put/patch (modification) requests return full json response of updated/created object
 15. add not null, unique, size, not blank etc. in all entities and DTOs
 16. implement password-change logic
 17. handle: if pageable size is more than totalElements it just gives empty list | implement NoContentForPageSize exception
+18. getAllGenres - response: without books | getGenreById - response: with books

@@ -1,8 +1,9 @@
 package hamdam.bookee.APIs.role;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -10,9 +11,11 @@ import java.util.Set;
 
 // TODO: 9/2/22 naming
 @Entity
-@Data
+@Table(name = "app_roles")
+@Getter
+@Setter
 @NoArgsConstructor
-public class AppRole {
+public class AppRoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -33,7 +36,7 @@ public class AppRole {
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
 
-    public AppRole(AppRoleDTO dto) {
+    public AppRoleEntity(AppRoleDTO dto) {
         this.roleName = dto.getRoleName();
         this.permissions = dto.getPermissions();
         this.isDefault = dto.isDefault();

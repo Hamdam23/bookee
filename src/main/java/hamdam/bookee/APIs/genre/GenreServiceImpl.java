@@ -23,51 +23,44 @@ public class GenreServiceImpl implements GenreService {
     private final BookRepository bookRepository;
 
     @Override
-    public Page<GenreEntity> getAllGenres(Pageable pageable) {
-        return genreRepository.findAll(pageable);
-    }
-
-    @Override
-    public GenreEntity getGenreById(Long id) {
-        // TODO: 9/2/22 Local variable 'genre' is redundant
-        return genreRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Genre", "id", id));
-    }
-
-    @Override
-    public ResponseSettings addGenre(GenreDTO dto) {
+    public GenreDTO addGenre(GenreDTO dto) {
         // TODO: 9/2/22 use GenreDTO as constructor argument
         GenreEntity entity = new GenreEntity(dto);
         genreRepository.save(entity);
-        return new ResponseSettings(
-                HttpStatus.OK,
-                LocalDateTime.now(),
-                dto.getName() + " genre successfully saved!"
-        );
+        return dto;
     }
 
     @Override
-    public ResponseSettings updateGenre(Long id, GenreDTO genre) {
+    public Page<GenreDTO> getAllGenres(Pageable pageable) {
+        return genreRepository.findAll(pageable).map(GenreDTO::new);
+    }
+
+    @Override
+    public GenreDTO getGenreById(Long id) {
+        // TODO: 9/2/22 Local variable 'genre' is redundant
+        GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Genre", "id", id));
+        return new GenreDTO(genreEntity);
+    }
+
+    @Override
+    public GenreDTO updateGenre(Long id, GenreDTO genreDTO) {
         GenreEntity oldGenre = genreRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Genre", "id", id));
-        BeanUtils.copyProperties(genre, oldGenre);
+        BeanUtils.copyProperties(genreDTO, oldGenre, "id");
 
         // TODO: 9/2/22 do yo really need 3 genre related object: oldGenre, newGenre, genre(DTO)?
         // TODO: 9/2/22 why calling copyProperties?
         List<BookEntity> books = new ArrayList<>();
-        genre.getBooks().forEach(aLong -> {
-            BookEntity book = bookRepository.findById(id).orElseThrow(()
+        genreDTO.getBooks().forEach(aLong -> {
+            BookEntity book = bookRepository.findById(aLong).orElseThrow(()
                     -> new ResourceNotFoundException("Book", "id", aLong));
             books.add(book);
         });
         oldGenre.setBooks(books);
 
         genreRepository.save(oldGenre);
-        return new ResponseSettings(
-                HttpStatus.OK,
-                LocalDateTime.now(),
-                "Genre with id: " + id + " successfully updated!"
-        );
+        return genreDTO;
     }
 
     @Override
@@ -76,7 +69,7 @@ public class GenreServiceImpl implements GenreService {
         genreRepository.existsById(id);
         genreRepository.deleteById(id);
         return new ResponseSettings(
-                HttpStatus.OK,
+                HttpStatus.NO_CONTENT,
                 LocalDateTime.now(),
                 "Genre with id: " + id + " successfully deleted!"
         );
