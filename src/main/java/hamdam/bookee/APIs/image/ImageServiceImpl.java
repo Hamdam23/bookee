@@ -1,23 +1,19 @@
 package hamdam.bookee.APIs.image;
 
 import hamdam.bookee.APIs.image.file.FileSystemRepository;
-import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
-import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -63,12 +59,12 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ResponseSettings deleteImageById(long id) {
+    public ApiResponse deleteImageById(long id) {
         // TODO: 9/2/22 check image id
         imageRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Image", "id", id));
         imageRepository.deleteById(id);
-        return new ResponseSettings(
+        return new ApiResponse(
                 HttpStatus.OK,
                 LocalDateTime.now(),
                 "Image with id: " + id + " successfully deleted!"

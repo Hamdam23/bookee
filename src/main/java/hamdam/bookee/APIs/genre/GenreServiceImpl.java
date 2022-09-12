@@ -2,8 +2,8 @@ package hamdam.bookee.APIs.genre;
 
 import hamdam.bookee.APIs.book.BookEntity;
 import hamdam.bookee.APIs.book.BookRepository;
-import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
-import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -64,11 +64,11 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public ResponseSettings deleteGenre(Long id) {
+    public ApiResponse deleteGenre(Long id) {
         // TODO: 9/2/22 existsById is enough
         genreRepository.existsById(id);
         genreRepository.deleteById(id);
-        return new ResponseSettings(
+        return new ApiResponse(
                 HttpStatus.NO_CONTENT,
                 LocalDateTime.now(),
                 "Genre with id: " + id + " successfully deleted!"

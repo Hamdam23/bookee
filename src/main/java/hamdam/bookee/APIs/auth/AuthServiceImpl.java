@@ -6,8 +6,8 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserServiceImpl;
-import hamdam.bookee.tools.exeptions.role.NoDefaultRoleException;
-import hamdam.bookee.tools.token.TokenProvider;
+import hamdam.bookee.tools.exceptions.role.NoDefaultRoleException;
+import hamdam.bookee.tools.token.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static hamdam.bookee.tools.token.TokenChecker.checkHeader;
-import static hamdam.bookee.tools.token.TokenProvider.getUsernameFromToken;
+import static hamdam.bookee.tools.token.TokenUtils.getUsernameFromToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -65,8 +65,8 @@ public class AuthServiceImpl implements AuthService {
 //            String username = decodedJWT.getSubject();
             UserDetails user = appUserServiceImpl.loadUserByUsername(getUsernameFromToken(header));
 
-            TokensResponse accessTokenResponse = TokenProvider.getAccessTokenResponse(user.getUsername(), userRepository);
-            TokenProvider.displayToken(accessTokenResponse, response);
+            TokensResponse accessTokenResponse = TokenUtils.getAccessTokenResponse(user.getUsername(), userRepository);
+            TokenUtils.displayToken(accessTokenResponse, response);
         } catch (Exception exception) {
             response.setHeader("error", exception.getMessage());
             response.setStatus(FORBIDDEN.value());

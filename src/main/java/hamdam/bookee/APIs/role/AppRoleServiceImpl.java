@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.role;
 
-import hamdam.bookee.tools.exeptions.role.DuplicateRoleNameException;
+import hamdam.bookee.tools.exceptions.role.DuplicateRoleNameException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

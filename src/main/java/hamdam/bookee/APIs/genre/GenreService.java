@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.genre;
 
-import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,5 +17,5 @@ public interface GenreService {
     // TODO: 9/2/22 why void?
     GenreDTO updateGenre(Long id, GenreDTO genre);
 
-    ResponseSettings deleteGenre(Long id);
+    ApiResponse deleteGenre(Long id);
 }

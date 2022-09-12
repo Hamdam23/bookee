@@ -1,14 +1,12 @@
 package hamdam.bookee.APIs.genre;
 
-import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 
@@ -43,7 +41,7 @@ public class GenreController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseSettings> deleteGenre(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> deleteGenre(@PathVariable Long id) {
         // TODO: 9/2/22 return full json response
         return new ResponseEntity<>(genreService.deleteGenre(id), HttpStatus.NO_CONTENT);
     }

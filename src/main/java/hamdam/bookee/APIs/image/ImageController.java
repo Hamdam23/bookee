@@ -1,7 +1,7 @@
 package hamdam.bookee.APIs.image;
 
-import hamdam.bookee.tools.annotations.MyValidFile;
-import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.annotations.ValidFile;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 
@@ -26,7 +24,7 @@ public class ImageController {
 
     // TODO: 9/2/22 why additional "/upload" ?
     @PostMapping
-    public ImagEntity uploadImage(@MyValidFile @RequestParam MultipartFile file) throws Exception {
+    public ImagEntity uploadImage(@ValidFile @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
     }
 
@@ -46,7 +44,7 @@ public class ImageController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<ResponseSettings> deleteImage(@PathVariable long id) {
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable long id) {
         // TODO: 9/2/22 return full json response
         return new ResponseEntity<>(imageService.deleteImageById(id), HttpStatus.OK);
     }

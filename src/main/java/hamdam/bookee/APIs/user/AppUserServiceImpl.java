@@ -5,7 +5,7 @@ import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
