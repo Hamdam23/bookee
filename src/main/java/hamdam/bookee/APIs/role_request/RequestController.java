@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.roleRequest;
+package hamdam.bookee.APIs.role_request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

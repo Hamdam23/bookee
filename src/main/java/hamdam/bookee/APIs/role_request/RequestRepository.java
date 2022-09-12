@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.roleRequest;
+package hamdam.bookee.APIs.role_request;
 
 import hamdam.bookee.APIs.user.AppUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

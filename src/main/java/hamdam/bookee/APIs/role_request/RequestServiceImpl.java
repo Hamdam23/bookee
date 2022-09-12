@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.roleRequest;
+package hamdam.bookee.APIs.role_request;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import hamdam.bookee.APIs.role.AppRoleEntity;
@@ -6,12 +6,12 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.tools.exeptions.pemission.NoCorrespondingPermissionException;
-import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
-import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedStateValueException;
-import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedRequestedRoleName;
-import hamdam.bookee.tools.exeptions.roleRequest.UnsupportedUserOnRoleRequest;
-import hamdam.bookee.tools.token.TokenProvider;
+import hamdam.bookee.tools.exceptions.pemission.NoCorrespondingPermissionException;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.roleRequest.UnsupportedStateValueException;
+import hamdam.bookee.tools.exceptions.roleRequest.UnsupportedRequestedRoleName;
+import hamdam.bookee.tools.exceptions.roleRequest.UnsupportedUserOnRoleRequest;
+import hamdam.bookee.tools.token.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import static hamdam.bookee.APIs.role.Permissions.*;
-import static hamdam.bookee.APIs.roleRequest.State.ACCEPTED;
-import static hamdam.bookee.APIs.roleRequest.State.DECLINED;
+import static hamdam.bookee.APIs.role_request.State.ACCEPTED;
+import static hamdam.bookee.APIs.role_request.State.DECLINED;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
@@ -47,9 +47,9 @@ public class RequestServiceImpl implements RequestService {
                 () -> new ResourceNotFoundException("Role", "role-name", requestRole.getRoleName()));
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
 
-        if (!permissionsSet.contains(USER)) {
+        if (!permissionsSet.contains(CREATE_ROLE_REQUEST)) {
             throw new UnsupportedUserOnRoleRequest();
-        } else if (role.getPermissions().contains(ADMIN)) {
+        } else if (role.getPermissions().contains(MONITOR_ROLE_REQUEST)) {
             throw new UnsupportedRequestedRoleName();
         }
         RequestEntity requestEntity = new RequestEntity(appUserEntity, role, State.IN_PROGRESS);
@@ -73,7 +73,7 @@ public class RequestServiceImpl implements RequestService {
         AppUserEntity appUserEntity = getUserByRequest(request);
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
         // change ADMIN permission -> MONITOR_ROLE_REQUEST
-        if (!permissionsSet.contains(ADMIN) && !responseList.isEmpty()) {
+        if (!permissionsSet.contains(MONITOR_ROLE_REQUEST) && !responseList.isEmpty()) {
             responseList = requestRepository.findAllByUser(appUserEntity);
         }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
@@ -97,7 +97,7 @@ public class RequestServiceImpl implements RequestService {
         AppUserEntity appUserEntity = getUserByRequest(request);
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
 
-        if (!permissionsSet.contains(ADMIN)) {
+        if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             throw new NoCorrespondingPermissionException("You have to get corresponding permission to access the method!");
         } else if (reviewState == null ||
                 (!reviewState.equals(ACCEPTED) &&
@@ -129,7 +129,7 @@ public class RequestServiceImpl implements RequestService {
 
         AppUserEntity appUserEntity = getUserByRequest(request);
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
-        if (permissionsSet.contains(ADMIN)) {
+        if (permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             requestRepository.deleteById(id);
         } else {
             if (roleRequestBelongUser(appUserEntity, requestEntity)){
@@ -150,7 +150,7 @@ public class RequestServiceImpl implements RequestService {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String token = authorizationHeader.substring("Bearer ".length());
-        DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
+        DecodedJWT decodedJWT = TokenUtils.decodeToken(token, true);
         String username = decodedJWT.getSubject();
 
         return userRepository.findAppUserByUserName(username).orElseThrow(

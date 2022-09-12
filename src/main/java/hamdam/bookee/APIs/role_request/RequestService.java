@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.roleRequest;
+package hamdam.bookee.APIs.role_request;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.roleRequest;
+package hamdam.bookee.APIs.role_request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hamdam.bookee.APIs.role.AppRoleEntity;
