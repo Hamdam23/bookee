@@ -1,6 +1,7 @@
 package hamdam.bookee.APIs.book;
 
 import hamdam.bookee.APIs.genre.GenreEntity;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,7 +29,12 @@ public class BookEntity {
     private String description;
 
     // TODO: 9/2/22 make author AppUser, not string
-    private String author;
+    @ManyToMany
+    @JoinTable(name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<AppUserEntity> authors = new ArrayList<>();
 
     // TODO: 9/2/22 it is better to make rating float/double
     private Double rating;

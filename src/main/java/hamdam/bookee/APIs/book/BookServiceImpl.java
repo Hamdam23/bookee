@@ -2,13 +2,14 @@ package hamdam.bookee.APIs.book;
 
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
-import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
-import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.APIs.user.AppUserEntity;
+import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,20 +23,25 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
+    private final AppUserRepository userRepository;
 
     @Override
-    public ResponseSettings addBook(BookDTO book) {
-        bookRepository.save(new BookEntity(book));
-        return new ResponseSettings(
-                HttpStatus.OK,
-                LocalDateTime.now(),
-                book.getName() + " book successfully saved!"
-        );
+    public BookEntity addBook(BookDTO book) {
+        BookEntity bookEntity = new BookEntity();
+        List<AppUserEntity> authors = new ArrayList<>();
+        book.getAuthors().forEach(aLong -> {
+            AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Author", "id", aLong));
+            authors.add(author);
+        });
+        bookEntity.setAuthors(authors);
+        bookEntity = bookRepository.save(new BookEntity(book));
+        return bookEntity;
     }
 
     @Override
-    public Page<BookEntity> getAllBooks(Pageable pageable) {
-        return bookRepository.findAll(pageable);
+    public Page<BookDTO> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable).map(BookDTO::new);
     }
 
     @Override
@@ -46,35 +52,32 @@ public class BookServiceImpl implements BookService {
 
     // TODO: 9/2/22 see todos in GenreServiceImpl:updateGenre
     @Override
-    public ResponseSettings updateBook(BookDTO book, Long id) {
+    public BookDTO updateBook(BookDTO bookDTO, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
-        BeanUtils.copyProperties(book, oldBook);
+        BeanUtils.copyProperties(bookDTO, oldBook, "id");
 
         List<GenreEntity> genreEntities = new ArrayList<>();
-        book.getGenres().forEach(aLong -> {
+        bookDTO.getGenres().forEach(aLong -> {
             GenreEntity genre = genreRepository.findById(id).orElseThrow(()
                     -> new ResourceNotFoundException("Genre", "id", aLong));
             genreEntities.add(genre);
         });
-
         oldBook.setGenres(genreEntities);
         bookRepository.save(oldBook);
 
-        return new ResponseSettings(
-                HttpStatus.OK,
-                LocalDateTime.now(),
-                "Book with id: " + id + " successfully updated!"
-        );
+        return bookDTO;
     }
 
     @Override
-    public ResponseSettings deleteBook(Long id) {
+    public ApiResponse deleteBook(Long id) {
         // TODO: 9/2/22 existsById is enough
-        bookRepository.existsById(id);
+        if (!bookRepository.existsById(id)){
+            throw new ResourceNotFoundException("Book", "id", id);
+        }
         bookRepository.deleteById(id);
 
-        return new ResponseSettings(
+        return new ApiResponse(
                 HttpStatus.NO_CONTENT,
                 LocalDateTime.now(),
                 "Book with id: " + id + " successfully deleted!"

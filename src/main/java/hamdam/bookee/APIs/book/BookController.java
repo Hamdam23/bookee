@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.tools.exeptions.ResponseSettings;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -18,19 +18,13 @@ public class BookController {
     private final BookServiceImpl bookService;
 
     @PostMapping
-    public ResponseEntity<ResponseSettings> addBook(@RequestBody BookDTO book) {
+    public BookEntity addBook(@RequestBody BookDTO book) {
         // TODO: 9/2/22 return full json response
-        return new ResponseEntity<>(bookService.addBook(book), HttpStatus.OK);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<ResponseSettings> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
-        // TODO: 9/2/22 return full json response
-        return new ResponseEntity<>(bookService.updateBook(newBook, id), HttpStatus.OK);
+        return bookService.addBook(book);
     }
 
     @GetMapping
-    public PagedResponse<BookEntity> getAllBooks(Pageable pageable) {
+    public PagedResponse<BookDTO> getAllBooks(Pageable pageable) {
         return new PagedResponse<>(bookService.getAllBooks(pageable));
     }
 
@@ -39,10 +33,16 @@ public class BookController {
         return bookService.getBookById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseSettings> deleteBook(@PathVariable Long id) {
+    @PatchMapping("/{id}")
+    public BookDTO updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
         // TODO: 9/2/22 return full json response
-        return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.OK);
+        return bookService.updateBook(newBook, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteBook(@PathVariable Long id) {
+        // TODO: 9/2/22 return full json response
+        return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.NO_CONTENT);
     }
 }
 
