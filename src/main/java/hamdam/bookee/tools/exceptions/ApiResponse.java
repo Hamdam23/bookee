@@ -1,4 +1,4 @@
-package hamdam.bookee.tools.exeptions;
+package hamdam.bookee.tools.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -13,22 +13,22 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseSettings {
+public class ApiResponse {
 
     private HttpStatus status;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
     private String message;
     private String details;
 
-    public ResponseSettings(ApiException apiException, String details) {
+    public ApiResponse(ApiException apiException, String details) {
         this.status = apiException.getStatus();
         this.message = apiException.getMessage();
         this.details = details;
         this.timestamp = LocalDateTime.now();
     }
 
-    public ResponseSettings(HttpStatus status,LocalDateTime timestamp, String message) {
+    public ApiResponse(HttpStatus status, LocalDateTime timestamp, String message) {
         this.status = status;
         this.timestamp = timestamp;
         this.message = message;

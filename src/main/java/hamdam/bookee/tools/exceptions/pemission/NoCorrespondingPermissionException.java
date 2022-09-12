@@ -1,6 +1,6 @@
-package hamdam.bookee.tools.exeptions.pemission;
+package hamdam.bookee.tools.exceptions.pemission;
 
-import hamdam.bookee.tools.exeptions.ApiException;
+import hamdam.bookee.tools.exceptions.ApiException;
 import org.springframework.http.HttpStatus;
 
 public class NoCorrespondingPermissionException extends ApiException {

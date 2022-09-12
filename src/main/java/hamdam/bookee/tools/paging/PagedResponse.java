@@ -8,13 +8,13 @@ import java.util.List;
 
 @Data
 public class PagedResponse<T> {
-    List<T> content;
-    @JsonProperty("pagination_settings")
-    PageableSettings paginationSettings;
+    private List<T> content;
+    @JsonProperty("pageable_settings")
+    private PageableSettings pageableSettings;
 
     public PagedResponse(Page<T> page) {
         this.content = page.getContent();
-        this.paginationSettings = new PageableSettings(page.getPageable().getPageNumber(),
+        this.pageableSettings = new PageableSettings(page.getPageable().getPageNumber(),
                 getNextPage(page),
                 getPrevPage(page),
                 page.getPageable().getPageSize(),

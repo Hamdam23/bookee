@@ -1,10 +1,8 @@
-package hamdam.bookee.tools.exeptions;
+package hamdam.bookee.tools.exceptions;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.OK)
 @Getter
 public class ResourceNotFoundException extends ApiException {
 

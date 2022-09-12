@@ -1,6 +1,6 @@
-package hamdam.bookee.tools.exeptions.role;
+package hamdam.bookee.tools.exceptions.role;
 
-import hamdam.bookee.tools.exeptions.ApiException;
+import hamdam.bookee.tools.exceptions.ApiException;
 import org.springframework.http.HttpStatus;
 
 public class DuplicateRoleNameException extends ApiException {

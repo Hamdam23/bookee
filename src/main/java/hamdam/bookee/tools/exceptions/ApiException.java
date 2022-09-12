@@ -1,4 +1,4 @@
-package hamdam.bookee.tools.exeptions;
+package hamdam.bookee.tools.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,5 @@ import org.springframework.http.HttpStatus;
 public class ApiException extends RuntimeException {
 
     private HttpStatus status;
-    // TODO: 9/2/22 do you really need JsonFormat here, why?
-    //  No I do not need it.
     private String message;
 }

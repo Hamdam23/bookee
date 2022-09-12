@@ -1,4 +1,4 @@
-package hamdam.bookee.tools.exeptions;
+package hamdam.bookee.tools.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,25 +11,23 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // TODO: 9/2/22 method name is not clear, what is it for?
-    //  Handling INTERNAL_SERVER_ERROR
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseSettings> handleInternalServerError(Exception exception) {
-        ResponseSettings responseSettings = new ResponseSettings(
+    public ResponseEntity<ApiResponse> handleUnknownException(Exception exception) {
+        ApiResponse apiResponse = new ApiResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now(),
                 "Unknown error",
                 exception.getMessage()
         );
-        return new ResponseEntity<>(responseSettings, responseSettings.getStatus());
+        return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ResponseSettings> handleApiException(
+    public ResponseEntity<ApiResponse> handleApiException(
             ApiException exception,
             WebRequest webRequest
     ) {
-        ResponseSettings responseSettings = new ResponseSettings(exception, webRequest.getDescription(false));
-        return new ResponseEntity<>(responseSettings, responseSettings.getStatus());
+        ApiResponse apiResponse = new ApiResponse(exception, webRequest.getDescription(false));
+        return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }
 }

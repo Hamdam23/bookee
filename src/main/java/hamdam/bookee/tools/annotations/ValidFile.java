@@ -12,8 +12,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({PARAMETER})
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = MyEmptyFileValidator.class)
-public @interface MyValidFile {
+@Constraint(validatedBy = EmptyFileValidator.class)
+public @interface ValidFile {
 
     String message() default "{Uploading files other than {jpg, jpeg, png} prohibited!}";
 
