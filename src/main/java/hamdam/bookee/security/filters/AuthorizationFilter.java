@@ -1,4 +1,4 @@
-package hamdam.bookee.security.filter;
+package hamdam.bookee.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.Permissions;
@@ -22,43 +22,41 @@ import java.util.*;
 
 import static hamdam.bookee.tools.constants.Endpoints.*;
 import static hamdam.bookee.tools.token.TokenChecker.checkHeader;
-import static hamdam.bookee.tools.token.TokenProvider.getUsernameFromToken;
+import static hamdam.bookee.tools.token.TokenUtils.getUsernameFromToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
-// TODO: 9/2/22 it is better not to use Custom prefix for naming, name must describe logic/implementation of filtering process
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
-    // TODO: 9/2/22 user service, not repository
     private final AppUserService appUserService;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         return path.equals(API_REGISTER) ||
                 path.equals(API_LOGIN) ||
                 path.equals(API_TOKEN_REFRESH);
     }
 
-    // TODO: 9/2/22 line length is too long, split it
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws IOException {
+
         String header = request.getHeader(AUTHORIZATION);
         checkHeader(header);
         try {
-//            String token = header.substring("Bearer ".length());
-//            DecodedJWT decodedJWT = TokenProvider.decodeToken(token, true);
             String username = getUsernameFromToken(header);
             AppUserEntity user = appUserService.getUserByUsername(username);
-            // TODO: 9/2/22 handle get() call
             Set<Permissions> permissions = user.getRole().getPermissions();
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            // TODO use mapper for authorities&permission
             permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.name())));
+
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(username, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);

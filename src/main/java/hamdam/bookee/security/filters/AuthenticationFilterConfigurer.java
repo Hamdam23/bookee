@@ -1,4 +1,4 @@
-package hamdam.bookee.security.filter;
+package hamdam.bookee.security.filters;
 
 import hamdam.bookee.APIs.user.AppUserRepository;
 import org.springframework.security.authentication.AuthenticationManager;

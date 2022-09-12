@@ -1,4 +1,4 @@
-package hamdam.bookee.security;
+package hamdam.bookee.security.handlers;
 
 import hamdam.bookee.APIs.user.AppUserService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-// TODO: 9/2/22 AuthenticationEntryPoint must be moved to security related package
 @Component
 @RequiredArgsConstructor
 public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint {
