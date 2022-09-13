@@ -3,9 +3,9 @@ package hamdam.bookee.tools.exceptions.pemission;
 import hamdam.bookee.tools.exceptions.ApiException;
 import org.springframework.http.HttpStatus;
 
-public class NoCorrespondingPermissionException extends ApiException {
+public class LimitedPermissionException extends ApiException {
 
-    public NoCorrespondingPermissionException(String message){
+    public LimitedPermissionException(String message){
         super(HttpStatus.FORBIDDEN, message);
     }
 }

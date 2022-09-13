@@ -43,6 +43,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     ) throws IOException {
         UserDetails user = (UserDetails) authResult.getPrincipal();
         TokensResponse tokensResponse = TokenUtils.getTokenResponse(user.getUsername(), userRepository);
-        TokenUtils.displayToken(tokensResponse, response);
+        TokenUtils.presentToken(tokensResponse, response);
     }
 }

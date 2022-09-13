@@ -6,11 +6,11 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.tools.exceptions.pemission.NoCorrespondingPermissionException;
+import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
-import hamdam.bookee.tools.exceptions.roleRequest.UnsupportedStateValueException;
-import hamdam.bookee.tools.exceptions.roleRequest.UnsupportedRequestedRoleName;
-import hamdam.bookee.tools.exceptions.roleRequest.UnsupportedUserOnRoleRequest;
+import hamdam.bookee.tools.exceptions.roleRequest.IncorrectStateValueException;
+import hamdam.bookee.tools.exceptions.roleRequest.IncorrectRequestedRoleName;
+import hamdam.bookee.tools.exceptions.roleRequest.IncorrectUserOnRoleRequest;
 import hamdam.bookee.tools.token.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,9 +48,9 @@ public class RequestServiceImpl implements RequestService {
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
 
         if (!permissionsSet.contains(CREATE_ROLE_REQUEST)) {
-            throw new UnsupportedUserOnRoleRequest();
+            throw new IncorrectUserOnRoleRequest();
         } else if (role.getPermissions().contains(MONITOR_ROLE_REQUEST)) {
-            throw new UnsupportedRequestedRoleName();
+            throw new IncorrectRequestedRoleName();
         }
         RequestEntity requestEntity = new RequestEntity(appUserEntity, role, State.IN_PROGRESS);
         requestRepository.save(requestEntity);
@@ -98,12 +98,12 @@ public class RequestServiceImpl implements RequestService {
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
 
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
-            throw new NoCorrespondingPermissionException("You have to get corresponding permission to access the method!");
+            throw new LimitedPermissionException("You have to get corresponding permission to access the method!");
         } else if (reviewState == null ||
                 (!reviewState.equals(ACCEPTED) &&
                         !reviewState.equals(DECLINED))
         ) {
-            throw new UnsupportedStateValueException("state can be either ACCEPTED or DECLINED");
+            throw new IncorrectStateValueException("State can be either ACCEPTED or DECLINED");
         }
 
         AppUserEntity user = requestEntity.getUser();
@@ -135,7 +135,7 @@ public class RequestServiceImpl implements RequestService {
             if (roleRequestBelongUser(appUserEntity, requestEntity)){
                 requestRepository.deleteById(id);
             } else {
-                throw new NoCorrespondingPermissionException("You do not have permission to delete role request does not belong to you!");
+                throw new LimitedPermissionException("You do not have permission to delete role request does not belong to you!");
             }
         }
 

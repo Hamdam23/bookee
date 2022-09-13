@@ -9,17 +9,27 @@ import java.util.List;
 @Data
 public class PagedResponse<T> {
     private List<T> content;
-    @JsonProperty("pageable_settings")
-    private PageableSettings pageableSettings;
+    @JsonProperty("page_number")
+    private Integer pageNumber;
+    @JsonProperty("next_page")
+    private Integer nextPage;
+    @JsonProperty("previous_page")
+    private Integer previousPage;
+    @JsonProperty("page_size")
+    private Integer pageSize;
+    @JsonProperty("total_pages")
+    private Integer totalPages;
+    @JsonProperty("total_elements")
+    private Long totalElements;
 
     public PagedResponse(Page<T> page) {
         this.content = page.getContent();
-        this.pageableSettings = new PageableSettings(page.getPageable().getPageNumber(),
-                getNextPage(page),
-                getPrevPage(page),
-                page.getPageable().getPageSize(),
-                page.getTotalPages(),
-                page.getTotalElements());
+        this.pageNumber = page.getPageable().getPageNumber();
+        this.nextPage = getNextPage(page);
+        this.previousPage = getPrevPage(page);
+        this.pageSize = page.getPageable().getPageSize();
+        this.totalPages = page.getTotalPages();
+        this.totalElements = page.getTotalElements();
     }
 
     private Integer getNextPage(Page<T> page) {

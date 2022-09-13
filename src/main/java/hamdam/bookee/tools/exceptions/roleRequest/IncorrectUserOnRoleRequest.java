@@ -4,11 +4,11 @@ import hamdam.bookee.tools.exceptions.ApiException;
 import org.springframework.http.HttpStatus;
 
 // TODO: 9/2/22 naming: InvalidRequestedRoleException vs InvalidRoleRequestException
-public class UnsupportedRequestedRoleName extends ApiException {
-    public UnsupportedRequestedRoleName() {
+public class IncorrectUserOnRoleRequest extends ApiException {
+    public IncorrectUserOnRoleRequest(){
         super(
                 HttpStatus.BAD_REQUEST,
-                "Requested role only applies for [author] role"
+                "Role request only applies for [user] role"
         );
     }
 }

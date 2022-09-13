@@ -22,8 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import static hamdam.bookee.tools.constants.ConstantFields.ROLE;
-
 public class TokenUtils {
 
     // TODO: 9/2/22 get secret from environment variable
@@ -85,7 +83,7 @@ public class TokenUtils {
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
-                .withClaim(ROLE, role.getRoleName())
+                .withClaim("role", role.getRoleName())
                 .sign(ACCESS_ALGORITHM);
     }
 
@@ -94,12 +92,15 @@ public class TokenUtils {
         return JWT.create()
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3600000 * 24 * 20))
-                .withClaim(ROLE, role.getRoleName())
+                .withClaim("role", role.getRoleName())
                 .sign(REFRESH_ALGORITHM);
     }
 
     // TODO: 9/2/22 needs better name
-    public static void displayToken(TokensResponse tokensResponse, HttpServletResponse response) throws IOException {
+    public static void presentToken(
+            TokensResponse tokensResponse,
+            HttpServletResponse response
+    ) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         Map<String, Object> data = new ObjectMapper().convertValue(tokensResponse,
                 new TypeReference<>() {

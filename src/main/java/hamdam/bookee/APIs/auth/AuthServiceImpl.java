@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
             UserDetails user = appUserServiceImpl.loadUserByUsername(getUsernameFromToken(header));
 
             TokensResponse accessTokenResponse = TokenUtils.getAccessTokenResponse(user.getUsername(), userRepository);
-            TokenUtils.displayToken(accessTokenResponse, response);
+            TokenUtils.presentToken(accessTokenResponse, response);
         } catch (Exception exception) {
             response.setHeader("error", exception.getMessage());
             response.setStatus(FORBIDDEN.value());
