@@ -5,9 +5,16 @@ import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
+import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +23,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
+import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -44,50 +55,60 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public AppUserEntity getUserByUsername(String username) {
-        return userRepository.findAppUserByUserName(username).orElseThrow(()
-                // TODO: 9/2/22 custom exception
-                -> new ResourceNotFoundException("User", "username", username)
+    public Page<AppUserResponseDTO> getAllUsers(@PageableDefault Pageable pageable) {
+        return userRepository.findAllByOrderByTimeStampDesc(pageable).map(AppUserResponseDTO::new);
+    }
+
+    @Override
+    public AppUserResponseDTO getUserById(Long id) {
+        // TODO: 9/2/22 custom exception
+        return new AppUserResponseDTO(userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id))
         );
     }
 
     @Override
-    public List<AppUserEntity> getAllUsers() {
-        return userRepository.findAllByOrderByTimeStampDesc();
-    }
-
-    @Override
-    public AppUserEntity updateUser(AppUserDTO newUser, long id) {
+    public AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id, HttpServletRequest request) {
         // TODO: 9/2/22 code duplication
-        AppUserEntity user = getAppUserById(id);
-        user.setName(newUser.getName());
-        return user;
-    }
+        AppUserEntity requestedUser = getAppUserById(id);
+        AppUserEntity currentUser = getUserByRequest(request, userRepository);
 
-    @Override
-    public void deleteUser(long id) {
-        // TODO: 9/2/22 searching for image or user? imageRepository? why?
-        userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User", "id", id)
-        );
-        userRepository.deleteById(id);
+        if (currentUser.getRole().getPermissions().contains(MONITOR_USER) && newUser.getRoleId() != null) {
+            requestedUser.setRole(roleRepository.findById(newUser.getRoleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Role", "id", newUser.getRoleId()))
+            );
+        }
+
+        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
+            requestedUser.setUserImagEntity(imageRepository.findById(newUser.getImageId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id))
+            );
+
+            requestedUser.setName(newUser.getName());
+            requestedUser.setUserName(newUser.getUserName());
+
+            return new AppUserResponseDTO(userRepository.save(requestedUser));
+        } else {
+            throw new LimitedPermissionException();
+        }
+
     }
 
     @Override
     @Transactional
-    public void setImageToUser(long id, UserImageDTO imageDTO) {
+    public AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO) {
         ImagEntity imagEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                 -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
         );
         // TODO: 9/2/22 code duplication
         AppUserEntity user = getAppUserById(id);
         user.setUserImagEntity(imagEntity);
-        userRepository.save(user);
+        return new AppUserResponseDTO(userRepository.save(user));
     }
 
     @Override
     @Transactional
-    public AppUserEntity setRoleToUser(long id, AppUserRoleDTO roleDTO) {
+    public AppUserResponseDTO setRoleToUser(Long id, AppUserRoleIdDTO roleDTO) {
         AppUserEntity user = userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", id)
         );
@@ -96,7 +117,28 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         );
         user.setRole(appRoleEntity);
         // TODO: 9/2/22 you can return value from repository method call
-        return userRepository.save(user);
+        return new AppUserResponseDTO(userRepository.save(user));
+    }
+
+    @Override
+    public ApiResponse deleteUser(Long id, HttpServletRequest request) {
+        // TODO: 9/2/22 searching for image or user? imageRepository? why?
+        AppUserEntity currentUser = getUserByRequest(request, userRepository);
+
+        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
+            userRepository.findById(id).orElseThrow(()
+                    -> new ResourceNotFoundException("User", "id", id)
+            );
+            userRepository.deleteById(id);
+
+            return new ApiResponse(
+                    HttpStatus.NO_CONTENT,
+                    LocalDateTime.now(),
+                    "User with id: " + id + " successfully deleted!"
+            );
+        } else {
+            throw new LimitedPermissionException();
+        }
     }
 
     // TODO: 9/2/22 needs rename (and maybe some docs)
@@ -105,10 +147,15 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         return userRepository.existsByUserName(username);
     }
 
-    private AppUserEntity getAppUserById(Long id){
-        return userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User", "id", id)
-        );
+    @Override
+    public AppUserEntity getUserByUsername(String username) {
+        return userRepository.findAppUserByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    }
+
+    private AppUserEntity getAppUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
 
 }

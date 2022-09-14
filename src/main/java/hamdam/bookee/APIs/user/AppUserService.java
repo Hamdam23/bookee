@@ -1,25 +1,31 @@
 package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.image.UserImageDTO;
+import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
+import hamdam.bookee.tools.exceptions.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 public interface AppUserService {
-    AppUserEntity getUserByUsername(String userName);
+    Page<AppUserResponseDTO> getAllUsers(Pageable pageable);
 
-    List<AppUserEntity> getAllUsers();
+    AppUserResponseDTO getUserById(Long id);
 
     // TODO: 9/2/22 don't use entity as update request argument
     //  fvck u
-    AppUserEntity updateUser(AppUserDTO newUser, long id);
-
-    void deleteUser(long id);
+    AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id, HttpServletRequest request);
 
     // TODO: 9/2/22 why void, must return updated AppUser object
-    void setImageToUser(long id, UserImageDTO imageDTO);
+    AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO);
 
-    AppUserEntity setRoleToUser(long id, AppUserRoleDTO appUserRoleDTO);
+    AppUserResponseDTO setRoleToUser(Long id, AppUserRoleIdDTO appUserRoleIdDTO);
+
+    ApiResponse deleteUser(Long id, HttpServletRequest request);
 
     // TODO: 9/2/22 rename (!)
     boolean isPasswordInvalid(String username);
+
+    AppUserEntity getUserByUsername(String username);
 }
