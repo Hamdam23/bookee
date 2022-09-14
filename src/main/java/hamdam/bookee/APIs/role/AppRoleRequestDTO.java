@@ -10,7 +10,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppRoleDTO {
+public class AppRoleRequestDTO {
     // TODO: 9/2/22 name & json
     @JsonProperty("role_name")
     private String roleName;

@@ -14,7 +14,7 @@ public class AppRoleController {
     private final AppRoleService appRoleService;
 
     @PostMapping
-    public AppRoleEntity postRole(@RequestBody AppRoleDTO appRole) {
+    public AppRoleEntity postRole(@RequestBody AppRoleRequestDTO appRole) {
         return appRoleService.addRole(appRole);
     }
 

@@ -24,6 +24,7 @@ import java.util.Set;
 import static hamdam.bookee.APIs.role.Permissions.*;
 import static hamdam.bookee.APIs.role_request.State.ACCEPTED;
 import static hamdam.bookee.APIs.role_request.State.DECLINED;
+import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
@@ -42,7 +43,7 @@ public class RequestServiceImpl implements RequestService {
         // TODO: 9/2/22 why using setters? use them as constructor arguments
         //  Done
 
-        AppUserEntity appUserEntity = getUserByRequest(request);
+        AppUserEntity appUserEntity = getUserByRequest(request, userRepository);
         AppRoleEntity role = roleRepository.findByRoleName(requestRole.getRoleName()).orElseThrow(
                 () -> new ResourceNotFoundException("Role", "role-name", requestRole.getRoleName()));
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
@@ -70,7 +71,7 @@ public class RequestServiceImpl implements RequestService {
             responseList = requestRepository.findAllByState(reviewState);
         }
 
-        AppUserEntity appUserEntity = getUserByRequest(request);
+        AppUserEntity appUserEntity = getUserByRequest(request, userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
         // change ADMIN permission -> MONITOR_ROLE_REQUEST
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST) && !responseList.isEmpty()) {
@@ -94,11 +95,11 @@ public class RequestServiceImpl implements RequestService {
         RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
-        AppUserEntity appUserEntity = getUserByRequest(request);
+        AppUserEntity appUserEntity = getUserByRequest(request, userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
 
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
-            throw new LimitedPermissionException("You have to get corresponding permission to access the method!");
+            throw new LimitedPermissionException();
         } else if (reviewState == null ||
                 (!reviewState.equals(ACCEPTED) &&
                         !reviewState.equals(DECLINED))
@@ -127,7 +128,7 @@ public class RequestServiceImpl implements RequestService {
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
 
-        AppUserEntity appUserEntity = getUserByRequest(request);
+        AppUserEntity appUserEntity = getUserByRequest(request, userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
         if (permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             requestRepository.deleteById(id);
@@ -135,7 +136,7 @@ public class RequestServiceImpl implements RequestService {
             if (roleRequestBelongUser(appUserEntity, requestEntity)){
                 requestRepository.deleteById(id);
             } else {
-                throw new LimitedPermissionException("You do not have permission to delete role request does not belong to you!");
+                throw new LimitedPermissionException();
             }
         }
 
@@ -146,16 +147,16 @@ public class RequestServiceImpl implements RequestService {
         return Objects.equals(requestEntity.getUser().getId(), user.getId());
     }
 
-    public AppUserEntity getUserByRequest(HttpServletRequest request) {
-
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        String token = authorizationHeader.substring("Bearer ".length());
-        DecodedJWT decodedJWT = TokenUtils.decodeToken(token, true);
-        String username = decodedJWT.getSubject();
-
-        return userRepository.findAppUserByUserName(username).orElseThrow(
-                () -> new ResourceNotFoundException("User", "username", username));
-    }
+//    public AppUserEntity getUserByRequest(HttpServletRequest request) {
+//
+//        String authorizationHeader = request.getHeader(AUTHORIZATION);
+//        String token = authorizationHeader.substring("Bearer ".length());
+//        DecodedJWT decodedJWT = TokenUtils.decodeToken(token, true);
+//        String username = decodedJWT.getSubject();
+//
+//        return userRepository.findAppUserByUserName(username).orElseThrow(
+//                () -> new ResourceNotFoundException("User", "username", username));
+//    }
 
     public Set<Permissions> getUserPermissions(AppUserEntity user) {
         return user.getRole().getPermissions();

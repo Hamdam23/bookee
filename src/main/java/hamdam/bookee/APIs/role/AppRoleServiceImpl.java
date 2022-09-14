@@ -12,7 +12,7 @@ public class AppRoleServiceImpl implements AppRoleService {
     private final AppRoleRepository appRoleRepository;
 
     @Override
-    public AppRoleEntity addRole(AppRoleDTO appRole) {
+    public AppRoleEntity addRole(AppRoleRequestDTO appRole) {
         // TODO: 9/2/22 check if role name is unique
         if (isDuplicateRoleName(appRole.getRoleName())) {
             throw new DuplicateRoleNameException("Duplicate role name detected!");

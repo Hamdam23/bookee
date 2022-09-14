@@ -36,7 +36,7 @@ public class AppRoleEntity {
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
 
-    public AppRoleEntity(AppRoleDTO dto) {
+    public AppRoleEntity(AppRoleRequestDTO dto) {
         this.roleName = dto.getRoleName();
         this.permissions = dto.getPermissions();
         this.isDefault = dto.isDefault();

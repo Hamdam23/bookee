@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class ImagEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     // TODO: 9/2/22 name & json
     @JsonProperty("image_name")
