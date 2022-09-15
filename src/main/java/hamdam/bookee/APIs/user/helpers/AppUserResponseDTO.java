@@ -1,7 +1,6 @@
-package hamdam.bookee.APIs.user;
+package hamdam.bookee.APIs.user.helpers;
 
-import hamdam.bookee.APIs.user.helpers.AppUserImageDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserRoleDTO;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;

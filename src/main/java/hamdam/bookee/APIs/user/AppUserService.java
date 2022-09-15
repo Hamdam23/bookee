@@ -1,6 +1,8 @@
 package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.image.UserImageDTO;
+import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
+import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.data.domain.Page;

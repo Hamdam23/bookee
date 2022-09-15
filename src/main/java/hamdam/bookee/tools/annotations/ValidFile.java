@@ -12,12 +12,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({PARAMETER})
 @Retention(RUNTIME)
 @Documented
-//@Constraint(validatedBy = EmptyFileValidator.class)
+@Constraint(validatedBy = EmptyFileValidator.class)
 public @interface ValidFile {
 
-//    String message() default "{Uploading files other than {jpg, jpeg, png} prohibited!}";
-//
-//    Class<?>[] groups() default {};
-//
-//    Class<? extends Payload>[] payload() default {};
+    String message() default "{Uploading files other than {jpg, jpeg, png} prohibited!}";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 }

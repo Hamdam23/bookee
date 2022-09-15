@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.user;
+package hamdam.bookee.APIs.user.helpers;
 
 import lombok.Getter;
 import lombok.Setter;
