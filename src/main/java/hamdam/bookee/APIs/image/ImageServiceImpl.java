@@ -29,7 +29,8 @@ public class ImageServiceImpl implements ImageService {
         } else {
             fileNameWithoutExt = fileNameWithoutExt.replace(" ", "-");
         }
-        //check for null and empty
+        //TODO check for null and empty
+        // isn't it get handled by custom ValidFile annotation?
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         String name = fileNameWithoutExt + "-" + new Date().getTime() + "." + extension;
         String location = fileSystemRepository.writeFile(file.getBytes(), name);
@@ -41,7 +42,7 @@ public class ImageServiceImpl implements ImageService {
     public FileSystemResource downloadImage(String name) {
         ImagEntity imagEntity = imageRepository.findByImageName(name).orElseThrow(()
                 // TODO: 9/2/22 custom exception
-                -> new RuntimeException("Image with name: " + name + " not found")
+                -> new ResourceNotFoundException("Image", "name", name)
         );
         return fileSystemRepository.readFile(imagEntity.getLocation());
     }

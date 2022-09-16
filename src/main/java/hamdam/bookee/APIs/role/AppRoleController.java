@@ -33,7 +33,7 @@ public class AppRoleController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<ApiResponse> deleteRoleById(@PathVariable Long id, HttpServletRequest request) {
-        return new ResponseEntity<>(appRoleService.deleteRoleById(id, request), HttpStatus.NO_CONTENT);
+    public ResponseEntity<ApiResponse> deleteRoleById(@PathVariable Long id) {
+        return new ResponseEntity<>(appRoleService.deleteRoleById(id), HttpStatus.NO_CONTENT);
     }
 }

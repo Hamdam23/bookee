@@ -1,10 +1,11 @@
 package hamdam.bookee.APIs.role_request;
 
+import hamdam.bookee.APIs.role_request.helpers.ReviewStateDTO;
+import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static hamdam.bookee.tools.constants.Endpoints.API_ROLE_REQUEST;
@@ -17,27 +18,25 @@ public class RequestController {
     private final RequestService requestService;
 
     @PostMapping
-    public ResponseEntity<RoleRequestResponse> sendRoleRequest(@RequestBody RequestRole requestRole, HttpServletRequest request) {
-        return ResponseEntity.ok().body(requestService.postRoleRequest(requestRole, request));
+    public ResponseEntity<RoleRequestResponse> sendRoleRequest(@RequestBody RoleRequestDTO roleRequestDTO) {
+        return ResponseEntity.ok().body(requestService.postRoleRequest(roleRequestDTO));
     }
 
     // TODO: 9/2/22 why ReviewState, for filtering purposes it is better to use request params
     @GetMapping
-    public List<RoleRequestResponse> getAllRoleRequests(@RequestParam(required = false) State reviewState,
-                                                        HttpServletRequest request) {
-        return requestService.getAllRoleRequests(reviewState, request);
+    public List<RoleRequestResponse> getAllRoleRequests(@RequestParam(required = false) State reviewState) {
+        return requestService.getAllRoleRequests(reviewState);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<RoleRequestResponse> reviewRequest(@PathVariable Long id,
-                                                             @RequestParam State reviewState,
-                                                             HttpServletRequest request) {
-        return ResponseEntity.ok().body(requestService.reviewRequest(id, reviewState, request));
+                                                             @RequestBody ReviewStateDTO reviewState) {
+        return ResponseEntity.ok().body(requestService.reviewRequest(id, reviewState));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteRequest(@PathVariable Long id, HttpServletRequest request){
-        requestService.deleteRequest(id, request);
+    public ResponseEntity<String> deleteRequest(@PathVariable Long id){
+        requestService.deleteRequest(id);
         // TODO: 9/2/22 return full json response, not plain text
         return ResponseEntity.ok().body("Role Request with id: [" + id + "] is successfully deleted.");
     }

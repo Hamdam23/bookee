@@ -48,7 +48,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     ) throws IOException {
 
         String header = request.getHeader(AUTHORIZATION);
-        checkHeader(header);
+        checkHeader(header, true);
         try {
             String username = getUsernameFromToken(header);
             AppUserEntity user = appUserService.getUserByUsername(username);
@@ -67,7 +67,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             Map<String, String> error = new HashMap<>();
             error.put("message", exception.getMessage());
             response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-//            new ObjectMapper().writeValue(response.getOutputStream(), error);
+            new ObjectMapper().writeValue(response.getOutputStream(), error);
         }
     }
 }

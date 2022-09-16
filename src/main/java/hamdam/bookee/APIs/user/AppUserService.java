@@ -17,14 +17,14 @@ public interface AppUserService {
 
     // TODO: 9/2/22 don't use entity as update request argument
     //  fvck u
-    AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id, HttpServletRequest request);
+    AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id);
 
     // TODO: 9/2/22 why void, must return updated AppUser object
     AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO);
 
     AppUserResponseDTO setRoleToUser(Long id, AppUserRoleIdDTO appUserRoleIdDTO);
 
-    ApiResponse deleteUser(Long id, HttpServletRequest request);
+    ApiResponse deleteUser(Long id);
 
     // TODO: 9/2/22 rename (!)
     boolean isPasswordInvalid(String username);

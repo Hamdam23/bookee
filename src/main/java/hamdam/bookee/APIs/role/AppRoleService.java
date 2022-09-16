@@ -14,5 +14,5 @@ public interface AppRoleService {
 
     Page<AppRoleResponseDTO> getAllRoles(Pageable pageable);
 
-    ApiResponse deleteRoleById(Long id, HttpServletRequest request);
+    ApiResponse deleteRoleById(Long id);
 }

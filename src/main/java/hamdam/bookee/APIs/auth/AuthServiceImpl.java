@@ -6,13 +6,19 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserServiceImpl;
+import hamdam.bookee.tools.exceptions.role.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.role.NoDefaultRoleException;
 import hamdam.bookee.tools.token.TokenUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static hamdam.bookee.tools.token.TokenChecker.checkHeader;
+import static hamdam.bookee.tools.token.TokenUtils.getTokenResponse;
 import static hamdam.bookee.tools.token.TokenUtils.getUsernameFromToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -38,8 +45,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     // TODO: 9/2/22 naming: userDTO
-    public AppUserEntity registerUser(RegistrationRequest request) {
+    public TokensResponse registerUser(RegistrationRequest request) {
         // TODO: 9/2/22 set encoded password to AppUser, not to RegistrationRequest
+        if (userRepository.existsByUserName(request.getUsername())) {
+            throw new DuplicateResourceException("username");
+        }
         AppUserEntity appUserEntity = new AppUserEntity(request);
         appUserEntity.setPassword(passwordEncoder.encode(request.getPassword()));
         AppRoleEntity role = roleRepository.findFirstByIsDefault(true).orElseThrow(
@@ -48,14 +58,16 @@ public class AuthServiceImpl implements AuthService {
         );
         appUserEntity.setRole(role);
         // TODO: 9/2/22 you can return value which is being returned by repository method
-        return userRepository.save(appUserEntity);
+        userRepository.save(appUserEntity);
+
+        return getTokenResponse(request.getUsername(), userRepository);
     }
 
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String header = request.getHeader(AUTHORIZATION);
         // TODO: 9/2/22 code duplication: CustomAuthorizationFilter:doFilterInternal
-        checkHeader(header);
+        checkHeader(header, false);
 
         try {
 //            String refresh_token = header.substring("Bearer ".length());

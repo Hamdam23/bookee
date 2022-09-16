@@ -48,8 +48,8 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_GENRE + "/**").hasAuthority(Permissions.DELETE_GENRE.name());
 
         // TODO test get and get + "/**"
-        http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER + "/**").hasAuthority(Permissions.GET_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER).hasAuthority(Permissions.MONITOR_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER + "/**").hasAuthority(Permissions.GET_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + "/**").hasAuthority(Permissions.UPDATE_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + API_SET_ROLE_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());

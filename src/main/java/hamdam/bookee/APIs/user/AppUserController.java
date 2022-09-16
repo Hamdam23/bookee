@@ -39,8 +39,8 @@ public class AppUserController {
 
     // TODO: 9/2/22 use DTO for request body
     @PatchMapping("/{id}")
-    public AppUserResponseDTO updateUser(@RequestBody AppUserRequestDTO user, @PathVariable Long id, HttpServletRequest request) {
-        return userService.updateUser(user, id, request);
+    public AppUserResponseDTO updateUser(@RequestBody AppUserRequestDTO user, @PathVariable Long id) {
+        return userService.updateUser(user, id);
     }
 
     // TODO {userId} should be replaced with {id}
@@ -57,9 +57,9 @@ public class AppUserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {
 
         // TODO: 9/2/22 return full json response
-        return new ResponseEntity<>(userService.deleteUser(id, request), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.NO_CONTENT);
     }
 }

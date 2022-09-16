@@ -12,7 +12,6 @@
 15. add not null, unique, size, not blank etc. in all entities and DTOs
 16. implement password-change logic
 17. handle: if pageable size is more than totalElements it just gives empty list | implement NoContentForPageSize exception
-18. getAllGenres - response: without books | getGenreById - response: with books
 19. user 'id' property everywhere instead of name or username or something-name
 20. problem: can not insert data  on the table 'book_author' table
 21. use Mapper classes for each package! if required, create separate DTOs for request and response
@@ -22,7 +21,6 @@
 25. set-image-to-user should be considered
 26. valid file ni extentions listini dinamik atish
 27. use constants class for every package
-28. best-practice for package naming
 29. DuplicateRoleNameException use for Register & rename
 30. get rid of static message on UnsupportedUserOnRoleRequest class | use permission or role-name
 31. paging naming
@@ -35,3 +33,7 @@
 -8. handle Optional.get() warnings
 -9. don't use @Data lombok annotation in entities
 -11. If role of user in the project (AppRole) is implemented as dynamic, use it as dynamic everywhere
+-* 18. getAllGenres - response: without books | getGenreById - response: with books
+- 28. best-practice for package naming
+    -> https://stackoverflow.com/questions/49890803/naming-conventions-of-composed-package-names
+    -> https://stackoverflow.com/questions/3179216/what-is-the-convention-for-word-separator-in-java-package-names

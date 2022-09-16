@@ -25,7 +25,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,10 +70,10 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id, HttpServletRequest request) {
+    public AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id) {
         // TODO: 9/2/22 code duplication
         AppUserEntity requestedUser = getAppUserById(id);
-        AppUserEntity currentUser = getUserByRequest(request, userRepository);
+        AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getRole().getPermissions().contains(MONITOR_USER) && newUser.getRoleId() != null) {
             requestedUser.setRole(roleRepository.findById(newUser.getRoleId())
@@ -124,9 +123,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    public ApiResponse deleteUser(Long id, HttpServletRequest request) {
+    public ApiResponse deleteUser(Long id) {
         // TODO: 9/2/22 searching for image or user? imageRepository? why?
-        AppUserEntity currentUser = getUserByRequest(request, userRepository);
+        AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
             userRepository.findById(id).orElseThrow(()

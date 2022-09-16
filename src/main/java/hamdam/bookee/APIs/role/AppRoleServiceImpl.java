@@ -7,14 +7,13 @@ import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
-import hamdam.bookee.tools.exceptions.role.DuplicateRoleNameException;
+import hamdam.bookee.tools.exceptions.role.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class AppRoleServiceImpl implements AppRoleService {
 
         // TODO: 9/2/22 check if role name is unique
         if (isDuplicateRoleName(appRole.getRoleName())) {
-            throw new DuplicateRoleNameException("Duplicate role name detected!");
+            throw new DuplicateResourceException("role name");
         }
         AppRoleEntity roleEntity = new AppRoleEntity(appRole);
 
@@ -46,9 +45,9 @@ public class AppRoleServiceImpl implements AppRoleService {
     }
 
     @Override
-    public ApiResponse deleteRoleById(Long id, HttpServletRequest request) {
+    public ApiResponse deleteRoleById(Long id) {
 
-        AppUserEntity currentUser = getUserByRequest(request, userRepository);
+        AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_ROLE)) {
             roleRepository.findById(id).orElseThrow(()

@@ -19,6 +19,7 @@ public class RoleRequestResponse {
     private String requestedRole;
     private LocalDateTime timeStamp;
     private State state;
+    private String description;
 
     public RoleRequestResponse(RequestEntity entity, String requestedRole){
         this.name = entity.getUser().getName();
@@ -26,14 +27,6 @@ public class RoleRequestResponse {
         this.userRole = entity.getUser().getRole().getRoleName();
         this.userImagEntity = entity.getUser().getUserImagEntity();
         this.requestedRole = requestedRole;
-        BeanUtils.copyProperties(entity, this);
-    }
-
-    public RoleRequestResponse(RequestEntity entity){
-        this.name = entity.getUser().getName();
-        this.userName = entity.getUser().getUserName();
-        this.userRole = entity.getUser().getRole().getRoleName();
-        this.userImagEntity = entity.getUser().getUserImagEntity();
         BeanUtils.copyProperties(entity, this);
     }
 }

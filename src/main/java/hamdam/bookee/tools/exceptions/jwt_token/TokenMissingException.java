@@ -5,9 +5,9 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class RefreshTokenMissingException extends ApiException {
+public class TokenMissingException extends ApiException {
 
-    public RefreshTokenMissingException() {
-        super(HttpStatus.BAD_REQUEST, "Refresh token is missing!");
+    public TokenMissingException(String message) {
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }

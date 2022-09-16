@@ -39,6 +39,8 @@ public class RequestEntity {
     @Enumerated(EnumType.STRING)
     private State state;
 
+    private String description;
+
     public RequestEntity(AppUserEntity user, AppRoleEntity role, State state) {
         this.user = user;
         this.role = role;

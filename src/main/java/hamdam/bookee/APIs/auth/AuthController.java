@@ -17,7 +17,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(API_REGISTER)
-    public AppUserEntity register(@RequestBody RegistrationRequest user) {
+    public TokensResponse register(@RequestBody RegistrationRequest user) {
         return authService.registerUser(user);
         // TODO: 9/2/22 return tokens also, because currently user is have to login again after registration
     }
