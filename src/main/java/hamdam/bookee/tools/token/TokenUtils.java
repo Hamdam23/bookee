@@ -58,9 +58,9 @@ public class TokenUtils {
         ).getRole();
 
         return new TokensResponse(
-                createAccessToken(username, role),
+                createToken(username, role, true),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000)),
-                createRefreshToken(username, role),
+                createToken(username, role, false),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000 * 24 * 20)),
                 role.getRoleName(),
                 role.getPermissions()
@@ -73,27 +73,26 @@ public class TokenUtils {
                 .getRole();
 
         return new TokensResponse(
-                createAccessToken(username, role),
+                createToken(username, role, true),
                 DATE_FORMAT.format(System.currentTimeMillis())
         );
     }
 
-    public static String createAccessToken(String username, AppRoleEntity role) {
+    public static String createToken(String username, AppRoleEntity role, boolean isAccessToken) {
 
-        return JWT.create()
-                .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
-                .withClaim("role", role.getRoleName())
-                .sign(ACCESS_ALGORITHM);
-    }
-
-    public static String createRefreshToken(String username, AppRoleEntity role) {
-
-        return JWT.create()
-                .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 3600000 * 24 * 20))
-                .withClaim("role", role.getRoleName())
-                .sign(REFRESH_ALGORITHM);
+        if (isAccessToken) {
+            return JWT.create()
+                    .withSubject(username)
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
+                    .withClaim("role", role.getRoleName())
+                    .sign(ACCESS_ALGORITHM);
+        } else {
+            return JWT.create()
+                    .withSubject(username)
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 3600000 * 24 * 20))
+                    .withClaim("role", role.getRoleName())
+                    .sign(REFRESH_ALGORITHM);
+        }
     }
 
     // TODO: 9/2/22 needs better name
