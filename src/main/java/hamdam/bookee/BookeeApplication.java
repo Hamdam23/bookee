@@ -2,13 +2,11 @@ package hamdam.bookee;
 
 import hamdam.bookee.APIs.auth.AuthService;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
-import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
-import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleService;
-import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.user.AppUserEntity;
-import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
+import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
+import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
 import hamdam.bookee.APIs.user.AppUserService;
+import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,7 +20,7 @@ import static hamdam.bookee.APIs.role.Permissions.*;
 @RequiredArgsConstructor
 public class BookeeApplication {
 
-//    implements CommandLineRunner
+//        implements CommandLineRunner {
 //    private final AppRoleService roleService;
 //    private final AuthService authService;
 //    private final AppUserService userService;
@@ -35,7 +33,7 @@ public class BookeeApplication {
 //    @Override
 //    public void run(String... args) {
 //        try {
-//            AppRoleEntity admin = roleService.addRole(new AppRoleRequestDTO("admin", false, Set.of(
+//            AppRoleResponseDTO admin = roleService.addRole(new AppRoleRequestDTO("admin", false, Set.of(
 //                    MONITOR_USER,
 //                    MONITOR_ROLE,
 //                    MONITOR_ROLE_REQUEST,
@@ -50,7 +48,7 @@ public class BookeeApplication {
 //                    UPDATE_GENRE,
 //                    DELETE_GENRE
 //            )));
-//            AppRoleEntity author = roleService.addRole(new AppRoleRequestDTO("author", false, Set.of(
+//            AppRoleResponseDTO author = roleService.addRole(new AppRoleRequestDTO("author", false, Set.of(
 //                    GET_USER,
 //                    UPDATE_USER,
 //                    DELETE_USER,
@@ -65,7 +63,7 @@ public class BookeeApplication {
 //                    UPDATE_GENRE,
 //                    DELETE_GENRE
 //            )));
-//            AppRoleEntity user = roleService.addRole(new AppRoleRequestDTO("user", true, Set.of(
+//            AppRoleResponseDTO user = roleService.addRole(new AppRoleRequestDTO("user", true, Set.of(
 //                    GET_USER,
 //                    UPDATE_USER,
 //                    DELETE_USER,
@@ -79,13 +77,13 @@ public class BookeeApplication {
 //                    GET_GENRE
 //            )));
 //
-//            AppUserEntity farrukh = authService.registerUser(new RegistrationRequest("Farrukh", "farrukh_kh", "123"));
-//            AppUserEntity hamdam = authService.registerUser(new RegistrationRequest("Hamdam", "hamdam_x", "123"));
-//            AppUserEntity userx = authService.registerUser(new RegistrationRequest("Userx", "user_x", "123"));
+//            authService.registerUser(new RegistrationRequest("Farrukh", "farrukh_kh", "123"));
+//            authService.registerUser(new RegistrationRequest("Hamdam", "hamdam_x", "123"));
+//            authService.registerUser(new RegistrationRequest("Userx", "user_x", "123"));
 //
-//            userService.setRoleToUser(farrukh.getId(), new AppUserRoleIdDTO(admin.getId()));
-//            userService.setRoleToUser(hamdam.getId(), new AppUserRoleIdDTO(author.getId()));
-//            userService.setRoleToUser(userx.getId(), new AppUserRoleIdDTO(user.getId()));
+//            userService.setRoleToUser(userService.getUserByUsername("farrukh_kh").getId(), new AppUserRoleIdDTO(admin.getId()));
+//            userService.setRoleToUser(userService.getUserByUsername("hamdam_x").getId(), new AppUserRoleIdDTO(author.getId()));
+//            userService.setRoleToUser(userService.getUserByUsername("user_x").getId(), new AppUserRoleIdDTO(user.getId()));
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
