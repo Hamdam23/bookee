@@ -2,6 +2,7 @@ package hamdam.bookee.APIs.role.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.role.Permissions;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class AppRoleRequestDTO {
 
     // TODO: 9/2/22 name & json
