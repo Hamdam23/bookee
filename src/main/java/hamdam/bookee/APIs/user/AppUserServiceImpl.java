@@ -99,13 +99,23 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     @Transactional
     public AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO) {
-        ImagEntity imagEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
-                -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
-        );
-        // TODO: 9/2/22 code duplication
-        AppUserEntity user = getAppUserById(id);
-        user.setUserImagEntity(imagEntity);
-        return new AppUserResponseDTO(userRepository.save(user));
+
+        AppUserEntity currentUser = getUserByRequest(userRepository);
+
+        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
+            userRepository.findById(id).orElseThrow(()
+                    -> new ResourceNotFoundException("User", "id", id)
+            );
+            ImagEntity imagEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
+                    -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
+            );
+            // TODO: 9/2/22 code duplication
+            AppUserEntity user = getAppUserById(id);
+            user.setUserImagEntity(imagEntity);
+            return new AppUserResponseDTO(userRepository.save(user));
+        } else {
+            throw new LimitedPermissionException();
+        }
     }
 
     @Override

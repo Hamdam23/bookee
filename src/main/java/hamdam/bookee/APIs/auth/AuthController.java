@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.auth;
 
-import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

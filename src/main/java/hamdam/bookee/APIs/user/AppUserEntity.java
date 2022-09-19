@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,8 +24,10 @@ public class AppUserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "name can not be blank!")
     private String name;
 
+    @NotBlank(message = "username can not be blank!")
     @Column(unique = true)
     private String userName;
 
@@ -32,7 +35,7 @@ public class AppUserEntity {
     @UpdateTimestamp
     private LocalDateTime timeStamp;
 
-    @JsonIgnore
+    @NotBlank(message = "password can not be blank!")
     private String password;
 
     @ManyToOne

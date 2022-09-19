@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
@@ -28,6 +29,7 @@ public class AppRoleEntity {
     // TODO: 9/2/22 naming & json property
     @Column(unique = true, nullable = false)
     @JsonProperty("role_name")
+    @NotBlank(message = "role_name name can not be blank!")
     private String roleName;
 
     // TODO: 9/2/22 set column to nullable false

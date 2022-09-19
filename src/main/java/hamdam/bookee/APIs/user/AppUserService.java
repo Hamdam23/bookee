@@ -8,8 +8,6 @@ import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.servlet.http.HttpServletRequest;
-
 public interface AppUserService {
     Page<AppUserResponseDTO> getAllUsers(Pageable pageable);
 

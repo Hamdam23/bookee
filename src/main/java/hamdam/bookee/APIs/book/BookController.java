@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 import static hamdam.bookee.tools.constants.Endpoints.API_BOOK;
 
 @RestController
@@ -18,7 +20,7 @@ public class BookController {
     private final BookServiceImpl bookService;
 
     @PostMapping
-    public BookEntity addBook(@RequestBody BookDTO book) {
+    public BookEntity addBook(@Valid @RequestBody BookDTO book) {
         // TODO: 9/2/22 return full json response
         return bookService.addBook(book);
     }
@@ -34,7 +36,7 @@ public class BookController {
     }
 
     @PatchMapping("/{id}")
-    public BookDTO updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
+    public BookDTO updateBook(@PathVariable Long id, @Valid @RequestBody BookDTO newBook) {
         // TODO: 9/2/22 return full json response
         return bookService.updateBook(newBook, id);
     }

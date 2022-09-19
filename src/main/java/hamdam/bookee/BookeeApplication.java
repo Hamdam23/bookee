@@ -2,24 +2,12 @@ package hamdam.bookee;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import hamdam.bookee.APIs.auth.AuthService;
-import hamdam.bookee.APIs.auth.RegistrationRequest;
-import hamdam.bookee.APIs.role.AppRoleService;
-import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
-import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
-import hamdam.bookee.APIs.user.AppUserService;
-import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
-import java.util.Set;
-
-import static hamdam.bookee.APIs.role.Permissions.*;
 
 @SpringBootApplication
 @RequiredArgsConstructor

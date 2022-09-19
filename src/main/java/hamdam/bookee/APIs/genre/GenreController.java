@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 
 @RestController
@@ -18,7 +20,7 @@ public class GenreController {
     private final GenreService genreService;
 
     @PostMapping
-    public GenreDTO addGenre(@RequestBody GenreDTO genre) {
+    public GenreDTO addGenre(@Valid @RequestBody GenreDTO genre) {
         // TODO: 9/2/22 return full json response
         return genreService.addGenre(genre);
     }
@@ -34,7 +36,7 @@ public class GenreController {
     }
 
     @PatchMapping("/{id}")
-    public GenreDTO updateGenre(@PathVariable Long id, @RequestBody GenreDTO genre) {
+    public GenreDTO updateGenre(@PathVariable Long id, @Valid @RequestBody GenreDTO genre) {
         genreService.updateGenre(id, genre);
         // TODO: 9/2/22 return full json response
         return genreService.updateGenre(id, genre);

@@ -39,7 +39,7 @@ public class TokenUtils {
         return verifier.verify(token);
     }
 
-    public static String getUsernameFromToken(String header){
+    public static String getUsernameFromToken(String header) {
         try {
             String token = header.substring("Bearer ".length());
             DecodedJWT decodedJWT = TokenUtils.decodeToken(token, true);

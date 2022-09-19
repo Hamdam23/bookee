@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static hamdam.bookee.tools.constants.Endpoints.API_ROLE_REQUEST;
@@ -18,7 +19,7 @@ public class RequestController {
     private final RequestService requestService;
 
     @PostMapping
-    public ResponseEntity<RoleRequestResponse> sendRoleRequest(@RequestBody RoleRequestDTO roleRequestDTO) {
+    public ResponseEntity<RoleRequestResponse> sendRoleRequest(@Valid @RequestBody RoleRequestDTO roleRequestDTO) {
         return ResponseEntity.ok().body(requestService.postRoleRequest(roleRequestDTO));
     }
 
@@ -30,7 +31,7 @@ public class RequestController {
 
     @PutMapping("{id}")
     public ResponseEntity<RoleRequestResponse> reviewRequest(@PathVariable Long id,
-                                                             @RequestBody ReviewStateDTO reviewState) {
+                                                             @Valid @RequestBody ReviewStateDTO reviewState) {
         return ResponseEntity.ok().body(requestService.reviewRequest(id, reviewState));
     }
 

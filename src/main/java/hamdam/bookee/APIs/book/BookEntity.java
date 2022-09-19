@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +23,17 @@ public class BookEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "name can not be blank!")
     private String name;
 
+    @Size(max = 30, message = "tagline size is too long!")
     private String tagline;
 
+    @Size(max = 200, message = "description size is too long!")
     private String description;
 
     // TODO: 9/2/22 make author AppUser, not string
+    @NotEmpty(message = "authors can not be empty!")
     @ManyToMany
     @JoinTable(name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),
@@ -37,8 +42,10 @@ public class BookEntity {
     private List<AppUserEntity> authors = new ArrayList<>();
 
     // TODO: 9/2/22 it is better to make rating float/double
+    @DecimalMax("10.0") @DecimalMin("0.0")
     private Double rating;
 
+    @NotEmpty(message = "genres can not be empty!")
     @ManyToMany
     @JoinTable(name = "book_genre",
             joinColumns = @JoinColumn(name = "book_id"),

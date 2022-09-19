@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.genre;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hamdam.bookee.APIs.book.BookEntity;
 import lombok.Getter;
@@ -9,6 +8,8 @@ import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,10 @@ public class GenreEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "genre name can not be blank!")
     private String name;
 
+    @Size(max = 200, message = "description size is too long!")
     private String description;
 
     // TODO: 9/2/22 implement this:

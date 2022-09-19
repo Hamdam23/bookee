@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +18,23 @@ import java.util.List;
 public class BookDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+
+    @NotBlank(message = "name can not be blank!")
     private String name;
+
+    @Size(max = 30, message = "tagline size is too long!")
     private String tagline;
+
+    @Size(max = 200, message = "description size is too long!")
     private String description;
+
+    @NotEmpty(message = "authors can not be empty!")
     private List<Long> authors = new ArrayList<>();
+
+    @DecimalMax("10.0") @DecimalMin("0.0")
     private Double rating;
+
+    @NotEmpty(message = "genres can not be empty!")
     private List<Long> genres = new ArrayList<>();
 
     public BookDTO(BookEntity entity) {

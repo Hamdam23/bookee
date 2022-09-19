@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Getter
@@ -15,6 +16,7 @@ public class AppRoleRequestDTO {
 
     // TODO: 9/2/22 name & json
     @JsonProperty("role_name")
+    @NotBlank(message = "role_name name can not be blank!")
     private String roleName;
 
     @JsonProperty("is_default")

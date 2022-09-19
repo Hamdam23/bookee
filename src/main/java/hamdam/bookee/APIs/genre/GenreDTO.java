@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
@@ -14,8 +16,13 @@ import java.util.List;
 public class GenreDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+
+    @NotBlank(message = "name can not be blank!")
     private String name;
+
+    @Size(max = 200, message = "description size is too long!")
     private String description;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> books;
 

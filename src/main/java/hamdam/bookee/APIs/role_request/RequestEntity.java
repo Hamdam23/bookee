@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 // TODO: 9/2/22 naming
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class RequestEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,6 +41,7 @@ public class RequestEntity {
     @Enumerated(EnumType.STRING)
     private State state;
 
+    @Size(max = 200, message = "Description size is too long!")
     private String description;
 
     public RequestEntity(AppUserEntity user, AppRoleEntity role, State state) {

@@ -6,8 +6,6 @@ import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.servlet.http.HttpServletRequest;
-
 public interface AppRoleService {
 
     AppRoleResponseDTO addRole(AppRoleRequestDTO appRole);
