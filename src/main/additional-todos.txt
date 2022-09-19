@@ -1,39 +1,41 @@
 #Waiting
-1. Database migration
-2. Tests
+32. get expiry times from app.yaml file
+17. handle: if pageable size is more than totalElements it just gives empty list | implement NoContentForPageSize exception
 3. Code comments, README, etc.
 4. API documentation
 5. Downloadable Postman collection
 6. Project packaging
-10. roleRequest package needs big refactor/rename/new-features/logic-changes etc.
 12. Validations in request DTOs
-13. for delete requests whether return full json response or empty response (but with 204), not plain text
-14. for post/put/patch (modification) requests return full json response of updated/created object
 15. add not null, unique, size, not blank etc. in all entities and DTOs
-16. implement password-change logic
-17. handle: if pageable size is more than totalElements it just gives empty list | implement NoContentForPageSize exception
-19. user 'id' property everywhere instead of name or username or something-name
 20. problem: can not insert data  on the table 'book_author' table
-21. use Mapper classes for each package! if required, create separate DTOs for request and response
 22. review auth package
-23. wtf - I don't have set permission-to-role request?
-24. editing/deleting only user-self should be done
 25. set-image-to-user should be considered
 26. valid file ni extentions listini dinamik atish
 27. use constants class for every package
-29. DuplicateRoleNameException use for Register & rename
-30. get rid of static message on UnsupportedUserOnRoleRequest class | use permission or role-name
-31. paging naming
-32. get expiry times from app.yaml file
 34. it gives 403 with empty response if token is expired
 
 #Done
 -7. filter package vs security package
 -8. handle Optional.get() warnings
 -9. don't use @Data lombok annotation in entities
+-10. roleRequest package needs big refactor/rename/new-features/logic-changes etc.
 -11. If role of user in the project (AppRole) is implemented as dynamic, use it as dynamic everywhere
--* 18. getAllGenres - response: without books | getGenreById - response: with books
-- 28. best-practice for package naming
+-13. for delete requests whether return full json response or empty response (but with 204), not plain text
+-*14. for post/put/patch (modification) requests return full json response of updated/created object
+-*18. getAllGenres - response: without books | getGenreById - response: with books
+-19. user 'id' property everywhere instead of name or username or something-name
+-23. wtf - I don't have set permission-to-role request?
+-24. editing/deleting only user-self should be done
+-28. best-practice for package naming
     -> https://stackoverflow.com/questions/49890803/naming-conventions-of-composed-package-names
     -> https://stackoverflow.com/questions/3179216/what-is-the-convention-for-word-separator-in-java-package-names
-- 33. use common method for createAccessToken and createRefreshToken methods
+-29. DuplicateRoleNameException use for Register & rename
+-30. get rid of static message on UnsupportedUserOnRoleRequest class | use permission or role-name
+-31. paging naming
+-33. use common method for createAccessToken and createRefreshToken methods
+
+#For Later
+1. Database migration
+2. Tests
+16. implement password-change logic
+21. use Mapper classes for each package! if required, create separate DTOs for request and response
