@@ -3,7 +3,8 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,7 @@ public interface AppUserService {
     // TODO: 9/2/22 why void, must return updated AppUser object
     AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO);
 
-    AppUserResponseDTO setRoleToUser(Long id, AppUserRoleIdDTO appUserRoleIdDTO);
+    AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO setUserRoleDTO);
 
     ApiResponse deleteUser(Long id);
 
@@ -28,4 +29,6 @@ public interface AppUserService {
     boolean isPasswordInvalid(String username);
 
     AppUserEntity getUserByUsername(String username);
+
+    AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id);
 }

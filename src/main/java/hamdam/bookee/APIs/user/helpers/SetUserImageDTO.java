@@ -8,14 +8,14 @@ import org.springframework.beans.BeanUtils;
 
 @Getter
 @Setter
-public class AppUserImageDTO {
+public class SetUserImageDTO {
 
     @JsonProperty("image_id")
     private Long id;
     @JsonProperty("image_location")
     private String location;
 
-    public AppUserImageDTO(ImagEntity entity) {
+    public SetUserImageDTO(ImagEntity entity) {
         BeanUtils.copyProperties(entity ,this);
     }
 }

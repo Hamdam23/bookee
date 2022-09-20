@@ -3,7 +3,8 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +42,15 @@ public class AppUserController {
         return userService.updateUser(user, id);
     }
 
+    @PatchMapping("/change-password/{id}")
+    public AppUserResponseDTO updatePassword(@RequestBody SetUserPasswordDTO passwordDTO, @PathVariable Long id) {
+        return userService.updatePassword(passwordDTO, id);
+    }
+
     // TODO {userId} should be replaced with {id}
     @PatchMapping(API_SET_ROLE_USER + "/{userId}")
-    public AppUserResponseDTO addRoleToUser(@PathVariable Long userId, @RequestBody AppUserRoleIdDTO appUserRoleIdDTO) {
-        return userService.setRoleToUser(userId, appUserRoleIdDTO);
+    public AppUserResponseDTO addRoleToUser(@PathVariable Long userId, @RequestBody SetUserRoleDTO setUserRoleDTO) {
+        return userService.setRoleToUser(userId, setUserRoleDTO);
     }
 
     @PatchMapping(SET_IMAGE_TO_USER + "/{id}")

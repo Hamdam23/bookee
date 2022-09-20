@@ -7,10 +7,13 @@ import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserRoleIdDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
+import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +44,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
     private final ImageRepository imageRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -120,7 +125,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public AppUserResponseDTO setRoleToUser(Long id, AppUserRoleIdDTO roleDTO) {
+    public AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO roleDTO) {
         AppUserEntity user = userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User", "id", id)
         );
@@ -163,6 +168,39 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     public AppUserEntity getUserByUsername(String username) {
         return userRepository.findAppUserByUserName(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    }
+
+    @Override
+    public AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id) {
+        AppUserEntity user = userRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("User", "id", id)
+        );
+
+        AppUserEntity currentUser = getUserByRequest(userRepository);
+
+        if (currentUser.getId().equals(id)) {
+            String oldPassword = passwordDTO.getOldPassword();
+            String newPassword = passwordDTO.getNewPassword();
+            String confirmedPassword = passwordDTO.getConfirmNewPassword();
+
+            if (oldPassword.equals(newPassword)) {
+                throw new DuplicateResourceException("passwords", oldPassword, newPassword);
+            }
+            // logic is written that throws the same exception as the next if logic,
+            // just because I need different responses.
+            if (!newPassword.equals(confirmedPassword)) {
+                throw new PasswordMismatchException(newPassword, confirmedPassword);
+            }
+            if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                throw new PasswordMismatchException(oldPassword, "user's password");
+            }
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+
+            return new AppUserResponseDTO(userRepository.save(user));
+        } else {
+            throw new LimitedPermissionException();
+        }
     }
 
     private AppUserEntity getAppUserById(Long id) {

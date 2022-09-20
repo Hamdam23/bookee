@@ -6,7 +6,7 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserServiceImpl;
-import hamdam.bookee.tools.exceptions.role.DuplicateResourceException;
+import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.role.NoDefaultRoleException;
 import hamdam.bookee.tools.token.TokenUtils;
 import lombok.RequiredArgsConstructor;

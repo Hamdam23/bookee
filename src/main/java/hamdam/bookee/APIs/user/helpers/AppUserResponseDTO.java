@@ -13,13 +13,13 @@ public class AppUserResponseDTO {
     private String name;
     private String userName;
     private AppUserRoleDTO role;
-    private AppUserImageDTO image;
+    private SetUserImageDTO image;
 
     public AppUserResponseDTO(AppUserEntity entity) {
         BeanUtils.copyProperties(entity, this);
         if (entity.getRole() != null)
             this.role = new AppUserRoleDTO(entity.getRole());
         if (entity.getUserImagEntity() != null)
-            this.image = new AppUserImageDTO(entity.getUserImagEntity());
+            this.image = new SetUserImageDTO(entity.getUserImagEntity());
     }
 }
