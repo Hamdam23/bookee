@@ -1,6 +1,8 @@
-package hamdam.bookee.APIs.book;
+package hamdam.bookee.APIs.book.helpers;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import hamdam.bookee.APIs.book.BookEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookDTO {
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
@@ -28,6 +31,7 @@ public class BookDTO {
     @Size(max = 200, message = "description size is too long!")
     private String description;
 
+    @JsonProperty("author_ids")
     @NotEmpty(message = "authors can not be empty!")
     private List<Long> authors = new ArrayList<>();
 

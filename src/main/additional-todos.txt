@@ -3,9 +3,7 @@
 4. API documentation
 5. Downloadable Postman collection
 6. Project packaging
-20. problem: can not insert data  on the table 'book_author' table
 22. review auth package
-25. create checkUserAuthority method
 26. valid file ni extentions listini dinamik atish
 27. use constants class for every package
 
@@ -20,10 +18,13 @@
 -*14. for post/put/patch (modification) requests return full json response of updated/created object
 -15. add not null, unique, size, not blank etc. in all entities and DTOs
 -17. handle: if pageable size is more than totalElements it just gives empty list | implement NoContentForPageSize exception
+-16. implement password-change logic
 -*18. getAllGenres - response: without books | getGenreById - response: with books
 -19. user 'id' property everywhere instead of name or username or something-name
+-20. problem: can not insert data  on the table 'book_author' table
 -23. wtf - I don't have set permission-to-role request?
 -24. editing/deleting only user-self should be done
+-*25. create checkUserAuthority method
 -28. best-practice for package naming
     -> https://stackoverflow.com/questions/49890803/naming-conventions-of-composed-package-names
     -> https://stackoverflow.com/questions/3179216/what-is-the-convention-for-word-separator-in-java-package-names
@@ -37,5 +38,4 @@
 #For Later
 1. Database migration
 2. Tests
-16. implement password-change logic
 21. use Mapper classes for each package! if required, create separate DTOs for request and response

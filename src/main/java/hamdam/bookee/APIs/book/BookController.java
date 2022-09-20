@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.book.helpers.BookDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class BookController {
     private final BookServiceImpl bookService;
 
     @PostMapping
-    public BookEntity addBook(@Valid @RequestBody BookDTO book) {
+    public BookDTO addBook(@Valid @RequestBody BookDTO book) {
         // TODO: 9/2/22 return full json response
         return bookService.addBook(book);
     }
@@ -31,7 +32,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public BookEntity getBookByID(@PathVariable Long id) {
+    public BookDTO getBookByID(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
 

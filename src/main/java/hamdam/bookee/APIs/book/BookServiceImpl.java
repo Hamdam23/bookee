@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.book.helpers.BookDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
@@ -26,8 +27,8 @@ public class BookServiceImpl implements BookService {
     private final AppUserRepository userRepository;
 
     @Override
-    public BookEntity addBook(BookDTO book) {
-        BookEntity bookEntity = new BookEntity();
+    public BookDTO addBook(BookDTO book) {
+        BookEntity bookEntity = new BookEntity(book);
         List<AppUserEntity> authors = new ArrayList<>();
         book.getAuthors().forEach(aLong -> {
             AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
@@ -35,8 +36,17 @@ public class BookServiceImpl implements BookService {
             authors.add(author);
         });
         bookEntity.setAuthors(authors);
-        bookEntity = bookRepository.save(new BookEntity(book));
-        return bookEntity;
+
+        List<GenreEntity> genres = new ArrayList<>();
+        book.getGenres().forEach(aLong -> {
+            GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Genre", "id", aLong));
+            genres.add(genre);
+        });
+        bookEntity.setGenres(genres);
+
+        bookRepository.save(bookEntity);
+        return book;
     }
 
     @Override
@@ -45,9 +55,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookEntity getBookById(Long id) {
-        return bookRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Book", "id", id));
+    public BookDTO getBookById(Long id) {
+        return new BookDTO(bookRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Book", "id", id)));
     }
 
     // TODO: 9/2/22 see todos in GenreServiceImpl:updateGenre

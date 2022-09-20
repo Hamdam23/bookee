@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.book.helpers.BookDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.Getter;
@@ -56,8 +57,5 @@ public class BookEntity {
     public BookEntity(BookDTO bookDTO) {
         // TODO: 9/2/22 use BeanUtils.copyProperties()
         BeanUtils.copyProperties(bookDTO, this, "id");
-        bookDTO.getGenres().forEach(
-                genreId -> this.genres.add(new GenreEntity(genreId))
-        );
     }
 }
