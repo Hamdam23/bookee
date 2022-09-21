@@ -2,7 +2,7 @@
 
 #### _bookee - Find books you'll love, and keep track of the ones you want to read._
 
-#### By _**Hamdam23, KhusainovFarrukh**_
+#### By _**Hamdam23**_
 
 <!-- PROJECT SHIELDS -->
 <!--
