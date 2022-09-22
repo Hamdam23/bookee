@@ -25,7 +25,7 @@ public class RoleRequestResponse {
         this.name = entity.getUser().getName();
         this.userName = entity.getUser().getUserName();
         this.userRole = entity.getUser().getRole().getRoleName();
-        this.userImagEntity = entity.getUser().getUserImagEntity();
+        this.userImagEntity = entity.getUser().getUserImage();
         this.requestedRole = requestedRole;
         BeanUtils.copyProperties(entity, this);
     }

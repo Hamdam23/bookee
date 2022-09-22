@@ -16,10 +16,12 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 public class AppUserEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,10 +33,6 @@ public class AppUserEntity {
     @Column(unique = true)
     private String userName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @UpdateTimestamp
-    private LocalDateTime timeStamp;
-
     @NotBlank(message = "password can not be blank!")
     private String password;
 
@@ -44,7 +42,11 @@ public class AppUserEntity {
     // TODO: 9/2/22 name & json
     @OneToOne
     @JsonProperty("user_image")
-    private ImagEntity userImagEntity;
+    private ImagEntity userImage;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 
     public AppUserEntity(RegistrationRequest dto) {
         this.setName(dto.getName());

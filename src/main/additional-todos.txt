@@ -7,6 +7,11 @@
 26. valid file ni extentions listini dinamik atish
 27. use constants class for every package
 
+#For Later
+1. Database migration
+2. Tests
+21. use Mapper classes for each package! if required, create separate DTOs for request and response
+
 #Done
 -7. filter package vs security package
 -8. handle Optional.get() warnings
@@ -34,8 +39,3 @@
 -*32. get expiry times from app.yaml file
 -33. use common method for createAccessToken and createRefreshToken methods
 -34. it gives 403 with empty response if token is expired
-
-#For Later
-1. Database migration
-2. Tests
-21. use Mapper classes for each package! if required, create separate DTOs for request and response

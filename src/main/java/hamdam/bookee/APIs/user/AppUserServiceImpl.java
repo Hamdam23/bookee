@@ -87,7 +87,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         }
 
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
-            requestedUser.setUserImagEntity(imageRepository.findById(newUser.getImageId())
+            requestedUser.setUserImage(imageRepository.findById(newUser.getImageId())
                     .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id))
             );
 
@@ -116,7 +116,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
             );
             // TODO: 9/2/22 code duplication
             AppUserEntity user = getAppUserById(id);
-            user.setUserImagEntity(imagEntity);
+            user.setUserImage(imagEntity);
             return new AppUserResponseDTO(userRepository.save(user));
         } else {
             throw new LimitedPermissionException();
