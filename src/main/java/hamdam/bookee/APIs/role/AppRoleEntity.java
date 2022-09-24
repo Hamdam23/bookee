@@ -16,7 +16,7 @@ import java.util.Set;
 
 // TODO: 9/2/22 naming
 @Entity
-@Table(name = "roles", schema = "my_bookee")
+@Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
