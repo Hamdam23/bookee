@@ -1,11 +1,11 @@
 #db stuff
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/asd
+    url: jdbc:postgresql://localhost:5432/bookee
     username: postgres
     password: postgres
   flyway:
-    locations: classpath:db/migration
+    baseline-on-migrate: true
 
   #hibernate stuff
   jpa:
