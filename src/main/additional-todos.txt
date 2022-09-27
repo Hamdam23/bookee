@@ -8,6 +8,7 @@
 22. review auth package
 26. valid file ni extentions listini dinamik atish
 27. use constants class for every package
+35. user env variable for encoded password
 
 #Done
 -1. Database migration

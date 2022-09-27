@@ -13,7 +13,5 @@ public interface AppRoleRepository extends JpaRepository<AppRoleEntity, Long> {
 
     Optional<AppRoleEntity> findFirstByIsDefault(boolean isDefault);
 
-    Optional<AppRoleEntity> findByRoleName(String roleName);
-
     Page<AppRoleEntity> findAllByOrderByTimeStampDesc(Pageable pageable);
 }

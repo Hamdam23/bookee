@@ -11,8 +11,6 @@ import java.util.Optional;
 public interface AppUserRepository extends JpaRepository<AppUserEntity, Long> {
     Optional<AppUserEntity> findAppUserByUserName(String userName);
 
-    // TODO: 9/2/22 there is default findById for this logic
-
     Page<AppUserEntity> findAllByOrderByTimeStampDesc(Pageable pageable);
 
     boolean existsByUserName(String username);

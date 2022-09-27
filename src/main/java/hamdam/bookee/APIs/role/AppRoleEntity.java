@@ -53,4 +53,9 @@ public class AppRoleEntity {
         this.isDefault = dto.isDefault();
     }
 
+    public AppRoleEntity(String roleName, boolean isDefault, LocalDateTime timeStamp) {
+        this.roleName = roleName;
+        this.isDefault = isDefault;
+        this.timeStamp = timeStamp;
+    }
 }
