@@ -32,14 +32,13 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsEmptyDataIfContainsOnlyNonDefaultRole() {
+    void returnsEmptyDataIfSingleNonDefaultRoleExists() {
         //given
-        AppRoleEntity role = new AppRoleEntity(
+        underTest.save(new AppRoleEntity(
                 "ADMIN",
                 false,
                 LocalDateTime.now()
-        );
-        underTest.save(role);
+        ));
 
         //when
         Optional<AppRoleEntity> actual = underTest.findFirstByIsDefault(true);
@@ -49,10 +48,10 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsDataIfSingleDefaultRoleExists() {
+    void returnsValidDataIfSingleDefaultRoleExists() {
         //given
-        AppRoleEntity role = underTest.save(new AppRoleEntity(
-                "ADMIN",
+        AppRoleEntity expected = underTest.save(new AppRoleEntity(
+                "USER",
                 true,
                 LocalDateTime.now()
         ));
@@ -62,23 +61,23 @@ class AppRoleRepositoryTest {
 
         //then
         assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get().getId()).isEqualTo(role.getId());
+        assertThat(actual.get().getId()).isEqualTo(expected.getId());
     }
 
     @Test
     void returnsValidDataIfContainsMultipleNonDefaultRolesAndSingleDefaultRole() {
         //given
-        AppRoleEntity role1 = underTest.save(new AppRoleEntity(
+        AppRoleEntity role = underTest.save(new AppRoleEntity(
                 "USER",
                 true,
                 LocalDateTime.now()
         ));
-        AppRoleEntity role2 = underTest.save(new AppRoleEntity(
+        underTest.save(new AppRoleEntity(
                 "ADMIN",
                 false,
                 LocalDateTime.now()
         ));
-        AppRoleEntity role3 = underTest.save(new AppRoleEntity(
+        underTest.save(new AppRoleEntity(
                 "AUTHOR",
                 false,
                 LocalDateTime.now()
@@ -89,7 +88,7 @@ class AppRoleRepositoryTest {
 
         //then
         assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get().getRoleName()).isEqualTo(role1.getRoleName());
+        assertThat(actual.get().getRoleName()).isEqualTo(role.getRoleName());
     }
 
     @Test
