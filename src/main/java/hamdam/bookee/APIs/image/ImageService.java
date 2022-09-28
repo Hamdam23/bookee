@@ -1,19 +1,20 @@
 package hamdam.bookee.APIs.image;
 
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 public interface ImageService {
-    Image uploadImage(MultipartFile file) throws Exception;
+    ImagEntity uploadImage(MultipartFile file) throws Exception;
 
     FileSystemResource downloadImage(String location);
 
-    Image getImageByID(long id);
+    ImageDTO getImageByID(long id);
 
     // TODO: 9/2/22 why it returns ImageDTO, but byId returns Image itself?
-    List<ImageDTO> getAllImages();
+    Page<ImageDTO> getAllImages(Pageable pageable);
 
-    void deleteImageById(long id);
+    ApiResponse deleteImageById(long id);
 }

@@ -1,0 +1,32 @@
+#db config
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: false
+
+  #hibernate config
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+        show_sql: true
+        format_sql: true
+        ddl-auto: none
+    generate-ddl: false
+
+  #file config
+  servlet:
+    multipart:
+      max-file-size: 20MB
+
+#todo imho, file path must be read from ENV variable
+#todo also, test this on deployment (heroku)
+file_upload_path: "/home/hamdam/Pictures/bookee/"
+
+server:
+  error:
+    include-stacktrace: never

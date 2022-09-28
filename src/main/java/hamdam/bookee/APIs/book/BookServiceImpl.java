@@ -1,10 +1,21 @@
 package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.tools.exeptions.ResourceNotFoundException;
+import hamdam.bookee.APIs.book.helpers.BookDTO;
+import hamdam.bookee.APIs.genre.GenreEntity;
+import hamdam.bookee.APIs.genre.GenreRepository;
+import hamdam.bookee.APIs.user.AppUserEntity;
+import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -12,42 +23,74 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final GenreRepository genreRepository;
+    private final AppUserRepository userRepository;
 
     @Override
-    public void addBook(BookDTO book) {
-        bookRepository.save(new BookEntity(book));
+    public BookDTO addBook(BookDTO book) {
+        BookEntity bookEntity = new BookEntity(book);
+        List<AppUserEntity> authors = new ArrayList<>();
+        book.getAuthors().forEach(aLong -> {
+            AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Author", "id", aLong));
+            authors.add(author);
+        });
+        bookEntity.setAuthors(authors);
+
+        List<GenreEntity> genres = new ArrayList<>();
+        book.getGenres().forEach(aLong -> {
+            GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Genre", "id", aLong));
+            genres.add(genre);
+        });
+        bookEntity.setGenres(genres);
+
+        bookRepository.save(bookEntity);
+        return book;
     }
 
     @Override
-    public List<BookEntity> getAllBooks() {
-        return bookRepository.findAll();
+    public Page<BookDTO> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable).map(BookDTO::new);
     }
 
     @Override
-    public BookEntity getBookById(Long id) {
-        return bookRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Book", "id", id));
+    public BookDTO getBookById(Long id) {
+        return new BookDTO(bookRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Book", "id", id)));
     }
 
     // TODO: 9/2/22 see todos in GenreServiceImpl:updateGenre
     @Override
-    public void updateBook(BookDTO book, Long id) {
+    public BookDTO updateBook(BookDTO bookDTO, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
+        BeanUtils.copyProperties(bookDTO, oldBook, "id");
 
-        BeanUtils.copyProperties(book, oldBook);
-
-        BookEntity newBook = new BookEntity(book);
-        oldBook.setGenres(newBook.getGenres());
+        List<GenreEntity> genreEntities = new ArrayList<>();
+        bookDTO.getGenres().forEach(aLong -> {
+            GenreEntity genre = genreRepository.findById(id).orElseThrow(()
+                    -> new ResourceNotFoundException("Genre", "id", aLong));
+            genreEntities.add(genre);
+        });
+        oldBook.setGenres(genreEntities);
         bookRepository.save(oldBook);
+
+        return bookDTO;
     }
 
     @Override
-    public void deleteBook(Long id) {
+    public ApiResponse deleteBook(Long id) {
         // TODO: 9/2/22 existsById is enough
-        bookRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Book", "id", id));
-
+        if (!bookRepository.existsById(id)){
+            throw new ResourceNotFoundException("Book", "id", id);
+        }
         bookRepository.deleteById(id);
+
+        return new ApiResponse(
+                HttpStatus.NO_CONTENT,
+                LocalDateTime.now(),
+                "Book with id: " + id + " successfully deleted!"
+        );
     }
 }

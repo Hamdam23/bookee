@@ -10,10 +10,7 @@ import java.nio.file.Paths;
 
 @Service
 public class FileSystemRepository {
-    // TODO: 9/2/22 remove old (done) todos everywhere
 
-    // TODO: 13/07/22 handle npe -> problem removed;)
-    // TODO: 13/07/22 custom path -> Status:DONE on 15/07/22
     @Value("${file_upload_path}")
     private String path;
 

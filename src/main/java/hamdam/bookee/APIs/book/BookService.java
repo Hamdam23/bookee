@@ -1,17 +1,20 @@
 package hamdam.bookee.APIs.book;
 
-import java.util.List;
+import hamdam.bookee.APIs.book.helpers.BookDTO;
+import hamdam.bookee.tools.exceptions.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
     // TODO: 9/2/22 why void
-    void addBook(BookDTO book);
+    BookDTO addBook(BookDTO book);
 
-    List<BookEntity> getAllBooks();
+    Page<BookDTO> getAllBooks(Pageable pageable);
 
-    BookEntity getBookById(Long id);
+    BookDTO getBookById(Long id);
 
     // TODO: 9/2/22 why void
-    void updateBook(BookDTO book, Long id);
+    BookDTO updateBook(BookDTO book, Long id);
 
-    void deleteBook(Long id);
+    ApiResponse deleteBook(Long id);
 }

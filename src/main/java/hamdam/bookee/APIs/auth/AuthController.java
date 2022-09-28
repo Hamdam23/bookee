@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.auth;
 
-import hamdam.bookee.APIs.user.AppUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(API_REGISTER)
-    public AppUser register(@RequestBody RegistrationRequest user) {
+    public TokensResponse register(@RequestBody RegistrationRequest user) {
         return authService.registerUser(user);
         // TODO: 9/2/22 return tokens also, because currently user is have to login again after registration
     }

@@ -1,10 +1,15 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.book.helpers.BookDTO;
+import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
 
 import static hamdam.bookee.tools.constants.Endpoints.API_BOOK;
 
@@ -16,34 +21,31 @@ public class BookController {
     private final BookServiceImpl bookService;
 
     @PostMapping
-    public ResponseEntity<String> addBook(@RequestBody BookDTO book) {
-        bookService.addBook(book);
+    public BookDTO addBook(@Valid @RequestBody BookDTO book) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Book successfully saved!");
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody BookDTO newBook) {
-        bookService.updateBook(newBook, id);
-        // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Book with id: " + id + " successfully updated!");
+        return bookService.addBook(book);
     }
 
     @GetMapping
-    public List<BookEntity> getAllBooks() {
-        return bookService.getAllBooks();
+    public PagedResponse<BookDTO> getAllBooks(Pageable pageable) {
+        return new PagedResponse<>(bookService.getAllBooks(pageable));
     }
 
     @GetMapping("/{id}")
-    public BookEntity getBookByID(@PathVariable Long id) {
+    public BookDTO getBookByID(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        bookService.deleteBook(id);
+    @PatchMapping("/{id}")
+    public BookDTO updateBook(@PathVariable Long id, @Valid @RequestBody BookDTO newBook) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Book with id: " + id + " successfully deleted!");
+        return bookService.updateBook(newBook, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteBook(@PathVariable Long id) {
+        // TODO: 9/2/22 return full json response
+        return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.NO_CONTENT);
     }
 }
 

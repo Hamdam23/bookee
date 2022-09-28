@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -16,15 +15,20 @@ public class TokensResponse {
     @JsonProperty("access_token")
     private String accessToken;
     // TODO: 9/2/22 naming & json name
-    @JsonProperty("access_token_expires_at")
-    private Date accessTokenExpiry;
+    @JsonProperty("access_token_expiry")
+    private String accessTokenExpiry;
     @JsonProperty("refresh_token")
     private String refreshToken;
     // TODO: 9/2/22 naming & json name
-    @JsonProperty("refresh_token_expires_at")
-    private Date refreshTokenExpiry;
+    @JsonProperty("refresh_token_expiry")
+    private String refreshTokenExpiry;
     @JsonProperty("role")
     private String role;
     @JsonProperty("permissions")
     Set<Permissions> permissions;
+
+    public TokensResponse(String accessToken, String accessTokenExpiry) {
+        this.accessToken = accessToken;
+        this.accessTokenExpiry = accessTokenExpiry;
+    }
 }

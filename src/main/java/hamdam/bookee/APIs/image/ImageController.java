@@ -1,15 +1,17 @@
 package hamdam.bookee.APIs.image;
 
-import hamdam.bookee.tools.annotations.MyValidFile;
+import hamdam.bookee.tools.annotations.ValidFile;
+import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 
@@ -21,8 +23,8 @@ public class ImageController {
     private final ImageService imageService;
 
     // TODO: 9/2/22 why additional "/upload" ?
-    @PostMapping("/upload")
-    public Image uploadImage(@MyValidFile @RequestParam MultipartFile file) throws Exception {
+    @PostMapping
+    public ImagEntity uploadImage(@ValidFile @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
     }
 
@@ -32,19 +34,18 @@ public class ImageController {
     }
 
     @GetMapping("{id}")
-    public Image getImageByID(@PathVariable long id) {
+    public ImageDTO getImageByID(@PathVariable long id) {
         return imageService.getImageByID(id);
     }
 
     @GetMapping
-    public List<ImageDTO> getAllImages() {
-        return imageService.getAllImages();
+    public PagedResponse<ImageDTO> getAllImages(Pageable pageable) {
+        return new PagedResponse<>(imageService.getAllImages(pageable));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable long id) {
-        imageService.deleteImageById(id);
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable long id) {
         // TODO: 9/2/22 return full json response
-        return ResponseEntity.ok().body("Image with id: " + id + " successfully deleted!");
+        return new ResponseEntity<>(imageService.deleteImageById(id), HttpStatus.OK);
     }
 }

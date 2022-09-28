@@ -1,18 +1,21 @@
 package hamdam.bookee.APIs.genre;
 
-import java.util.List;
+import hamdam.bookee.tools.exceptions.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface GenreService {
-    List<GenreEntity> getAllGenres();
+
+    // TODO: 9/2/22 why void?
+    GenreDTO addGenre(GenreDTO genre);
+
+    Page<GenreDTO> getAllGenres(Pageable pageable);
 
     // TODO: 9/2/22 not ID, Id :-)
-    GenreEntity getGenreByID(Long id);
+    GenreDTO getGenreById(Long id);
 
     // TODO: 9/2/22 why void?
-    void addGenre(GenreDTO genre);
+    GenreDTO updateGenre(Long id, GenreDTO genre);
 
-    // TODO: 9/2/22 why void?
-    void updateGenre(Long id, GenreDTO genre);
-
-    void deleteGenre(Long id);
+    ApiResponse deleteGenre(Long id);
 }
