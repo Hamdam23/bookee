@@ -5,8 +5,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,24 +96,24 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsValidDataIfContainsMultipleNonDefaultRolesAndMultipleDefaultRoles() {
+    void returnsValidDataWhenMultipleNonDefaultRolesAndMultipleDefaultRolesAvailable() {
         //given
-        AppRoleEntity role1 = underTest.save(new AppRoleEntity(
+        AppRoleEntity expected = underTest.save(new AppRoleEntity(
                 "USER1",
                 true,
                 LocalDateTime.now()
         ));
-        AppRoleEntity role2 = underTest.save(new AppRoleEntity(
+        underTest.save(new AppRoleEntity(
                 "USER2",
                 true,
                 LocalDateTime.now()
         ));
-        AppRoleEntity role3 = underTest.save(new AppRoleEntity(
+        underTest.save(new AppRoleEntity(
                 "ADMIN",
                 false,
                 LocalDateTime.now()
         ));
-        AppRoleEntity role4 = underTest.save(new AppRoleEntity(
+        underTest.save(new AppRoleEntity(
                 "AUTHOR",
                 false,
                 LocalDateTime.now()
@@ -120,11 +124,47 @@ class AppRoleRepositoryTest {
 
         //then
         assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get().getRoleName()).isEqualTo(role1.getRoleName());
+        assertThat(actual.get().getRoleName()).isEqualTo(expected.getRoleName());
     }
 
     @Test
-    @Disabled
-    void findAllByOrderByTimeStampDesc() {
+    void returnEmptyDataWhenNoRoleOrderedByTimeStampDesc() {
+        //given
+        //when
+        Page<AppRoleEntity> pagedRoles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, 1));
+
+        //then
+        assertThat(pagedRoles.isEmpty()).isTrue();
+    }
+
+    @Test
+    void returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailable() {
+        //given
+        List<AppRoleEntity> actual = new ArrayList<>();
+        actual.add(underTest.save(new AppRoleEntity(
+                "AUTHOR1",
+                false,
+                LocalDateTime.of(2022, 1, 1, 1, 1)
+        )));
+        actual.add(underTest.save(new AppRoleEntity(
+                "AUTHOR2",
+                false,
+                LocalDateTime.of(2022, 2, 2, 2, 2)
+        )));
+        actual.add(underTest.save(new AppRoleEntity(
+                "USER1",
+                true,
+                LocalDateTime.of(2022, 3, 3, 3, 3)
+        )));
+
+        //when
+        Page<AppRoleEntity> pagedRoles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, actual.size()));
+
+        //then
+        assertThat(pagedRoles.isEmpty()).isFalse();
+        assertThat(pagedRoles.getContent().get(0).getTimeStamp()).isAfter(
+                pagedRoles.getContent().get(1).getTimeStamp());
+        assertThat(pagedRoles.getContent().get(1).getTimeStamp()).isAfter(
+                pagedRoles.getContent().get(2).getTimeStamp());
     }
 }
