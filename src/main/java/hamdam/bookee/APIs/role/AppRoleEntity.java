@@ -58,4 +58,13 @@ public class AppRoleEntity {
         this.isDefault = isDefault;
         this.timeStamp = timeStamp;
     }
+
+    public AppRoleEntity(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public AppRoleEntity(String roleName, Set<Permissions> permissions) {
+        this.roleName = roleName;
+        this.permissions = permissions;
+    }
 }

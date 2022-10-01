@@ -37,10 +37,8 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    // TODO: 9/2/22 naming: userDTO
-    public TokensResponse registerUser(RegistrationRequest request) {
-        // TODO: 9/2/22 set encoded password to AppUser, not to RegistrationRequest
-        if (userRepository.existsByUserName(request.getUsername())) {
+    public TokensResponse registerUser(RegistrationRequest registrationRequest) {
+        if (userRepository.existsByUserName(registrationRequest.getUsername())) {
             throw new DuplicateResourceException("username");
         }
         AppUserEntity appUserEntity = new AppUserEntity(registrationRequest);
@@ -50,8 +48,7 @@ public class AuthServiceImpl implements AuthService {
         appUserEntity.setRole(role);
 
         userRepository.save(appUserEntity);
-
-        return getTokenResponse(request.getUsername(), userRepository);
+        return getTokenResponse(registrationRequest.getUsername(), userRepository);
     }
 
     @Override

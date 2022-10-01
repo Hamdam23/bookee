@@ -49,9 +49,8 @@ public class AppRoleServiceImpl implements AppRoleService {
 
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
-        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_ROLE)) {
-            roleRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
+        if (currentUser.getRole().getPermissions().contains(MONITOR_ROLE)) {
+            if (!roleRepository.existsById(id)) throw new ResourceNotFoundException("Role", "id", id);
             roleRepository.deleteById(id);
 
             return new ApiResponse(

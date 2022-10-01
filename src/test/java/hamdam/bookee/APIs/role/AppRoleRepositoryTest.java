@@ -201,4 +201,30 @@ class AppRoleRepositoryTest {
                 pagedRoles.getContent().get(2).getTimeStamp());
         assertThat(pagedRoles.getContent().get(0).getId()).isEqualTo(updated.getId());
     }
+
+    @Test
+    void returnTrueWhenRoleNameExists() {
+        // given
+        String roleName = "USER";
+        underTest.save(new AppRoleEntity(roleName));
+
+        //when
+        boolean expected = underTest.existsByRoleName(roleName);
+
+        //then
+        assertThat(expected).isTrue();
+    }
+
+    @Test
+    void returnFalseWhenRoleNameDoesNotExists() {
+        // given
+        String roleName = "USER";
+        underTest.save(new AppRoleEntity(roleName));
+
+        //when
+        boolean expected = underTest.existsByRoleName("TEST");
+
+        //then
+        assertThat(expected).isFalse();
+    }
 }

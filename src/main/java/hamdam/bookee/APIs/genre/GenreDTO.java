@@ -26,6 +26,11 @@ public class GenreDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> books;
 
+    public GenreDTO(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
     public GenreDTO(GenreEntity entity){
         BeanUtils.copyProperties(entity, this);
     }

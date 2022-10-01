@@ -53,4 +53,9 @@ public class AppUserEntity {
         this.setUserName(dto.getUsername());
         this.setPassword(dto.getPassword());
     }
+
+    public AppUserEntity(String userName, AppRoleEntity role){
+        this.userName = userName;
+        this.role = role;
+    }
 }
