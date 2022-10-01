@@ -5,15 +5,24 @@ import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class GetUserByToken {
 
     public static AppUserEntity getUserByRequest(AppUserRepository userRepository) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = (String) auth.getPrincipal();
+        Object principal = auth.getPrincipal();
 
-        return userRepository.findAppUserByUserName(username).orElseThrow(
-                () -> new ResourceNotFoundException("User", "username", username));
+        String username;
+
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            username = (String) principal;
+        }
+
+        return userRepository.findAppUserByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 }
