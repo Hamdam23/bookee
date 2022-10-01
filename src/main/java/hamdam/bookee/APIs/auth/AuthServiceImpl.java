@@ -5,7 +5,7 @@ import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.AppUserServiceImpl;
+import hamdam.bookee.APIs.user.AppUserService;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.role.NoDefaultRoleException;
 import hamdam.bookee.tools.token.TokenUtils;
@@ -33,9 +33,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
-    // TODO: 9/2/22 don't use implementation of bean when injecting dependency
-    //  because I need loadUserByUsername method, and AppUserService doesn't have such method
-    private final AppUserServiceImpl appUserServiceImpl;
+    private final AppUserService appUserService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -45,14 +43,12 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByUserName(request.getUsername())) {
             throw new DuplicateResourceException("username");
         }
-        AppUserEntity appUserEntity = new AppUserEntity(request);
-        appUserEntity.setPassword(passwordEncoder.encode(request.getPassword()));
-        AppRoleEntity role = roleRepository.findFirstByIsDefault(true).orElseThrow(
-                // TODO: 9/2/22 use custom exception
-                () -> new NoDefaultRoleException("There is no default role for users")
-        );
+        AppUserEntity appUserEntity = new AppUserEntity(registrationRequest);
+        appUserEntity.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+        AppRoleEntity role = roleRepository.findFirstByIsDefaultIsTrue()
+                .orElseThrow(() -> new NoDefaultRoleException("There is no default role for users"));
         appUserEntity.setRole(role);
-        // TODO: 9/2/22 you can return value which is being returned by repository method
+
         userRepository.save(appUserEntity);
 
         return getTokenResponse(request.getUsername(), userRepository);
@@ -61,17 +57,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String header = request.getHeader(AUTHORIZATION);
-        // TODO: 9/2/22 code duplication: CustomAuthorizationFilter:doFilterInternal
         checkHeader(header, false);
 
         try {
-//            String refresh_token = header.substring("Bearer ".length());
-//            // TODO catch error "The Token's Signature resulted invalid when verified using the Algorithm: HmacSHA384"
-//            //  code 124
-//            DecodedJWT decodedJWT = TokenProvider.decodeToken(refresh_token, false);
-//            String username = decodedJWT.getSubject();
-            UserDetails user = appUserServiceImpl.loadUserByUsername(getUsernameFromToken(header));
-
+            UserDetails user = appUserService.loadUserByUsername(getUsernameFromToken(header));
             TokensResponse accessTokenResponse = TokenUtils.getAccessTokenResponse(user.getUsername(), userRepository);
             TokenUtils.presentToken(accessTokenResponse, response);
         } catch (Exception exception) {

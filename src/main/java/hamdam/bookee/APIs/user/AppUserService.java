@@ -8,8 +8,9 @@ import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface AppUserService {
+public interface AppUserService extends UserDetailsService {
     Page<AppUserResponseDTO> getAllUsers(Pageable pageable);
 
     AppUserResponseDTO getUserById(Long id);

@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface AppRoleRepository extends JpaRepository<AppRoleEntity, Long> {
 
-    Optional<AppRoleEntity> findFirstByIsDefault(boolean isDefault);
+    Optional<AppRoleEntity> findFirstByIsDefaultIsTrue();
 
     Page<AppRoleEntity> findAllByOrderByTimeStampDesc(Pageable pageable);
 }

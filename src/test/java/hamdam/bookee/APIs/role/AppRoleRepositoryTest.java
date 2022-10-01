@@ -1,7 +1,6 @@
 package hamdam.bookee.APIs.role;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,7 +28,7 @@ class AppRoleRepositoryTest {
     @Test
     void returnsEmptyDataIfNoRoleExists() {
         //when
-        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefault(true);
+        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
         assertThat(actual.isEmpty()).isTrue();
@@ -45,7 +44,7 @@ class AppRoleRepositoryTest {
         ));
 
         //when
-        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefault(true);
+        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
         assertThat(actual.isEmpty()).isTrue();
@@ -61,7 +60,7 @@ class AppRoleRepositoryTest {
         ));
 
         //when
-        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefault(true);
+        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
         assertThat(actual.isPresent()).isTrue();
@@ -88,7 +87,7 @@ class AppRoleRepositoryTest {
         ));
 
         //when
-        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefault(true);
+        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
         assertThat(actual.isPresent()).isTrue();
@@ -120,7 +119,7 @@ class AppRoleRepositoryTest {
         ));
 
         //when
-        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefault(true);
+        Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
         assertThat(actual.isPresent()).isTrue();
@@ -144,27 +143,62 @@ class AppRoleRepositoryTest {
         actual.add(underTest.save(new AppRoleEntity(
                 "AUTHOR1",
                 false,
-                LocalDateTime.of(2022, 1, 1, 1, 1)
+                LocalDateTime.now()
         )));
         actual.add(underTest.save(new AppRoleEntity(
                 "AUTHOR2",
                 false,
-                LocalDateTime.of(2022, 2, 2, 2, 2)
+                LocalDateTime.now()
         )));
         actual.add(underTest.save(new AppRoleEntity(
                 "USER1",
                 true,
-                LocalDateTime.of(2022, 3, 3, 3, 3)
+                LocalDateTime.now()
         )));
 
         //when
         Page<AppRoleEntity> pagedRoles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, actual.size()));
 
         //then
-        assertThat(pagedRoles.isEmpty()).isFalse();
+        assertThat(pagedRoles.getSize()).isEqualTo(actual.size());
         assertThat(pagedRoles.getContent().get(0).getTimeStamp()).isAfter(
                 pagedRoles.getContent().get(1).getTimeStamp());
         assertThat(pagedRoles.getContent().get(1).getTimeStamp()).isAfter(
                 pagedRoles.getContent().get(2).getTimeStamp());
+    }
+
+    @Test
+    void returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailableAndRoleUpdated() {
+        //given
+        List<AppRoleEntity> actual = new ArrayList<>();
+        actual.add(underTest.save(new AppRoleEntity(
+                "AUTHOR1",
+                false,
+                LocalDateTime.now()
+        )));
+        actual.add(underTest.save(new AppRoleEntity(
+                "AUTHOR2",
+                false,
+                LocalDateTime.now()
+        )));
+        actual.add(underTest.save(new AppRoleEntity(
+                "USER1",
+                true,
+                LocalDateTime.now()
+        )));
+        AppRoleEntity updated = actual.get(2);
+        updated.setRoleName(updated.getRoleName() + " UPDATED");
+        updated = underTest.save(updated);
+
+        //when
+        Page<AppRoleEntity> pagedRoles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, actual.size()));
+
+        //then
+        assertThat(pagedRoles.getSize()).isEqualTo(actual.size());
+        assertThat(pagedRoles.getContent().get(0).getTimeStamp()).isAfter(
+                pagedRoles.getContent().get(1).getTimeStamp());
+        assertThat(pagedRoles.getContent().get(1).getTimeStamp()).isAfter(
+                pagedRoles.getContent().get(2).getTimeStamp());
+        assertThat(pagedRoles.getContent().get(0).getId()).isEqualTo(updated.getId());
     }
 }
