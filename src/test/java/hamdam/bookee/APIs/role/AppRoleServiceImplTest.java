@@ -6,6 +6,8 @@ import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -22,6 +27,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+import static hamdam.bookee.APIs.role.Permissions.GET_USER;
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,8 +35,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SecurityTestExecutionListeners
-@ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 class AppRoleServiceImplTest {
 
@@ -44,7 +48,7 @@ class AppRoleServiceImplTest {
     private AppRoleServiceImpl underTest;
 
     @Test
-    void canCreateRole() {
+    void shouldCreateRole() {
         // given
         AppRoleRequestDTO requestDTO = new AppRoleRequestDTO(
                 "USER", true, Collections.emptySet()
@@ -61,7 +65,7 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    void canThrowExceptionWhenRoleNameIsDuplicate() {
+    void shouldThrowExceptionWhenRoleNameIsDuplicate() {
         // given
         AppRoleRequestDTO requestDTO = new AppRoleRequestDTO(
                 "USER", true, Collections.emptySet()
@@ -76,7 +80,7 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    void canReturnValidDataWhenCalled() {
+    void shouldReturnValidDataWhenRequestIsValid() {
         //given
         when(appRoleRepository.findAllByOrderByTimeStampDesc(any())).thenReturn(Page.empty());
 
@@ -88,12 +92,53 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    @WithMockUser(username = "Hamdam")
-    void shouldReturnValidDataWhenIdIsValid() {
+    void shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
+        //given
+        Long id = 1L;
+        AppRoleEntity role = new AppRoleEntity("USER", Set.of(GET_USER));
+        AppUserEntity user = new AppUserEntity("Hamdam", role);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.deleteRoleById(id))
+                .isInstanceOf(LimitedPermissionException.class);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenRoleIdIsInvalid() {
+        Long id = 1L;
+        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
+        AppUserEntity user = new AppUserEntity("Hamdam", role);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.deleteRoleById(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Role");
+    }
+
+    @Test
+    void shouldReturnValidDataWhenValidRequestIsValid() {
         //given
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
+        SecurityContextHolder.setContext(context);
 
         when(appRoleRepository.existsById(id)).thenReturn(true);
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));

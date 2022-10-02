@@ -15,7 +15,6 @@ public class GetUserByToken {
         Object principal = auth.getPrincipal();
 
         String username;
-
         if (principal instanceof UserDetails) {
             username = ((UserDetails) principal).getUsername();
         } else {
