@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 class AppRoleRepositoryTest {
@@ -31,7 +33,7 @@ class AppRoleRepositoryTest {
         Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
-        assertThat(actual.isEmpty()).isTrue();
+        assertTrue(actual.isEmpty());
     }
 
     @Test
@@ -47,7 +49,7 @@ class AppRoleRepositoryTest {
         Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
-        assertThat(actual.isEmpty()).isTrue();
+        assertTrue(actual.isEmpty());
     }
 
     @Test
@@ -63,14 +65,14 @@ class AppRoleRepositoryTest {
         Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
-        assertThat(actual.isPresent()).isTrue();
+        assertTrue(actual.isPresent());
         assertThat(actual.get().getId()).isEqualTo(expected.getId());
     }
 
     @Test
     void returnsValidDataIfContainsMultipleNonDefaultRolesAndSingleDefaultRole() {
         //given
-        AppRoleEntity role = underTest.save(new AppRoleEntity(
+        AppRoleEntity expected = underTest.save(new AppRoleEntity(
                 "USER",
                 true,
                 LocalDateTime.now()
@@ -90,8 +92,8 @@ class AppRoleRepositoryTest {
         Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
-        assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get().getRoleName()).isEqualTo(role.getRoleName());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getId()).isEqualTo(expected.getId());
     }
 
     @Test
@@ -122,18 +124,18 @@ class AppRoleRepositoryTest {
         Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
         //then
-        assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get().getRoleName()).isEqualTo(expected.getRoleName());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getId()).isEqualTo(expected.getId());
     }
 
     @Test
     void returnEmptyDataWhenNoRoleOrderedByTimeStampDesc() {
         //given
         //when
-        Page<AppRoleEntity> pagedRoles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, 1));
+        Page<AppRoleEntity> roles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, 1));
 
         //then
-        assertThat(pagedRoles.isEmpty()).isTrue();
+        assertTrue(roles.isEmpty());
     }
 
     @Test
@@ -157,14 +159,14 @@ class AppRoleRepositoryTest {
         )));
 
         //when
-        Page<AppRoleEntity> pagedRoles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, actual.size()));
+        Page<AppRoleEntity> expected = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, actual.size()));
 
         //then
-        assertThat(pagedRoles.getSize()).isEqualTo(actual.size());
-        assertThat(pagedRoles.getContent().get(0).getTimeStamp()).isAfter(
-                pagedRoles.getContent().get(1).getTimeStamp());
-        assertThat(pagedRoles.getContent().get(1).getTimeStamp()).isAfter(
-                pagedRoles.getContent().get(2).getTimeStamp());
+        assertThat(expected.getSize()).isEqualTo(actual.size());
+        assertThat(expected.getContent().get(0).getTimeStamp()).isAfter(
+                expected.getContent().get(1).getTimeStamp());
+        assertThat(expected.getContent().get(1).getTimeStamp()).isAfter(
+                expected.getContent().get(2).getTimeStamp());
     }
 
     @Test
@@ -195,10 +197,10 @@ class AppRoleRepositoryTest {
 
         //then
         assertThat(pagedRoles.getSize()).isEqualTo(actual.size());
-        assertThat(pagedRoles.getContent().get(0).getTimeStamp()).isAfter(
+        assertThat(pagedRoles.getContent().get(2).getTimeStamp()).isBefore(
                 pagedRoles.getContent().get(1).getTimeStamp());
-        assertThat(pagedRoles.getContent().get(1).getTimeStamp()).isAfter(
-                pagedRoles.getContent().get(2).getTimeStamp());
+        assertThat(pagedRoles.getContent().get(1).getTimeStamp()).isBefore(
+                pagedRoles.getContent().get(0).getTimeStamp());
         assertThat(pagedRoles.getContent().get(0).getId()).isEqualTo(updated.getId());
     }
 
@@ -212,7 +214,7 @@ class AppRoleRepositoryTest {
         boolean expected = underTest.existsByRoleName(roleName);
 
         //then
-        assertThat(expected).isTrue();
+        assertTrue(expected);
     }
 
     @Test
@@ -225,6 +227,6 @@ class AppRoleRepositoryTest {
         boolean expected = underTest.existsByRoleName("TEST");
 
         //then
-        assertThat(expected).isFalse();
+        assertFalse(expected);
     }
 }
