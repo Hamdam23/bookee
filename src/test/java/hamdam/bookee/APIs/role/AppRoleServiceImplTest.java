@@ -14,9 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -29,6 +29,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SecurityTestExecutionListeners
+@ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 class AppRoleServiceImplTest {
 
@@ -86,15 +88,12 @@ class AppRoleServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "Hamdam")
     void shouldReturnValidDataWhenIdIsValid() {
         //given
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appRoleRepository.existsById(id)).thenReturn(true);
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
