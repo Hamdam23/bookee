@@ -24,7 +24,6 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public GenreDTO addGenre(GenreDTO dto) {
-        // TODO: 9/2/22 use GenreDTO as constructor argument
         GenreEntity entity = new GenreEntity(dto);
         genreRepository.save(entity);
         return dto;
@@ -37,7 +36,6 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public GenreDTO getGenreById(Long id) {
-        // TODO: 9/2/22 Local variable 'genre' is redundant
         GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Genre", "id", id));
         return new GenreDTO(genreEntity);
@@ -65,7 +63,6 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public ApiResponse deleteGenre(Long id) {
-        // TODO: 9/2/22 existsById is enough
         genreRepository.existsById(id);
         genreRepository.deleteById(id);
         return new ApiResponse(

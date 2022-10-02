@@ -43,7 +43,8 @@ public class GenreEntity {
         BeanUtils.copyProperties(genreDTO, this);
     }
 
-    public GenreEntity(Long id) {
-        this.id = id;
+    public GenreEntity(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 }

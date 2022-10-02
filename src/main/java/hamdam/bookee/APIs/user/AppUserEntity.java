@@ -58,4 +58,17 @@ public class AppUserEntity {
         this.userName = userName;
         this.role = role;
     }
+
+    public AppUserEntity(String name, String userName, String password) {
+        this.name = name;
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public AppUserEntity(String name, String userName, String password, LocalDateTime timeStamp) {
+        this.name = name;
+        this.userName = userName;
+        this.password = password;
+        this.timeStamp = timeStamp;
+    }
 }

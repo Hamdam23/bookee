@@ -9,9 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUserEntity, Long> {
+    boolean existsByUserName(String username);
+
     Optional<AppUserEntity> findAppUserByUserName(String userName);
 
     Page<AppUserEntity> findAllByOrderByTimeStampDesc(Pageable pageable);
-
-    boolean existsByUserName(String username);
 }
