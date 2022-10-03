@@ -130,7 +130,7 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    void shouldReturnValidDataWhenValidRequestIsValid() {
+    void shouldReturnValidResponseWhenRequestIsValid() {
         //given
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));

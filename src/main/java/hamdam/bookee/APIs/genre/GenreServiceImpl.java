@@ -50,9 +50,9 @@ public class GenreServiceImpl implements GenreService {
         // TODO: 9/2/22 do yo really need 3 genre related object: oldGenre, newGenre, genre(DTO)?
         // TODO: 9/2/22 why calling copyProperties?
         List<BookEntity> books = new ArrayList<>();
-        genreDTO.getBooks().forEach(aLong -> {
-            BookEntity book = bookRepository.findById(aLong).orElseThrow(()
-                    -> new ResourceNotFoundException("Book", "id", aLong));
+        genreDTO.getBooks().forEach(bookId -> {
+            BookEntity book = bookRepository.findById(bookId).orElseThrow(()
+                    -> new ResourceNotFoundException("Book", "id", bookId));
             books.add(book);
         });
         oldGenre.setBooks(books);

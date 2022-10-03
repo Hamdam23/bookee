@@ -35,11 +35,9 @@ public class GenreEntity {
     //TODO when genre deleted corresponding book's genre should be set to "null"
     @ManyToMany(mappedBy = "genres")
     // TODO: 9/2/22 remove @JsonIgnore and user @JsonIgnoreProperties in Book
-//    @JsonIgnore
     private List<BookEntity> books = new ArrayList<>();
 
     public GenreEntity(GenreDTO genreDTO) {
-        // TODO: 9/2/22 user BeanUtils.copyProperties()
         BeanUtils.copyProperties(genreDTO, this);
     }
 
