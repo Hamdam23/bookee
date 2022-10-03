@@ -1,6 +1,8 @@
 package hamdam.bookee.APIs.genre;
 
+import hamdam.bookee.APIs.book.BookEntity;
 import hamdam.bookee.APIs.book.BookRepository;
+import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,8 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 
 @ExtendWith(MockitoExtension.class)
 class GenreServiceImplTest {
@@ -36,7 +40,7 @@ class GenreServiceImplTest {
     private GenreRepository genreRepository;
 
     @Test
-    void shouldCreateRoleWhenRequestIsValid() {
+    void addGenre_shouldCreateRoleWhenRequestIsValid() {
         //given
         GenreDTO dto = new GenreDTO("name", "description");
 
@@ -44,58 +48,27 @@ class GenreServiceImplTest {
         GenreDTO actual = underTest.addGenre(dto);
 
         //then
+        verify(genreRepository).save(new GenreEntity(dto));
         assertThat(actual.getName()).isEqualTo(dto.getName());
         assertThat(actual.getDescription()).isEqualTo(dto.getDescription());
     }
 
     @Test
-    void shouldReturnEmptyDataWhenNoGenresAvailable() {
+    void getAllGenres_shouldReturnSingleDataWhenSingleGenreAvailable() {
         //given
-        Pageable pageable = PageRequest.of(0, 5);
-        when(genreRepository.findAll(any(Pageable.class))).thenReturn(Page.empty(Pageable.ofSize(5)));
+        Pageable pageable = PageRequest.of(0, 1);
+        when(genreRepository.findAll(pageable)).thenReturn(Page.empty(Pageable.ofSize(1)));
 
         //when
-        Page<GenreDTO> expected = underTest.getAllGenres(pageable);
+        Page<GenreDTO> actual = underTest.getAllGenres(pageable);
 
         //then
-        assertThat(expected).isEmpty();
+        verify(genreRepository).findAll(pageable);
+        assertThat(pageable.getPageSize()).isEqualTo(actual.getSize());
     }
 
     @Test
-    void shouldReturnSingleDataWhenSingleGenreAvailable() {
-        //given
-        List<GenreEntity> list = List.of(new GenreEntity("adventure", "adventure description"));
-        Page<GenreEntity> actual = new PageImpl<>(
-                list,
-                PageRequest.of(1, 1),
-                1);
-
-        //when
-        Page<GenreEntity> expected = new PageImpl<>(list, PageRequest.of(1, 1), 1);
-
-        //then
-        assertEquals(actual, expected);
-    }
-
-    @Test
-    void shouldReturnMultipleRolesWhenMultipleGenresAvailable() {
-        //given
-        List<GenreEntity> list = new ArrayList<>();
-        GenreEntity adventure = new GenreEntity("adventure", "adventure description");
-        GenreEntity horror = new GenreEntity("horror", "horror description");
-        list.add(adventure);
-        list.add(horror);
-        Page<GenreEntity> actual = new PageImpl<>(list, PageRequest.of(1, 3), 3);
-
-        //when
-        Page<GenreEntity> expected = new PageImpl<>(list, PageRequest.of(1, 3), 3);
-
-        //then
-        assertEquals(actual, expected);
-    }
-
-    @Test
-    void throwExceptionWhenIdIsInvalid() {
+    void getGenreById_throwExceptionWhenIdIsInvalid() {
         //given
         Long id = 1L;
         when(genreRepository.findById(id)).thenReturn(Optional.empty());
@@ -104,22 +77,81 @@ class GenreServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.getGenreById(id))
                 .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Genre")
+                .hasMessageContaining("id")
+                .hasMessageContaining(id.toString());
+    }
+
+    @Test
+    void getGenreById_shouldReturnValidDataWhenIdIsValid() {
+        //given
+        Long id = 1L;
+        when(genreRepository.findById(id)).thenReturn(Optional.of(new GenreEntity()));
+
+        //when
+        GenreDTO actual = underTest.getGenreById(id);
+
+        //then
+        verify(genreRepository).findById(id);
+        assertThat(actual).isNotNull();
+    }
+
+    @Test
+    void updateGenre_shouldThrowExceptionWhenIdIsInvalid() {
+        //given
+        Long id = 1L;
+        GenreDTO genreDTO = new GenreDTO("adventure", "adventure description");
+        when(genreRepository.findById(id)).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updateGenre(id, genreDTO))
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageStartingWith("Genre");
     }
 
     @Test
-    void shouldReturnValidDataWhenIdIsValid() {
+    void updateGenre_shouldReturnValidDataWhenRequestIsValid() {
         //given
-        Long id = 1L;
-        when(genreRepository.findById(id)).thenReturn(Optional.of(new GenreEntity("adventure",
-                "adventure description")));
+        Long genreId = 1L;
+        GenreDTO genreDTO = new GenreDTO("horror",
+                "horror description",
+                Arrays.asList(2L, 3L));
+        GenreEntity genreEntity = new GenreEntity("adventure",
+                "adventure description");
+        when(genreRepository.findById(genreId)).thenReturn(Optional.of(genreEntity));
+        when(bookRepository.findById(any())).thenReturn(Optional.of(new BookEntity()));
 
         //when
-        GenreDTO expected = underTest.getGenreById(id);
+        GenreDTO actual = underTest.updateGenre(genreId, genreDTO);
 
         //then
-        assertThat(expected.getName()).isEqualTo("adventure");
-        assertThat(expected.getDescription()).isEqualTo("adventure description");
+        assertThat(genreDTO).isEqualTo(actual);
     }
 
+    @Test
+    void deleteGenre_shouldThrowExceptionWhenIdIsInvalid() {
+        //given
+        Long id = 1L;
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.deleteGenre(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageStartingWith("Genre");
+    }
+
+    @Test
+    void deleteGenre_shouldReturnApiResponseWhenIdIsValid() {
+        //given
+        Long genreId = 1L;
+        when(genreRepository.existsById(genreId)).thenReturn(true);
+
+        //when
+        ApiResponse actual = underTest.deleteGenre(genreId);
+
+        //then
+        verify(genreRepository).deleteById(genreId);
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
 }

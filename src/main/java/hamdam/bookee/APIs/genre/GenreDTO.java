@@ -34,4 +34,10 @@ public class GenreDTO {
     public GenreDTO(GenreEntity entity){
         BeanUtils.copyProperties(entity, this);
     }
+
+    public GenreDTO(String name, String description, List<Long> books) {
+        this.name = name;
+        this.description = description;
+        this.books = books;
+    }
 }

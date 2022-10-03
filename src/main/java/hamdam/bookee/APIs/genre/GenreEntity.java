@@ -45,4 +45,10 @@ public class GenreEntity {
         this.name = name;
         this.description = description;
     }
+
+    public GenreEntity(String name, String description, List<BookEntity> books) {
+        this.name = name;
+        this.description = description;
+        this.books = books;
+    }
 }
