@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
@@ -27,13 +27,13 @@ import static org.mockito.Mockito.when;
 class GenreServiceImplTest {
 
     @InjectMocks
-    private static GenreServiceImpl underTest;
+    private GenreServiceImpl underTest;
 
     @Mock
-    private static BookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @Mock
-    private static GenreRepository genreRepository;
+    private GenreRepository genreRepository;
 
     @Test
     void shouldCreateRoleWhenRequestIsValid() {
