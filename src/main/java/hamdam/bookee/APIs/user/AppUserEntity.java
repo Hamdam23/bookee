@@ -1,10 +1,9 @@
 package hamdam.bookee.APIs.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
-import hamdam.bookee.APIs.image.ImagEntity;
+import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,7 +41,7 @@ public class AppUserEntity {
     // TODO: 9/2/22 name & json
     @OneToOne
     @JsonProperty("user_image")
-    private ImagEntity userImage;
+    private ImageEntity userImage;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @UpdateTimestamp
@@ -70,5 +69,11 @@ public class AppUserEntity {
         this.userName = userName;
         this.password = password;
         this.timeStamp = timeStamp;
+    }
+
+    public AppUserEntity(String name, String userName, AppRoleEntity role) {
+        this.name = name;
+        this.userName = userName;
+        this.role = role;
     }
 }
