@@ -22,7 +22,7 @@ public class ImageServiceImpl implements ImageService {
     private final FileSystemRepository fileSystemRepository;
 
     @Override
-    public ImagEntity uploadImage(MultipartFile file) throws Exception {
+    public ImageEntity uploadImage(MultipartFile file) throws Exception {
         String fileNameWithoutExt = FilenameUtils.removeExtension(file.getOriginalFilename());
         if (fileNameWithoutExt == null) {
             fileNameWithoutExt = "";
@@ -35,16 +35,16 @@ public class ImageServiceImpl implements ImageService {
         String name = fileNameWithoutExt + "-" + new Date().getTime() + "." + extension;
         String location = fileSystemRepository.writeFile(file.getBytes(), name);
 
-        return imageRepository.save(new ImagEntity(name, location));
+        return imageRepository.save(new ImageEntity(name, location));
     }
 
     @Override
     public FileSystemResource downloadImage(String name) {
-        ImagEntity imagEntity = imageRepository.findByImageName(name).orElseThrow(()
+        ImageEntity imageEntity = imageRepository.findByImageName(name).orElseThrow(()
                 // TODO: 9/2/22 custom exception
                 -> new ResourceNotFoundException("Image", "name", name)
         );
-        return fileSystemRepository.readFile(imagEntity.getLocation());
+        return fileSystemRepository.readFile(imageEntity.getLocation());
     }
 
     @Override

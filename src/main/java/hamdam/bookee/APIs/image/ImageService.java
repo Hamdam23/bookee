@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
-    ImagEntity uploadImage(MultipartFile file) throws Exception;
+    ImageEntity uploadImage(MultipartFile file) throws Exception;
 
     FileSystemResource downloadImage(String location);
 

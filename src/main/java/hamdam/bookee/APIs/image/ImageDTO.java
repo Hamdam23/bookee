@@ -15,7 +15,7 @@ public class ImageDTO {
     @JsonProperty("image_name")
     private String imageName;
 
-    public ImageDTO(ImagEntity entity){
+    public ImageDTO(ImageEntity entity){
         BeanUtils.copyProperties(entity, this);
     }
 }

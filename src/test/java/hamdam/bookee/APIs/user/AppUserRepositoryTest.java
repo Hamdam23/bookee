@@ -30,7 +30,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnTrueWhenUserExistsWithUserName() {
+    void existsByUserName_returnTrueWhenUserExistsWithUserName() {
         //given
         String username = "hamdam_kh";
         underTest.save(
@@ -47,7 +47,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnFalseWhenUserDoesNotExistsWithUserName() {
+    void existsByUserName_returnFalseWhenUserDoesNotExistsWithUserName() {
         //given
         String username = "user_kh";
         underTest.save(
@@ -64,7 +64,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnEmptyDataWhenUserNotFoundWithUserName() {
+    void findAppUserByUserName_returnEmptyDataWhenUserNotFoundWithUserName() {
         //given
         String username = "hamdam";
 
@@ -76,7 +76,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnValidDataWhenUserFoundWithUserName() {
+    void findAppUserByUserName_returnValidDataWhenUserFoundWithUserName() {
         //given
         String username = "hamdam";
         AppUserEntity actual = underTest.save(
@@ -93,7 +93,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnEmptyDataWhenNoUser() {
+    void findAllByOrderByTimeStampDesc_returnEmptyDataWhenNoUser() {
         //given
         Page<AppUserEntity> actual = new PageImpl<>(List.of(), Pageable.ofSize(1), 0);
 
@@ -105,7 +105,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnSingleDataWhenSingleUser() {
+    void findAllByOrderByTimeStampDesc_returnSingleDataWhenSingleUser() {
         //given
         underTest.save(
                 new AppUserEntity("Hamdam",
@@ -121,7 +121,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnOrderedUsersWhenMultipleUsers() {
+    void findAllByOrderByTimeStampDesc_returnOrderedUsersWhenMultipleUsers() {
         //given
         List<AppUserEntity> actual = new ArrayList<>();
         actual.add(underTest.save(
@@ -158,7 +158,7 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void returnOrderedUsersWhenMultipleUsersWithUpdatedUser() {
+    void findAllByOrderByTimeStampDesc_returnOrderedUsersWhenMultipleUsersWithUpdatedUser() {
         //given
         List<AppUserEntity> actual = new ArrayList<>();
         actual.add(underTest.save(

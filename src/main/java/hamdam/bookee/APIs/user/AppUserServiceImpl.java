@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.APIs.image.ImagEntity;
+import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
@@ -47,14 +46,14 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AppUserEntity> user = userRepository.findAppUserByUserName(username);
+        AppUserEntity user = userRepository.findAppUserByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         // TODO: 9/2/22 write mapper method/class for AppUser <-> User
-        // TODO TODO
         return new User(
                 // TODO: 9/2/22 handle get() call
-                user.get().getUserName(),
-                user.get().getPassword(),
-                user.get().getRole().getPermissions().stream().map(
+                user.getUserName(),
+                user.getPassword(),
+                user.getRole().getPermissions().stream().map(
                         permission -> new SimpleGrantedAuthority(permission.name())
                 ).collect(Collectors.toList())
         );
@@ -79,15 +78,17 @@ public class AppUserServiceImpl implements AppUserService {
         AppUserEntity requestedUser = getAppUserById(id);
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
-        if (currentUser.getRole().getPermissions().contains(MONITOR_USER) && newUser.getRoleId() != null) {
+        if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
+                && newUser.getRoleId() != null) {
             requestedUser.setRole(roleRepository.findById(newUser.getRoleId())
                     .orElseThrow(() -> new ResourceNotFoundException("Role", "id", newUser.getRoleId()))
             );
         }
 
-        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
+        if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
+                || currentUser.getId().equals(id)) {
             requestedUser.setUserImage(imageRepository.findById(newUser.getImageId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id))
+                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", newUser.getImageId()))
             );
 
             requestedUser.setName(newUser.getName());
@@ -110,12 +111,12 @@ public class AppUserServiceImpl implements AppUserService {
             userRepository.findById(id).orElseThrow(()
                     -> new ResourceNotFoundException("User", "id", id)
             );
-            ImagEntity imagEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
+            ImageEntity imageEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                     -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
             );
             // TODO: 9/2/22 code duplication
             AppUserEntity user = getAppUserById(id);
-            user.setUserImage(imagEntity);
+            user.setUserImage(imageEntity);
             return new AppUserResponseDTO(userRepository.save(user));
         } else {
             throw new LimitedPermissionException();
@@ -138,7 +139,6 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public ApiResponse deleteUser(Long id) {
-        // TODO: 9/2/22 searching for image or user? imageRepository? why?
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
@@ -206,5 +206,4 @@ public class AppUserServiceImpl implements AppUserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
-
 }

@@ -138,7 +138,9 @@ class GenreServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.deleteGenre(id))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageStartingWith("Genre");
+                .hasMessageContaining("Genre")
+                .hasMessageContaining("id")
+                .hasMessageContaining(id.toString());
     }
 
     @Test
