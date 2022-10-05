@@ -7,10 +7,13 @@ import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
 import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
+import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -550,5 +553,180 @@ class AppUserServiceImplTest {
         verify(appUserRepository).existsById(userId);
         verify(appUserRepository).deleteById(userId);
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void updatePassword_throwsExceptionWhenUserIdIsInvalid() {
+        //given
+        Long userId = 1L;
+        when(appUserRepository.findById(userId)).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updatePassword(new SetUserPasswordDTO(), userId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("User")
+                .hasMessageContaining("id")
+                .hasMessageContaining(userId.toString());
+        verify(appUserRepository).findById(userId);
+    }
+
+    @Test
+    void updatePassword_throwsExceptionWhenCurrentUserIsInvalid() {
+        //given
+        Long userId = 1L;
+        AppUserEntity user = new AppUserEntity("Nicola",
+                "niko",
+                "very_secure_password");
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updatePassword(new SetUserPasswordDTO(), userId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("User")
+                .hasMessageContaining("username")
+                .hasMessageContaining(user.getUserName());
+        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+    }
+
+    @Test
+    void updatePassword_throwsExceptionWhenOldAndNewPasswordAreEqual() {
+        //given
+        Long userId = 1L;
+        SetUserPasswordDTO request = new SetUserPasswordDTO(
+                "old_password", "old_password", "new_password"
+        );
+
+        AppUserEntity user = new AppUserEntity("Nicola",
+                "niko",
+                "very_secure_password");
+
+        AppUserEntity currentUser = new AppUserEntity("Phil",
+                "philly",
+                "very_good_password");
+        currentUser.setId(userId);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updatePassword(request, userId))
+                .isInstanceOf(DuplicateResourceException.class)
+                .hasMessageContaining("passwords")
+                .hasMessageContaining(request.getOldPassword())
+                .hasMessageContaining(request.getNewPassword());
+        verify(appUserRepository).findById(userId);
+        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+    }
+
+    @Test
+    void updatePassword_throwsExceptionWhenNewPasswordNotConfirmed() {
+        //given
+        Long userId = 1L;
+        SetUserPasswordDTO request = new SetUserPasswordDTO(
+                "old_password", "new_password", "new_Password"
+        );
+
+        AppUserEntity user = new AppUserEntity("Nicola",
+                "niko",
+                "very_secure_password");
+
+        AppUserEntity currentUser = new AppUserEntity("Phil",
+                "philly",
+                "very_good_password");
+        currentUser.setId(userId);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updatePassword(request, userId))
+                .isInstanceOf(PasswordMismatchException.class)
+                .hasMessageContaining("does not match");
+        verify(appUserRepository).findById(userId);
+        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+    }
+
+    @Test
+    void updatePassword_throwsExceptionWhenOldPasswordIsWrong() {
+        //given
+        Long userId = 1L;
+        SetUserPasswordDTO request = new SetUserPasswordDTO(
+                "old_password", "new_password", "new_password"
+        );
+
+        AppUserEntity user = new AppUserEntity("Nicola",
+                "niko",
+                "very_secure_password");
+
+        AppUserEntity currentUser = new AppUserEntity("Phil",
+                "philly",
+                "very_good_password");
+        currentUser.setId(userId);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updatePassword(request, userId))
+                .isInstanceOf(PasswordMismatchException.class)
+                .hasMessageContaining("does not match");
+        verify(appUserRepository).findById(userId);
+        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+    }
+
+    @Test
+    void updatePassword_returnValidDataWhenRequestIsValid() {
+        //given
+        Long userId = 1L;
+        SetUserPasswordDTO request = new SetUserPasswordDTO(
+                "old_password", "new_password", "new_password"
+        );
+
+        AppUserEntity user = new AppUserEntity("Nicola",
+                "niko",
+                "old_password");
+
+        AppUserEntity currentUser = new AppUserEntity("Phil",
+                "philly",
+                "very_good_password");
+        currentUser.setId(userId);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+        when(passwordEncoder.matches(request.getOldPassword(), user.getPassword())).thenReturn(true);
+        when(appUserRepository.save(user)).thenReturn(user);
+
+        //when
+        underTest.updatePassword(request, userId);
+
+        //then
+        assertThat(user.getPassword()).isEqualTo(passwordEncoder.encode(request.getNewPassword()));
+        verify(appUserRepository).findById(userId);
+        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
     }
 }
