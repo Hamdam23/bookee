@@ -6,7 +6,11 @@ import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.Column;
+
+@Component
 public class GetUserByToken {
 
     public static AppUserEntity getUserByRequest(AppUserRepository userRepository) {

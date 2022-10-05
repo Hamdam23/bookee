@@ -108,9 +108,6 @@ public class AppUserServiceImpl implements AppUserService {
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
-            userRepository.findById(id).orElseThrow(()
-                    -> new ResourceNotFoundException("User", "id", id)
-            );
             ImageEntity imageEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                     -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
             );
@@ -142,9 +139,9 @@ public class AppUserServiceImpl implements AppUserService {
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
-            userRepository.findById(id).orElseThrow(()
-                    -> new ResourceNotFoundException("User", "id", id)
-            );
+            if (!userRepository.existsById(id)) {
+                throw new ResourceNotFoundException("User", "id", id);
+            }
             userRepository.deleteById(id);
 
             return new ApiResponse(
@@ -155,18 +152,6 @@ public class AppUserServiceImpl implements AppUserService {
         } else {
             throw new LimitedPermissionException();
         }
-    }
-
-    // TODO: 9/2/22 needs rename (and maybe some docs)
-    @Override
-    public boolean isPasswordInvalid(String username) {
-        return userRepository.existsByUserName(username);
-    }
-
-    @Override
-    public AppUserEntity getUserByUsername(String username) {
-        return userRepository.findAppUserByUserName(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 
     @Override
@@ -202,7 +187,20 @@ public class AppUserServiceImpl implements AppUserService {
         }
     }
 
-    private AppUserEntity getAppUserById(Long id) {
+    // TODO: 9/2/22 needs rename (and maybe some docs)
+    @Override
+    public boolean isPasswordInvalid(String username) {
+        return userRepository.existsByUserName(username);
+    }
+
+    @Override
+    public AppUserEntity getUserByUsername(String username) {
+        return userRepository.findAppUserByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    }
+
+    //package-private
+    AppUserEntity getAppUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }

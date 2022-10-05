@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class UserImageDTO {
     @JsonProperty("image_id")
-    private long imageId;
+    private Long imageId;
 }
