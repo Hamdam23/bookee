@@ -13,6 +13,7 @@ import javax.persistence.Column;
 @Component
 public class GetUserByToken {
 
+    // TODO: 05/10/22 test
     public static AppUserEntity getUserByRequest(AppUserRepository userRepository) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
