@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -66,7 +65,6 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUserResponseDTO getUserById(Long id) {
-        // TODO: 9/2/22 custom exception
         return new AppUserResponseDTO(userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id))
         );
@@ -79,26 +77,21 @@ public class AppUserServiceImpl implements AppUserService {
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
-                && newUser.getRoleId() != null) {
-            requestedUser.setRole(roleRepository.findById(newUser.getRoleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Role", "id", newUser.getRoleId()))
-            );
-        }
-
-        if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
                 || currentUser.getId().equals(id)) {
-            requestedUser.setUserImage(imageRepository.findById(newUser.getImageId())
+            existingUser.setUserImage(imageRepository.findById(newUser.getImageId())
                     .orElseThrow(() -> new ResourceNotFoundException("Image", "id", newUser.getImageId()))
             );
 
-            requestedUser.setName(newUser.getName());
-            requestedUser.setUserName(newUser.getUserName());
+            if (!newUser.getUserName().equals(existingUser.getUserName()) && userRepository.existsByUserName(newUser.getUserName())) {
+                throw new DuplicateResourceException("username", "User", newUser.getUserName());
+            }
+            existingUser.setUserName(newUser.getUserName());
+            existingUser.setName(newUser.getName());
 
-            return new AppUserResponseDTO(userRepository.save(requestedUser));
+            return new AppUserResponseDTO(userRepository.save(existingUser));
         } else {
             throw new LimitedPermissionException();
         }
-
     }
 
     @Override
@@ -111,7 +104,6 @@ public class AppUserServiceImpl implements AppUserService {
             ImageEntity imageEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                     -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
             );
-            // TODO: 9/2/22 code duplication
             AppUserEntity user = getAppUserById(id);
             user.setUserImage(imageEntity);
             return new AppUserResponseDTO(userRepository.save(user));
@@ -123,25 +115,24 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     @Transactional
     public AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO roleDTO) {
-        AppUserEntity user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User", "id", id)
-        );
-        AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId()).orElseThrow(
-                () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
-        );
+        AppUserEntity user = getAppUserById(id);
+        AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId()));
         user.setRole(appRoleEntity);
-        // TODO: 9/2/22 you can return value from repository method call
         return new AppUserResponseDTO(userRepository.save(user));
     }
 
     @Override
     public ApiResponse deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User", "id", id);
+        }
+
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
+        //todo test 1st case in if
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
-            if (!userRepository.existsById(id)) {
-                throw new ResourceNotFoundException("User", "id", id);
-            }
+
             userRepository.deleteById(id);
 
             return new ApiResponse(
@@ -156,10 +147,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id) {
-        AppUserEntity user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User", "id", id)
-        );
-
+        AppUserEntity user = getAppUserById(id);
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getId().equals(id)) {
@@ -167,13 +155,11 @@ public class AppUserServiceImpl implements AppUserService {
             String newPassword = passwordDTO.getNewPassword();
             String confirmedPassword = passwordDTO.getConfirmNewPassword();
 
-            if (oldPassword.equals(newPassword)) {
-                throw new DuplicateResourceException("passwords", oldPassword, newPassword);
-            }
-            // logic is written that throws the same exception as the next if logic,
-            // just because I need different responses.
             if (!newPassword.equals(confirmedPassword)) {
                 throw new PasswordMismatchException(newPassword, confirmedPassword);
+            }
+            if (oldPassword.equals(newPassword)) {
+                throw new DuplicateResourceException("passwords", oldPassword, newPassword);
             }
             if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
                 throw new PasswordMismatchException(oldPassword, "user's password");

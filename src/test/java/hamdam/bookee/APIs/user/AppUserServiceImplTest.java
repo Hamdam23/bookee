@@ -14,8 +14,10 @@ import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +30,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -204,7 +207,7 @@ class AppUserServiceImplTest {
                 2L,
                 3L
         );
-        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
+        AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
         AppUserEntity user = new AppUserEntity("Phil", role);
         user.setId(4L);
 
@@ -249,7 +252,6 @@ class AppUserServiceImplTest {
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(requestedUser));
         when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
-        when(appRoleRepository.findById(request.getRoleId())).thenReturn(Optional.of(role));
         when(imageRepository.findById(request.getImageId())).thenReturn(Optional.of(image));
         when(appUserRepository.save(requestedUser)).thenReturn(requestedUser);
 
@@ -270,39 +272,12 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void setImageToUser_shouldThrowExceptionWhenUserNameIsInvalid() {
+    void setImageToUser_shouldThrowExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
         UserImageDTO imageDTO = new UserImageDTO();
-        AppUserEntity user = new AppUserEntity("Nicola",
-                "niko",
-                "very_secret_password");
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.setImageToUser(userId, imageDTO))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("User")
-                .hasMessageContaining("username")
-                .hasMessageContaining(user.getUserName());
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
-    }
-
-    @Test
-    void setImageToUser_shouldThrowExceptionWhenUserHasLimitedPermission() {
-        //given
-        Long userId = 1L;
-        UserImageDTO imageDTO = new UserImageDTO();
-        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
-        AppUserEntity user = new AppUserEntity("Nicola",
-                "niko",
-                role);
+        AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
+        AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(2L);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -314,8 +289,29 @@ class AppUserServiceImplTest {
         //when
         //then
         assertThatThrownBy(() -> underTest.setImageToUser(userId, imageDTO))
-                .isInstanceOf(LimitedPermissionException.class)
-                .hasMessageContaining("access");
+                .isInstanceOf(LimitedPermissionException.class);
+        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+    }
+
+    @Test
+    void setImageToUser_shouldThrowExceptionWhenUserDoesNotHaveRequiredPermission() {
+        //given
+        Long userId = 1L;
+        UserImageDTO imageDTO = new UserImageDTO();
+        AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
+        AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
+        user.setId(2L);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.setImageToUser(userId, imageDTO))
+                .isInstanceOf(LimitedPermissionException.class);
         verify(appUserRepository).findAppUserByUserName(user.getUserName());
     }
 
@@ -326,9 +322,7 @@ class AppUserServiceImplTest {
         UserImageDTO imageDTO = new UserImageDTO();
         imageDTO.setImageId(2L);
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
-        AppUserEntity user = new AppUserEntity("Nicola",
-                "niko",
-                role);
+        AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(3L);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -357,13 +351,9 @@ class AppUserServiceImplTest {
         imageDTO.setImageId(2L);
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
         role.setId(3L);
-        AppUserEntity user = new AppUserEntity("Nicola",
-                "niko",
-                role);
+        AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(userId);
-        ImageEntity image = new ImageEntity(
-                "alien", "solar-system/earth"
-        );
+        ImageEntity image = new ImageEntity("alien", "solar-system/earth");
         image.setId(4L);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -390,23 +380,6 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void setRoleToUser_throwsExceptionWhenUserIdIsInvalid() {
-        //given
-        Long userId = 1L;
-        SetUserRoleDTO roleDTO = new SetUserRoleDTO();
-        when(appUserRepository.findById(userId)).thenReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.setRoleToUser(userId, roleDTO))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("User")
-                .hasMessageContaining("id")
-                .hasMessageContaining(userId.toString());
-        verify(appUserRepository).findById(userId);
-    }
-
-    @Test
     void setRoleToUser_throwsExceptionWhenRoleIdIsInvalid() {
         //given
         Long userId = 1L;
@@ -430,9 +403,7 @@ class AppUserServiceImplTest {
         //given
         Long userId = 1L;
         SetUserRoleDTO roleDTO = new SetUserRoleDTO(2L);
-        AppRoleEntity role = new AppRoleEntity(
-                "test", Set.of(MONITOR_ROLE)
-        );
+        AppRoleEntity role = new AppRoleEntity("test", Collections.emptySet());
         role.setId(2L);
         AppUserEntity user = new AppUserEntity("Nicola", "niko", "very_secret_password");
         user.setId(userId);
@@ -454,52 +425,28 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void deleteUser_throwsExceptionWhenUserByTokenInvalid() {
-        //given
-        Long userId = 1L;
-        AppUserEntity user = new AppUserEntity("Nicola",
-                "niko",
-                "very_secure_password");
-        user.setId(userId);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.deleteUser(userId))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("User")
-                .hasMessageContaining("username")
-                .hasMessageContaining(user.getUserName());
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
-    }
-
-    @Test
-    void deleteUser_throwsExceptionWhenUserDoesNotHavePermission() {
+    void deleteUser_throwsExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
         AppUserEntity user = new AppUserEntity("Nicola",
                 "niko",
                 role);
-        user.setId(userId);
+        user.setId(2L);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
         SecurityContextHolder.setContext(context);
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.empty());
+        when(appUserRepository.existsById(userId)).thenReturn(false);
 
         //when
         //then
         assertThatThrownBy(() -> underTest.deleteUser(userId))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("User")
-                .hasMessageContaining("username")
-                .hasMessageContaining(user.getUserName());
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+                .hasMessageContaining("id")
+                .hasMessageContaining(userId.toString());
+        verify(appUserRepository).existsById(userId);
     }
 
     @Test
@@ -530,7 +477,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void deleteUser_returnValidDataWhenUserIdIsInvalid() {
+    void deleteUser_returnValidDataWhenUserHaveRequiredPermission() {
         //given
         Long userId = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
@@ -553,80 +500,6 @@ class AppUserServiceImplTest {
         verify(appUserRepository).existsById(userId);
         verify(appUserRepository).deleteById(userId);
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
-    }
-
-    @Test
-    void updatePassword_throwsExceptionWhenUserIdIsInvalid() {
-        //given
-        Long userId = 1L;
-        when(appUserRepository.findById(userId)).thenReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.updatePassword(new SetUserPasswordDTO(), userId))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("User")
-                .hasMessageContaining("id")
-                .hasMessageContaining(userId.toString());
-        verify(appUserRepository).findById(userId);
-    }
-
-    @Test
-    void updatePassword_throwsExceptionWhenCurrentUserIsInvalid() {
-        //given
-        Long userId = 1L;
-        AppUserEntity user = new AppUserEntity("Nicola",
-                "niko",
-                "very_secure_password");
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.updatePassword(new SetUserPasswordDTO(), userId))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("User")
-                .hasMessageContaining("username")
-                .hasMessageContaining(user.getUserName());
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
-    }
-
-    @Test
-    void updatePassword_throwsExceptionWhenOldAndNewPasswordAreEqual() {
-        //given
-        Long userId = 1L;
-        SetUserPasswordDTO request = new SetUserPasswordDTO(
-                "old_password", "old_password", "new_password"
-        );
-
-        AppUserEntity user = new AppUserEntity("Nicola",
-                "niko",
-                "very_secure_password");
-
-        AppUserEntity currentUser = new AppUserEntity("Phil",
-                "philly",
-                "very_good_password");
-        currentUser.setId(userId);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
-        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.updatePassword(request, userId))
-                .isInstanceOf(DuplicateResourceException.class)
-                .hasMessageContaining("passwords")
-                .hasMessageContaining(request.getOldPassword())
-                .hasMessageContaining(request.getNewPassword());
-        verify(appUserRepository).findById(userId);
-        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
     }
 
     @Test
@@ -657,7 +530,43 @@ class AppUserServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.updatePassword(request, userId))
                 .isInstanceOf(PasswordMismatchException.class)
-                .hasMessageContaining("does not match");
+                .hasMessageContaining(request.getNewPassword())
+                .hasMessageContaining(request.getConfirmNewPassword());
+        verify(appUserRepository).findById(userId);
+        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+    }
+
+    @Test
+    void updatePassword_throwsExceptionWhenOldAndNewPasswordAreEqual() {
+        //given
+        Long userId = 1L;
+        SetUserPasswordDTO request = new SetUserPasswordDTO(
+                "old_password", "old_password", "old_password"
+        );
+
+        AppUserEntity user = new AppUserEntity("Nicola",
+                "niko",
+                "very_secure_password");
+
+        AppUserEntity currentUser = new AppUserEntity("Phil",
+                "philly",
+                "very_good_password");
+        currentUser.setId(userId);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updatePassword(request, userId))
+                .isInstanceOf(DuplicateResourceException.class)
+                .hasMessageContaining("passwords")
+                .hasMessageContaining(request.getOldPassword())
+                .hasMessageContaining(request.getNewPassword());
         verify(appUserRepository).findById(userId);
         verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
     }
@@ -690,7 +599,8 @@ class AppUserServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.updatePassword(request, userId))
                 .isInstanceOf(PasswordMismatchException.class)
-                .hasMessageContaining("does not match");
+                .hasMessageContaining(request.getOldPassword())
+                .hasMessageContaining("user's password");
         verify(appUserRepository).findById(userId);
         verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
     }
@@ -719,13 +629,17 @@ class AppUserServiceImplTest {
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.matches(request.getOldPassword(), user.getPassword())).thenReturn(true);
+        when(passwordEncoder.encode(request.getNewPassword())).thenReturn("encoded_new_password");
         when(appUserRepository.save(user)).thenReturn(user);
 
         //when
         underTest.updatePassword(request, userId);
 
         //then
-        assertThat(user.getPassword()).isEqualTo(passwordEncoder.encode(request.getNewPassword()));
+        ArgumentCaptor<AppUserEntity> userArgCaptor = ArgumentCaptor.forClass(AppUserEntity.class);
+        verify(appUserRepository).save(userArgCaptor.capture());
+        AppUserEntity actual = userArgCaptor.getValue();
+        assertThat(actual.getPassword()).isEqualTo(passwordEncoder.encode(request.getNewPassword()));
         verify(appUserRepository).findById(userId);
         verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
     }
