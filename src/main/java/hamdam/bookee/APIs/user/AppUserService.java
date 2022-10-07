@@ -27,7 +27,7 @@ public interface AppUserService extends UserDetailsService {
     ApiResponse deleteUser(Long id);
 
     // TODO: 9/2/22 rename (!)
-    boolean isPasswordInvalid(String username);
+    boolean userExistsWithUsername(String username);
 
     AppUserEntity getUserByUsername(String username);
 

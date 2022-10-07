@@ -14,7 +14,6 @@ import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +35,8 @@ import java.util.Set;
 
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE;
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -632,5 +632,62 @@ class AppUserServiceImplTest {
         assertThat(actual.getPassword()).isEqualTo(passwordEncoder.encode(request.getNewPassword()));
         verify(appUserRepository).findById(userId);
         verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+    }
+
+    @Test
+    void userExistsWithUsername_returnFalseWhenUserNameIsInvalid() {
+        //given
+        String username = "test";
+        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+
+        //when
+        boolean actual = underTest.userExistsWithUsername(username);
+
+        //then
+        verify(appUserRepository).existsByUserName(username);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    void userExistsWithUsername_returnTrueWhenUserNameIsValid() {
+        //given
+        String username = "test";
+        when(appUserRepository.existsByUserName(username)).thenReturn(true);
+
+        //when
+        boolean actual = underTest.userExistsWithUsername(username);
+
+        //then
+        verify(appUserRepository).existsByUserName(username);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    void getUserByUsername_throwsExceptionWhenUsernameIsInvalid() {
+        //given
+        String username = "test";
+        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.getUserByUsername(username))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("User")
+                .hasMessageContaining(username);
+    }
+
+    @Test
+    void getUserByUsername_shouldReturnValidDataWhenUsernameIsValid() {
+        //given
+        String username = "test";
+        AppUserEntity user = new AppUserEntity(username, new AppRoleEntity());
+        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.of(user));
+
+        //when
+        underTest.getUserByUsername(username);
+
+        //then
+        verify(appUserRepository).findAppUserByUserName(username);
+        assertThat(user.getUserName()).isEqualTo(username);
     }
 }

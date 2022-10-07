@@ -172,7 +172,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     // TODO: 9/2/22 needs rename (and maybe some docs)
     @Override
-    public boolean isPasswordInvalid(String username) {
+    public boolean userExistsWithUsername(String username) {
         return userRepository.existsByUserName(username);
     }
 
