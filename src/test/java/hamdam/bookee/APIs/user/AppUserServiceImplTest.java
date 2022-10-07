@@ -91,7 +91,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void getAllUsers_shouldReturnSingleUserWhenSingleUserAvailable() {
+    void getAllUsers_shouldReturnValidData() {
         //given
         Pageable pageable = PageRequest.of(0, 1);
         when(appUserRepository.findAllByOrderByTimeStampDesc(pageable))
@@ -135,37 +135,6 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void updateUser_shouldThrowExceptionRequestedRoleIdIsValid() {
-        //given
-        Long userId = 1L;
-        AppUserRequestDTO request = new AppUserRequestDTO(
-                "Nicola",
-                "niko",
-                2L,
-                3L
-        );
-        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
-        AppUserEntity user = new AppUserEntity("Phil", role);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
-        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
-        when(appRoleRepository.findById(request.getRoleId())).thenReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.updateUser(request, userId))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Role")
-                .hasMessageContaining("id")
-                .hasMessageContaining(request.getRoleId().toString());
-        verify(appRoleRepository).findById(request.getRoleId());
-    }
-
-    @Test
     void updateUser_shouldThrowExceptionWhenImageIdIsInvalid() {
         //given
         Long userId = 1L;
@@ -198,7 +167,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void updateUser_shouldThrowExceptionWhenUserDoesNotHavePermission() {
+    void updateUser_shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
         //given
         Long userId = 1L;
         AppUserRequestDTO request = new AppUserRequestDTO(
@@ -221,12 +190,10 @@ class AppUserServiceImplTest {
         //when
         //then
         assertThatThrownBy(() -> underTest.updateUser(request, userId))
-                .isInstanceOf(LimitedPermissionException.class)
-                .hasMessageContaining("access");
-    }
+                .isInstanceOf(LimitedPermissionException.class);}
 
     @Test
-    void updateUser_shouldReturnValidDataWhenResponseIsValid() {
+    void updateUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
         AppUserRequestDTO request = new AppUserRequestDTO(
@@ -259,15 +226,10 @@ class AppUserServiceImplTest {
         AppUserResponseDTO actual = underTest.updateUser(request, userId);
 
         //then
-        verify(appUserRepository).findById(userId);
-        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
-        verify(appRoleRepository).findById(request.getRoleId());
-        verify(imageRepository).findById(request.getImageId());
         verify(appUserRepository).save(requestedUser);
 
         assertThat(actual.getName()).isEqualTo(request.getName());
         assertThat(actual.getUserName()).isEqualTo(request.getUserName());
-        assertThat(actual.getRole().getId()).isEqualTo(role.getId());
         assertThat(actual.getImage().getId()).isEqualTo(image.getId());
     }
 
@@ -428,7 +390,7 @@ class AppUserServiceImplTest {
     void deleteUser_throwsExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
-        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
         AppUserEntity user = new AppUserEntity("Nicola",
                 "niko",
                 role);
@@ -450,10 +412,10 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void deleteUser_throwsExceptionWhenUserIdIsInvalid() {
+    void deleteUser_throwsExceptionWhenUserDoesNotHavePermission() {
         //given
         Long userId = 1L;
-        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = new AppRoleEntity("USER",Collections.emptySet());
         AppUserEntity user = new AppUserEntity("Nicola",
                 "niko",
                 role);
@@ -462,18 +424,16 @@ class AppUserServiceImplTest {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
         SecurityContextHolder.setContext(context);
+        // TODO: 05/10/22 fix
+        when(appUserRepository.existsById(userId)).thenReturn(true);
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
-        when(appUserRepository.existsById(userId)).thenReturn(false);
 
         //when
         //then
+        // TODO: 05/10/22 fix
         assertThatThrownBy(() -> underTest.deleteUser(userId))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("User")
-                .hasMessageContaining("id")
-                .hasMessageContaining(userId.toString());
+                .isInstanceOf(LimitedPermissionException.class);
         verify(appUserRepository).findAppUserByUserName(user.getUserName());
-        verify(appUserRepository).existsById(userId);
     }
 
     @Test
@@ -500,6 +460,36 @@ class AppUserServiceImplTest {
         verify(appUserRepository).existsById(userId);
         verify(appUserRepository).deleteById(userId);
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    void updatePassword_throwsExceptionWhenUserIdIsInvalid() {
+        //given
+        Long userId = 1L;
+        SetUserPasswordDTO request = new SetUserPasswordDTO(
+                "old_password", "new_password", "new_Password"
+        );
+
+        AppUserEntity user = new AppUserEntity("Nicola",
+                "niko",
+                "very_secure_password");
+
+        AppUserEntity currentUser = new AppUserEntity("Phil",
+                "philly",
+                "very_good_password");
+        currentUser.setId(2L);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updatePassword(request, userId))
+                .isInstanceOf(LimitedPermissionException.class);
     }
 
     @Test

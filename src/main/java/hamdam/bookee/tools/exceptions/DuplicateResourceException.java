@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class DuplicateResourceException extends ApiException {
 
-    public DuplicateResourceException(String message) {
-        super(HttpStatus.BAD_REQUEST, "Duplicate " + message + " detected!");
+    public DuplicateResourceException(String fieldName) {
+        super(HttpStatus.BAD_REQUEST, "Duplicate " + fieldName + " detected!");
     }
 
     public DuplicateResourceException(String fieldName, String resourceType, String fieldValue) {

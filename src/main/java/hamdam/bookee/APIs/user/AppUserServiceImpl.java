@@ -59,7 +59,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public Page<AppUserResponseDTO> getAllUsers(@PageableDefault Pageable pageable) {
+    public Page<AppUserResponseDTO> getAllUsers(Pageable pageable) {
         return userRepository.findAllByOrderByTimeStampDesc(pageable).map(AppUserResponseDTO::new);
     }
 
@@ -72,8 +72,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id) {
-        // TODO: 9/2/22 code duplication
-        AppUserEntity requestedUser = getAppUserById(id);
+        AppUserEntity existingUser = getAppUserById(id);
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
@@ -95,7 +94,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    @Transactional
     public AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO) {
 
         AppUserEntity currentUser = getUserByRequest(userRepository);
@@ -113,7 +111,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    @Transactional
     public AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO roleDTO) {
         AppUserEntity user = getAppUserById(id);
         AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId())
