@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.role.AppRoleEntity;
+import hamdam.bookee.APIs.role_request.RequestEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -42,6 +44,9 @@ public class AppUserEntity {
     @OneToOne
     @JsonProperty("user_image")
     private ImageEntity userImage;
+
+    @OneToMany(mappedBy = "user")
+    private List<RequestEntity> roleRequests;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @UpdateTimestamp

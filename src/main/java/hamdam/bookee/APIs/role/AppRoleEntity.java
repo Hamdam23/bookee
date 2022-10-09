@@ -3,6 +3,7 @@ package hamdam.bookee.APIs.role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
+import hamdam.bookee.APIs.role_request.RequestEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 // TODO: 9/2/22 naming
@@ -24,7 +26,7 @@ public class AppRoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     // TODO: 9/2/22 naming & json property
     @Column(unique = true, nullable = false)
@@ -46,6 +48,9 @@ public class AppRoleEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
+
+    @OneToMany(mappedBy = "role")
+    private List<RequestEntity> roleRequests;
 
     public AppRoleEntity(AppRoleRequestDTO dto) {
         this.roleName = dto.getRoleName();
