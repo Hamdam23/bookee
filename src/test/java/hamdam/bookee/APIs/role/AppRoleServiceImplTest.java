@@ -101,10 +101,6 @@ class AppRoleServiceImplTest {
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(GET_USER));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
 
         //when
@@ -114,14 +110,11 @@ class AppRoleServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "Hamdam")
     void shouldThrowExceptionWhenRoleIdIsInvalid() {
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
 
@@ -133,15 +126,12 @@ class AppRoleServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "Hamdam")
     void shouldReturnValidResponseWhenRequestIsValid() {
         //given
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appRoleRepository.existsById(id)).thenReturn(true);
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));

@@ -30,6 +30,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -43,6 +46,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SecurityTestExecutionListeners
+@ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 class AppUserServiceImplTest {
 
@@ -176,6 +181,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "henk")
     void updateUser_shouldThrowExceptionWhenImageIdIsInvalid() {
         //given
         Long userId = 1L;
@@ -186,12 +192,8 @@ class AppUserServiceImplTest {
                 3L
         );
         AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
-        AppUserEntity user = new AppUserEntity("Phil", role);
+        AppUserEntity user = new AppUserEntity("henk", role);
         user.setId(1L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
@@ -208,6 +210,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "henk")
     void updateUser_shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
         //given
         Long userId = 1L;
@@ -218,12 +221,8 @@ class AppUserServiceImplTest {
                 3L
         );
         AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
-        AppUserEntity user = new AppUserEntity("Phil", role);
+        AppUserEntity user = new AppUserEntity("henk", role);
         user.setId(4L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
@@ -234,6 +233,7 @@ class AppUserServiceImplTest {
                 .isInstanceOf(LimitedPermissionException.class);}
 
     @Test
+    @WithMockUser(username = "henk")
     void updateUser_shouldThrowExceptionWhenUserRequest() {
         //given
         Long userId = 1L;
@@ -244,12 +244,8 @@ class AppUserServiceImplTest {
                 3L
         );
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
-        AppUserEntity user = new AppUserEntity("niko", role);
+        AppUserEntity user = new AppUserEntity("henk", role);
         user.setId(userId);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
@@ -263,6 +259,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "henk")
     void updateUser_shouldThrowExceptionWhenUserWithRequestedUsernameExists() {
         //given
         Long userId = 1L;
@@ -273,15 +270,11 @@ class AppUserServiceImplTest {
                 3L
         );
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
-        AppUserEntity user = new AppUserEntity("philly", role);
+        AppUserEntity user = new AppUserEntity("henk", role);
         user.setId(4L);
 
         ImageEntity image = new ImageEntity();
         image.setId(6L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
@@ -296,6 +289,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "henk")
     void updateUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
@@ -307,15 +301,11 @@ class AppUserServiceImplTest {
         );
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
         role.setId(4L);
-        AppUserEntity currentUser = new AppUserEntity("Phil", "philly", role);
+        AppUserEntity currentUser = new AppUserEntity("Henk", "henk", role);
         currentUser.setId(1L);
 
         AppUserEntity requestedUser = new AppUserEntity();
         currentUser.setId(5L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         ImageEntity image = new ImageEntity();
         image.setId(6L);
@@ -337,6 +327,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "niko")
     void setImageToUser_shouldThrowExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
@@ -345,10 +336,6 @@ class AppUserServiceImplTest {
         AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(2L);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
 
         //when
@@ -359,6 +346,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "niko")
     void setImageToUser_shouldThrowExceptionWhenUserDoesNotHaveRequiredPermission() {
         //given
         Long userId = 1L;
@@ -367,10 +355,6 @@ class AppUserServiceImplTest {
         AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(2L);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
 
         //when
@@ -381,6 +365,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "niko")
     void setImageToUser_shouldThrowExceptionWhenRequestedImageIsInvalid() {
         //given
         Long userId = 1L;
@@ -389,10 +374,6 @@ class AppUserServiceImplTest {
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
         AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(3L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
         when(imageRepository.findById(imageDTO.getImageId())).thenReturn(Optional.empty());
@@ -409,6 +390,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "niko")
     void setImageToUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
@@ -420,10 +402,6 @@ class AppUserServiceImplTest {
         user.setId(userId);
         ImageEntity image = new ImageEntity("alien", "solar-system/earth");
         image.setId(4L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -490,6 +468,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "niko")
     void deleteUser_throwsExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
@@ -498,10 +477,6 @@ class AppUserServiceImplTest {
                 "niko",
                 role);
         user.setId(2L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
         when(appUserRepository.existsById(userId)).thenReturn(false);
 
         //when
@@ -515,6 +490,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "niko")
     void deleteUser_throwsExceptionWhenUserDoesNotHavePermission() {
         //given
         Long userId = 1L;
@@ -523,23 +499,18 @@ class AppUserServiceImplTest {
                 "niko",
                 role);
         user.setId(2L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-        // TODO: 05/10/22 fix
         when(appUserRepository.existsById(userId)).thenReturn(true);
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
 
         //when
         //then
-        // TODO: 05/10/22 fix
         assertThatThrownBy(() -> underTest.deleteUser(userId))
                 .isInstanceOf(LimitedPermissionException.class);
         verify(appUserRepository).findAppUserByUserName(user.getUserName());
     }
 
     @Test
+    @WithMockUser(username = "niko")
     void deleteUser_returnValidDataWhenUserHaveRequiredPermission() {
         //given
         Long userId = 1L;
@@ -548,10 +519,6 @@ class AppUserServiceImplTest {
                 "niko",
                 role);
         user.setId(2L);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
-        SecurityContextHolder.setContext(context);
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
         when(appUserRepository.existsById(userId)).thenReturn(true);
 
@@ -566,6 +533,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "philly")
     void updatePassword_throwsExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
@@ -582,10 +550,6 @@ class AppUserServiceImplTest {
                 "very_good_password");
         currentUser.setId(2L);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
 
@@ -596,6 +560,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "philly")
     void updatePassword_throwsExceptionWhenNewPasswordNotConfirmed() {
         //given
         Long userId = 1L;
@@ -612,10 +577,6 @@ class AppUserServiceImplTest {
                 "very_good_password");
         currentUser.setId(userId);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
 
@@ -630,6 +591,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "philly")
     void updatePassword_throwsExceptionWhenOldAndNewPasswordAreEqual() {
         //given
         Long userId = 1L;
@@ -646,10 +608,6 @@ class AppUserServiceImplTest {
                 "very_good_password");
         currentUser.setId(userId);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
 
@@ -665,6 +623,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "philly")
     void updatePassword_throwsExceptionWhenOldPasswordIsWrong() {
         //given
         Long userId = 1L;
@@ -681,10 +640,6 @@ class AppUserServiceImplTest {
                 "very_good_password");
         currentUser.setId(userId);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
-        SecurityContextHolder.setContext(context);
-
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
 
@@ -699,6 +654,7 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "philly")
     void updatePassword_returnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
@@ -714,10 +670,6 @@ class AppUserServiceImplTest {
                 "philly",
                 "very_good_password");
         currentUser.setId(userId);
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getUserName(), null));
-        SecurityContextHolder.setContext(context);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
