@@ -25,13 +25,13 @@ public class RequestEntity {
     private Long id;
 
     // TODO: 9/2/22 maybe default value is also user_id (or app_user_id), why do you need @JoinColumn
-    @OneToOne
+    @OneToOne(optional = false)
     @JoinColumn(name = "user_id")
     private AppUserEntity user;
 
     // TODO: 9/2/22 AppUser contains AppRole, why you need this property
     // TODO: 9/2/22 if it is for requested role, then rename property or add comment
-    @OneToOne
+    @OneToOne(optional = false)
     private AppRoleEntity role;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -48,5 +48,10 @@ public class RequestEntity {
         this.user = user;
         this.role = role;
         this.state = state;
+    }
+
+    public RequestEntity(AppUserEntity user, AppRoleEntity role) {
+        this.user = user;
+        this.role = role;
     }
 }

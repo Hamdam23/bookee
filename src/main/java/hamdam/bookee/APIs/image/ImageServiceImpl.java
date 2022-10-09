@@ -41,7 +41,6 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public FileSystemResource downloadImage(String name) {
         ImageEntity imageEntity = imageRepository.findByImageName(name).orElseThrow(()
-                // TODO: 9/2/22 custom exception
                 -> new ResourceNotFoundException("Image", "name", name)
         );
         return fileSystemRepository.readFile(imageEntity.getLocation());
@@ -61,9 +60,10 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ApiResponse deleteImageById(long id) {
-        // TODO: 9/2/22 check image id
-        imageRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Image", "id", id));
+        if (!imageRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Image", "id", id);
+        }
+
         imageRepository.deleteById(id);
         return new ApiResponse(
                 HttpStatus.OK,

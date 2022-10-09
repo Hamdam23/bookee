@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,12 +40,13 @@ class GenreServiceImplTest {
     void addGenre_shouldCreateRoleWhenRequestIsValid() {
         //given
         GenreDTO dto = new GenreDTO("name", "description");
+        when(genreRepository.save(any())).thenReturn(new GenreEntity(dto));
 
         //when
         GenreDTO actual = underTest.addGenre(dto);
 
         //then
-        verify(genreRepository).save(new GenreEntity(dto));
+        verify(genreRepository).save(any());
         assertThat(actual.getName()).isEqualTo(dto.getName());
         assertThat(actual.getDescription()).isEqualTo(dto.getDescription());
     }
@@ -104,6 +106,25 @@ class GenreServiceImplTest {
         assertThatThrownBy(() -> underTest.updateGenre(id, genreDTO))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageStartingWith("Genre");
+    }
+
+    @Test
+    void updateGenre_throwsExceptionWhenBooIdIsInvalid() {
+        //given
+        Long id = 1L;
+        GenreDTO genreDTO = new GenreDTO("adventure",
+                "adventure description",
+                List.of(2L)
+        );
+        when(genreRepository.findById(id)).thenReturn(Optional.of(new GenreEntity()));
+        when(bookRepository.findById(genreDTO.getBooks().get(0))).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updateGenre(id, genreDTO))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageStartingWith("Book")
+                .hasMessageContaining(genreDTO.getBooks().get(0).toString());
     }
 
     @Test

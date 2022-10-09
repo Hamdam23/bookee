@@ -35,6 +35,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SecurityTestExecutionListeners
+@ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 class AppRoleServiceImplTest {
 
@@ -92,6 +94,7 @@ class AppRoleServiceImplTest {
     }
 
     @Test
+    @WithMockUser(username = "Hamdam")
     void shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
         //given
         Long id = 1L;

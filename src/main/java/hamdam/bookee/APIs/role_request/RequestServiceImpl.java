@@ -36,12 +36,6 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RoleRequestResponse postRoleRequest(RoleRequestDTO roleRequestDTO) {
-        // TODO: 9/2/22 why are you creating RequestEntity here? Create it where it needed with constructor arguments
-        //  Done
-
-        // TODO: 9/2/22 why using setters? use them as constructor arguments
-        //  Done
-
         AppUserEntity appUserEntity = getUserByRequest(userRepository);
         AppRoleEntity role = roleRepository.findById(roleRequestDTO.getRoleId()).orElseThrow(
                 () -> new ResourceNotFoundException("Role", "id", roleRequestDTO.getRoleId()));
@@ -58,9 +52,6 @@ public class RequestServiceImpl implements RequestService {
         return new RoleRequestResponse(requestEntity, role.getRoleName());
     }
 
-    // TODO: 9/2/22 rename (gets not all role requests in some situations)
-    // TODO: 9/2/22 method needs big code refactor
-    // TODO: 9/2/22 add feature: admin (not user with roleName="admin", but user with appropriate permission) can see role requests of specific user or all users
     @Override
     public List<RoleRequestResponse> getAllRoleRequests(State reviewState) {
         List<RequestEntity> responseList;
@@ -72,7 +63,6 @@ public class RequestServiceImpl implements RequestService {
 
         AppUserEntity appUserEntity = getUserByRequest(userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
-        // change ADMIN permission -> MONITOR_ROLE_REQUEST
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST) && !responseList.isEmpty()) {
             responseList = requestRepository.findAllByUser(appUserEntity);
         }
@@ -84,11 +74,6 @@ public class RequestServiceImpl implements RequestService {
         return requestResponses;
     }
 
-    // TODO: 9/2/22 static use of AppRole!
-    // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-    // TODO: 9/2/22 there must be other case(s) in switch
-    // TODO: 9/2/22 why .setState() call inside case?
-    // TODO: 9/2/22 handle get() call
     @Override
     public RoleRequestResponse reviewRequest(Long id, ReviewStateDTO reviewState) {
         RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
@@ -132,7 +117,7 @@ public class RequestServiceImpl implements RequestService {
         if (permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             requestRepository.deleteById(id);
         } else {
-            if (roleRequestBelongUser(appUserEntity, requestEntity)) {
+            if (roleRequestBelongsUser(appUserEntity, requestEntity)) {
                 requestRepository.deleteById(id);
             } else {
                 throw new LimitedPermissionException();
@@ -142,7 +127,7 @@ public class RequestServiceImpl implements RequestService {
         requestRepository.save(requestEntity);
     }
 
-    private boolean roleRequestBelongUser(AppUserEntity user, RequestEntity requestEntity) {
+    private boolean roleRequestBelongsUser(AppUserEntity user, RequestEntity requestEntity) {
         return Objects.equals(requestEntity.getUser().getId(), user.getId());
     }
 

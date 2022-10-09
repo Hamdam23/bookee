@@ -3,7 +3,6 @@
 3. Code comments, README, etc.
 4. API documentation
 5. Downloadable Postman collection
-6. Project packaging
 21. use Mapper classes for each package! if required, create separate DTOs for request and response
 22. review auth package
 26. valid file ni extentions listini dinamik atish
@@ -12,6 +11,7 @@
 
 #Done
 -1. Database migration
+6. Project packaging
 -7. filter package vs security package
 -8. handle Optional.get() warnings
 -9. don't use @Data lombok annotation in entities

@@ -25,13 +25,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE;
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
@@ -91,6 +94,44 @@ class AppUserServiceImplTest {
     }
 
     @Test
+    void loadUserByUsername_throwsExceptionWhenUsernameIsInvalid() {
+        //given
+        String username = "test";
+        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.loadUserByUsername(username))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("User")
+                .hasMessageContaining("username")
+                .hasMessageContaining(username);
+    }
+
+    @Test
+    void loadUserByUsername_shouldReturnValidDataWhenUsernameIsValid() {
+        //given
+        String username = "test";
+        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE, MONITOR_USER));
+        AppUserEntity user = new AppUserEntity(
+                "niko",  role
+        );
+        user.setPassword("very_good_password");
+        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.of(user));
+
+        //when
+        UserDetails actual = underTest.loadUserByUsername(username);
+
+        //then
+        verify(appUserRepository).findAppUserByUserName(username);
+        assertThat(actual.getUsername()).isEqualTo(user.getUserName());
+        assertThat(actual.getPassword()).isEqualTo(user.getPassword());
+        assertThat(actual.getAuthorities()).isEqualTo(user.getRole().getPermissions().stream().map(
+                permission -> new SimpleGrantedAuthority(permission.name())
+        ).collect(Collectors.toSet()));
+    }
+
+    @Test
     void getAllUsers_shouldReturnValidData() {
         //given
         Pageable pageable = PageRequest.of(0, 1);
@@ -144,7 +185,7 @@ class AppUserServiceImplTest {
                 2L,
                 3L
         );
-        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
+        AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
         AppUserEntity user = new AppUserEntity("Phil", role);
         user.setId(1L);
 
@@ -191,6 +232,68 @@ class AppUserServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.updateUser(request, userId))
                 .isInstanceOf(LimitedPermissionException.class);}
+
+    @Test
+    void updateUser_shouldThrowExceptionWhenUserRequest() {
+        //given
+        Long userId = 1L;
+        AppUserRequestDTO request = new AppUserRequestDTO(
+                "Nicola",
+                "niko",
+                2L,
+                3L
+        );
+        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppUserEntity user = new AppUserEntity("niko", role);
+        user.setId(userId);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(imageRepository.findById(request.getImageId())).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updateUser(request, userId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining(request.getImageId().toString());
+    }
+
+    @Test
+    void updateUser_shouldThrowExceptionWhenUserWithRequestedUsernameExists() {
+        //given
+        Long userId = 1L;
+        AppUserRequestDTO request = new AppUserRequestDTO(
+                "Nicola",
+                "niko",
+                2L,
+                3L
+        );
+        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppUserEntity user = new AppUserEntity("philly", role);
+        user.setId(4L);
+
+        ImageEntity image = new ImageEntity();
+        image.setId(6L);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(user.getUserName(), null));
+        SecurityContextHolder.setContext(context);
+
+        when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(imageRepository.findById(request.getImageId())).thenReturn(Optional.of(image));
+        when(appUserRepository.existsByUserName(request.getUserName())).thenReturn(true);
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.updateUser(request, userId))
+                .isInstanceOf(DuplicateResourceException.class)
+                .hasMessageContaining(request.getUserName());
+    }
 
     @Test
     void updateUser_shouldReturnValidDataWhenRequestIsValid() {

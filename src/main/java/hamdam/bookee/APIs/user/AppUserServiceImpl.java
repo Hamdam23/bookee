@@ -71,21 +71,22 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id) {
+    public AppUserResponseDTO updateUser(AppUserRequestDTO request, Long id) {
         AppUserEntity existingUser = getAppUserById(id);
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
         if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
                 || currentUser.getId().equals(id)) {
-            existingUser.setUserImage(imageRepository.findById(newUser.getImageId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", newUser.getImageId()))
+            existingUser.setUserImage(imageRepository.findById(request.getImageId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId()))
             );
 
-            if (!newUser.getUserName().equals(existingUser.getUserName()) && userRepository.existsByUserName(newUser.getUserName())) {
-                throw new DuplicateResourceException("username", "User", newUser.getUserName());
+            if (!request.getUserName().equals(existingUser.getUserName()) &&
+                    userRepository.existsByUserName(request.getUserName())) {
+                throw new DuplicateResourceException("username", "User", request.getUserName());
             }
-            existingUser.setUserName(newUser.getUserName());
-            existingUser.setName(newUser.getName());
+            existingUser.setUserName(request.getUserName());
+            existingUser.setName(request.getName());
 
             return new AppUserResponseDTO(userRepository.save(existingUser));
         } else {

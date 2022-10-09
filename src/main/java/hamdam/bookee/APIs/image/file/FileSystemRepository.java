@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.image.file;
 
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class FileSystemRepository {
         try {
             return new FileSystemResource(Paths.get(location));
         } catch (Exception exception) {
-            throw new RuntimeException("Image not found");
+            throw new ResourceNotFoundException("location", "Image", location);
         }
     }
 }
