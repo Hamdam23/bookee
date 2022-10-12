@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.role_request;
 
-import hamdam.bookee.APIs.role_request.helpers.ReviewStateDTO;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class RequestController {
 
     @PutMapping("{id}")
     public ResponseEntity<RoleRequestResponse> reviewRequest(@PathVariable Long id,
-                                                             @Valid @RequestBody ReviewStateDTO review) {
+                                                             @Valid @RequestBody ReviewRequestDTO review) {
         return ResponseEntity.ok().body(requestService.reviewRequest(id, review));
     }
 

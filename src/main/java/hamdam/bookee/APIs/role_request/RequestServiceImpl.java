@@ -3,13 +3,14 @@ package hamdam.bookee.APIs.role_request;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role_request.helpers.ReviewStateDTO;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import hamdam.bookee.tools.exceptions.roleRequest.AlreadyHasInProgressRequestException;
+import hamdam.bookee.tools.exceptions.roleRequest.NotAccessibleRequestException;
 import hamdam.bookee.tools.exceptions.roleRequest.NotAllowedRoleOnRequestException;
 import hamdam.bookee.tools.exceptions.roleRequest.IncorrectStateValueException;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,8 @@ public class RequestServiceImpl implements RequestService {
         } else if (role.getPermissions().contains(MONITOR_ROLE_REQUEST)) {
             throw new NotAllowedRoleOnRequestException();
         }
-        RequestEntity requestEntity = new RequestEntity(currentUser, role, State.IN_PROGRESS);
-        requestRepository.save(requestEntity);
+        RequestEntity requestEntity =
+                requestRepository.save(new RequestEntity(currentUser, role, State.IN_PROGRESS));
 
         return new RoleRequestResponse(requestEntity, role.getRoleName());
     }
@@ -77,7 +78,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public RoleRequestResponse reviewRequest(Long id, ReviewStateDTO reviewState) {
+    public RoleRequestResponse reviewRequest(Long id, ReviewRequestDTO review) {
         RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
@@ -86,21 +87,21 @@ public class RequestServiceImpl implements RequestService {
 
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             throw new LimitedPermissionException();
-        } else if (!reviewState.getState().equals(ACCEPTED) && !reviewState.getState().equals(DECLINED)) {
+        } else if (!review.getState().equals(ACCEPTED) && !review.getState().equals(DECLINED)) {
             throw new IncorrectStateValueException("State can be either ACCEPTED or DECLINED");
         }
 
+        if (review.getDescription() != null) {
+            requestEntity.setDescription(review.getDescription());
+        }
+
         AppUserEntity user = requestEntity.getUser();
-        if (reviewState.getState().equals(ACCEPTED)) {
+        if (review.getState().equals(ACCEPTED)) {
             user.setRole(requestEntity.getRole());
             userRepository.save(user);
         }
 
-        if (reviewState.getDescription() != null) {
-            requestEntity.setDescription(reviewState.getDescription());
-        }
-
-        requestEntity.setState(reviewState.getState());
+        requestEntity.setState(review.getState());
         requestRepository.save(requestEntity);
 
         return new RoleRequestResponse(requestEntity, requestEntity.getRole().getRoleName());
@@ -110,8 +111,8 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public void deleteRequest(Long id) {
         // TODO: 9/2/22 there is enough to call existsById()
-        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Role request", "id", id)
+        RequestEntity requestEntity = requestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role request", "id", id)
         );
 
         AppUserEntity currentUser = getUserByRequest(userRepository);
@@ -122,7 +123,7 @@ public class RequestServiceImpl implements RequestService {
             if (roleRequestBelongsUser(currentUser, requestEntity)) {
                 requestRepository.deleteById(id);
             } else {
-                throw new LimitedPermissionException();
+                throw new NotAccessibleRequestException();
             }
         }
 
