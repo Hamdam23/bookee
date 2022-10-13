@@ -492,7 +492,7 @@ class RequestServiceImplTest {
 
     @Test
     @WithMockUser("ann")
-    void deleteRequest_throwsExceptionWhenUserOwnsRequest() {
+    void deleteRequest_deletesDataWhenUserOwnsRequest() {
         Long id = 1L;
         AppRoleEntity userRole = new AppRoleEntity("user", Collections.emptySet());
         AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
@@ -512,9 +512,9 @@ class RequestServiceImplTest {
 
     @Test
     @WithMockUser("ann")
-    void deleteRequest_throwsExceptionWhenUserHasMonitoringPermission() {
+    void deleteRequest_deletesDataWhenUserHasMonitoringPermission() {
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Collections.emptySet());
+        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
         AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
         userAnn.setId(2L);
         RequestEntity requestEntity = new RequestEntity(userAnn, userRole, IN_PROGRESS);
