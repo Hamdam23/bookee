@@ -13,23 +13,23 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AppUserRequestDTO {
 
-    @NotBlank(message = "name can not be empty!")
+    @NotBlank()
     private String name;
 
-    @NotBlank(message = "name can not be empty!")
-    private String userName;
+    @NotBlank()
+    private String username;
 
     @JsonProperty("role_id")
-    @NotNull(message = "role_id can not be null!")
+    @NotNull()
     private Long roleId;
 
     @JsonProperty("image")
-    @NotNull(message = "image_id can not be null!")
+    @NotNull()
     private Long imageId;
 
-    public AppUserRequestDTO(String name, String userName, Long roleId, Long imageId) {
+    public AppUserRequestDTO(String name, String username, Long roleId, Long imageId) {
         this.name = name;
-        this.userName = userName;
+        this.username = username;
         this.roleId = roleId;
         this.imageId = imageId;
     }

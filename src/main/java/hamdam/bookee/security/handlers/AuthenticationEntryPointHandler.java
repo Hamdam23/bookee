@@ -20,7 +20,7 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         // TODO: 9/2/22 return json response, not plain text
-        if (userService.userExistsWithUsername(request.getParameter("username"))) {
+        if (userService.existsWithUsername(request.getParameter("username"))) {
             response.getWriter().write("Login failed: Invalid password!");
         } else {
             response.getWriter().write("Login failed: Invalid username!");

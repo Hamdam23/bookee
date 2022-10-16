@@ -11,25 +11,11 @@ import java.nio.file.Path;
 @Component
 public class FileSystemRepository {
 
-//    @Value("${file_upload_path}")
-//    private String path;
-
-    public String writeFileToPath(byte[] content, Path path) throws IOException {
-//        Path newFile = Paths.get(path + imageName);
-//        Files.createDirectories(path.getParent());
+    public String writeFilePath(byte[] content, Path path) throws IOException {
         Files.write(path, content);
 
         return path.toAbsolutePath().toString();
     }
-
-//    public String writeFile(byte[] content, String imageName) throws Exception {
-//        Path newFile = Paths.get(path + imageName);
-//        Files.createDirectories(newFile.getParent());
-//
-//        Files.write(newFile, content);
-//
-//        return newFile.toAbsolutePath().toString();
-//    }
 
     public FileSystemResource readFileFromPath(Path path) {
         try {
@@ -38,12 +24,4 @@ public class FileSystemRepository {
             throw new ResourceNotFoundException("location", "Image", path.toAbsolutePath().toString());
         }
     }
-
-//    public FileSystemResource readFile(String location) {
-//        try {
-//            return new FileSystemResource(Paths.get(location));
-//        } catch (Exception exception) {
-//            throw new ResourceNotFoundException("location", "Image", location);
-//        }
-//    }
 }

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class NoDefaultRoleException extends ApiException {
 
-    public NoDefaultRoleException(String message) {
-        super(HttpStatus.NOT_IMPLEMENTED, message);
+    public NoDefaultRoleException() {
+        super(HttpStatus.NOT_IMPLEMENTED, "There is no default role for users");
     }
 }

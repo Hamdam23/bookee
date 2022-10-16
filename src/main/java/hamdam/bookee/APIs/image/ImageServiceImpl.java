@@ -44,7 +44,7 @@ public class ImageServiceImpl implements ImageService {
         String name = fileNameWithoutExt + "-" + new Date().getTime() + "." + extension;
         Path path = Paths.get(imagesDirectory + name);
         Files.createDirectories(path.getParent());
-        String location = fileSystemRepository.writeFileToPath(file.getBytes(), path);
+        String location = fileSystemRepository.writeFilePath(file.getBytes(), path);
 
         return imageRepository.save(new ImageEntity(name, location));
     }

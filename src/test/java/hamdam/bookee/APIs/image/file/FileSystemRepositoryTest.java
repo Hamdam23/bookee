@@ -32,7 +32,7 @@ class FileSystemRepositoryTest {
         Path path = fileSystem.getPath("" + imageName);
 
         //when
-        String actual = underTest.writeFileToPath(content, path);
+        String actual = underTest.writeFilePath(content, path);
 
         //then
         assertThat(actual).isEqualTo(path.toAbsolutePath().toString());

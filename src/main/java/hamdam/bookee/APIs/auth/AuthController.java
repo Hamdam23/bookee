@@ -1,14 +1,17 @@
 package hamdam.bookee.APIs.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static hamdam.bookee.tools.constants.Endpoints.API_TOKEN_REFRESH;
 import static hamdam.bookee.tools.constants.Endpoints.API_REGISTER;
+import static hamdam.bookee.tools.constants.Endpoints.API_TOKEN_REFRESH;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,14 +21,10 @@ public class AuthController {
     @PostMapping(API_REGISTER)
     public TokensResponse register(@RequestBody RegistrationRequest user) {
         return authService.registerUser(user);
-        // TODO: 9/2/22 return tokens also, because currently user is have to login again after registration
     }
 
-    // TODO: 31/07/22 required: void ni yoqotish
-    // TODO: 31/07/22 required: replace request with header only
     @GetMapping(API_TOKEN_REFRESH)
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // TODO: 9/2/22 don't pass request and response to authService
-        authService.refreshToken(request, response);
+    public TokensResponse refreshToken(HttpServletRequest request) throws IOException {
+        return authService.refreshToken(request.getHeader(AUTHORIZATION));
     }
 }

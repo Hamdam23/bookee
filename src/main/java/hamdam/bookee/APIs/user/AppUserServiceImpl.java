@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.user;
 
+import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
@@ -13,9 +14,9 @@ import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
+import hamdam.bookee.tools.exceptions.role.NoDefaultRoleException;
 import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -35,7 +35,6 @@ import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository userRepository;
@@ -59,6 +58,22 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    public void saveUser(RegistrationRequest request) {
+        if (existsWithUsername(request.getUsername())) {
+            throw new DuplicateResourceException("username");
+        }
+        AppUserEntity appUserEntity = new AppUserEntity(request,
+                imageRepository.findById(request.getImageId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId())));
+
+        appUserEntity.setPassword(passwordEncoder.encode(request.getPassword()));
+        AppRoleEntity role = roleRepository.findFirstByIsDefaultIsTrue()
+                .orElseThrow(NoDefaultRoleException::new);
+        appUserEntity.setRole(role);
+        userRepository.save(appUserEntity);
+    }
+
+    @Override
     public Page<AppUserResponseDTO> getAllUsers(Pageable pageable) {
         return userRepository.findAllByOrderByTimeStampDesc(pageable).map(AppUserResponseDTO::new);
     }
@@ -77,15 +92,17 @@ public class AppUserServiceImpl implements AppUserService {
 
         if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
                 || currentUser.getId().equals(id)) {
-            existingUser.setUserImage(imageRepository.findById(request.getImageId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId()))
-            );
-
-            if (!request.getUserName().equals(existingUser.getUserName()) &&
-                    userRepository.existsByUserName(request.getUserName())) {
-                throw new DuplicateResourceException("username", "User", request.getUserName());
+            if (request.getImageId() != null) {
+                existingUser.setUserImage(imageRepository.findById(request.getImageId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId()))
+                );
             }
-            existingUser.setUserName(request.getUserName());
+
+            if (!request.getUsername().equals(existingUser.getUserName()) &&
+                    userRepository.existsByUserName(request.getUsername())) {
+                throw new DuplicateResourceException("username", "User", request.getUsername());
+            }
+            existingUser.setUserName(request.getUsername());
             existingUser.setName(request.getName());
 
             return new AppUserResponseDTO(userRepository.save(existingUser));
@@ -128,7 +145,6 @@ public class AppUserServiceImpl implements AppUserService {
 
         AppUserEntity currentUser = getUserByRequest(userRepository);
 
-        //todo test 1st case in if
         if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
 
             userRepository.deleteById(id);
@@ -173,7 +189,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     // TODO: 9/2/22 needs rename (and maybe some docs)
     @Override
-    public boolean userExistsWithUsername(String username) {
+    public boolean existsWithUsername(String username) {
         return userRepository.existsByUserName(username);
     }
 
@@ -183,7 +199,6 @@ public class AppUserServiceImpl implements AppUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 
-    //package-private
     AppUserEntity getAppUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));

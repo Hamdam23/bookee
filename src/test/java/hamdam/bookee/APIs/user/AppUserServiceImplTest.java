@@ -276,13 +276,13 @@ class AppUserServiceImplTest {
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
         when(imageRepository.findById(request.getImageId())).thenReturn(Optional.of(image));
-        when(appUserRepository.existsByUserName(request.getUserName())).thenReturn(true);
+        when(appUserRepository.existsByUserName(request.getUsername())).thenReturn(true);
 
         //when
         //then
         assertThatThrownBy(() -> underTest.updateUser(request, userId))
                 .isInstanceOf(DuplicateResourceException.class)
-                .hasMessageContaining(request.getUserName());
+                .hasMessageContaining(request.getUsername());
     }
 
     @Test
@@ -319,7 +319,7 @@ class AppUserServiceImplTest {
         verify(appUserRepository).save(requestedUser);
 
         assertThat(actual.getName()).isEqualTo(request.getName());
-        assertThat(actual.getUserName()).isEqualTo(request.getUserName());
+        assertThat(actual.getUserName()).isEqualTo(request.getUsername());
         assertThat(actual.getImage().getId()).isEqualTo(image.getId());
     }
 
@@ -693,7 +693,7 @@ class AppUserServiceImplTest {
         when(appUserRepository.existsByUserName(username)).thenReturn(false);
 
         //when
-        boolean actual = underTest.userExistsWithUsername(username);
+        boolean actual = underTest.existsWithUsername(username);
 
         //then
         verify(appUserRepository).existsByUserName(username);
@@ -707,7 +707,7 @@ class AppUserServiceImplTest {
         when(appUserRepository.existsByUserName(username)).thenReturn(true);
 
         //when
-        boolean actual = underTest.userExistsWithUsername(username);
+        boolean actual = underTest.existsWithUsername(username);
 
         //then
         verify(appUserRepository).existsByUserName(username);

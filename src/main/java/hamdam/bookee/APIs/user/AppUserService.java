@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.user;
 
+import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface AppUserService extends UserDetailsService {
+    void saveUser(RegistrationRequest request);
+
     Page<AppUserResponseDTO> getAllUsers(Pageable pageable);
 
     AppUserResponseDTO getUserById(Long id);
@@ -19,7 +22,6 @@ public interface AppUserService extends UserDetailsService {
     //  fvck u
     AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id);
 
-    // TODO: 9/2/22 why void, must return updated AppUser object
     AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO);
 
     AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO setUserRoleDTO);
@@ -27,7 +29,7 @@ public interface AppUserService extends UserDetailsService {
     ApiResponse deleteUser(Long id);
 
     // TODO: 9/2/22 rename (!)
-    boolean userExistsWithUsername(String username);
+    boolean existsWithUsername(String username);
 
     AppUserEntity getUserByUsername(String username);
 
