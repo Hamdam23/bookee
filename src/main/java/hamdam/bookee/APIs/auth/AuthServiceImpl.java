@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.auth;
 
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.AppUserService;
@@ -36,20 +37,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokensResponse refreshToken(String header) throws IOException {
+    public TokensResponse refreshToken(String header) {
         checkHeader(header, false);
 
         try {
             UserDetails user = userService.loadUserByUsername(getUsernameFromToken(header));
-            TokensResponse accessTokenResponse = TokenUtils.getAccessTokenResponse(user.getUsername(), userRepository);
-            TokenUtils.presentToken(accessTokenResponse, response);
-        } catch (Exception exception) {
-//            response.setHeader("error", exception.getMessage());
+            return TokenUtils.getAccessTokenResponse(user.getUsername(), userRepository);
+//            TokenUtils.presentToken(accessTokenResponse, response);
+        } catch (AlgorithmMismatchException exception) {
+            throw new AlgorithmMismatchException(exception.getMessage());
+        }
 //            response.setStatus(FORBIDDEN.value());
 //            Map<String, String> error = new HashMap<>();
 //            error.put("error_error_message", exception.getMessage());
 //            response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
 //            new ObjectMapper().writeValue(response.getOutputStream(), error);
-        }
+//        }
     }
 }

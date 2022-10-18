@@ -50,7 +50,7 @@ class AppRoleServiceImplTest {
     private AppRoleServiceImpl underTest;
 
     @Test
-    void shouldCreateRole() {
+    void deleteRoleById_shouldCreateRole() {
         // given
         AppRoleRequestDTO requestDTO = new AppRoleRequestDTO(
                 "USER", true, Collections.emptySet()
@@ -67,7 +67,7 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenRoleNameIsDuplicate() {
+    void deleteRoleById_shouldThrowExceptionWhenRoleNameIsDuplicate() {
         // given
         AppRoleRequestDTO requestDTO = new AppRoleRequestDTO(
                 "USER", true, Collections.emptySet()
@@ -82,7 +82,7 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    void shouldReturnValidDataWhenRequestIsValid() {
+    void deleteRoleById_shouldReturnValidDataWhenRequestIsValid() {
         //given
         when(appRoleRepository.findAllByOrderByTimeStampDesc(any())).thenReturn(Page.empty());
 
@@ -95,7 +95,7 @@ class AppRoleServiceImplTest {
 
     @Test
     @WithMockUser(username = "Hamdam")
-    void shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
+    void deleteRoleById_shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
         //given
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(GET_USER));
@@ -111,7 +111,7 @@ class AppRoleServiceImplTest {
 
     @Test
     @WithMockUser(username = "Hamdam")
-    void shouldThrowExceptionWhenRoleIdIsInvalid() {
+    void deleteRoleById_shouldThrowExceptionWhenRoleIdIsInvalid() {
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
@@ -127,7 +127,7 @@ class AppRoleServiceImplTest {
 
     @Test
     @WithMockUser(username = "Hamdam")
-    void shouldReturnValidResponseWhenRequestIsValid() {
+    void deleteRoleById_shouldReturnValidResponseWhenRequestIsValid() {
         //given
         Long id = 1L;
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));

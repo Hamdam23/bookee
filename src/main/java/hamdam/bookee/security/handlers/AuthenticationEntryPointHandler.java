@@ -1,6 +1,7 @@
 package hamdam.bookee.security.handlers;
 
 import hamdam.bookee.APIs.user.AppUserService;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -20,10 +21,11 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         // TODO: 9/2/22 return json response, not plain text
-        if (userService.existsWithUsername(request.getParameter("username"))) {
-            response.getWriter().write("Login failed: Invalid password!");
+        String username = request.getParameter("username");
+        if (userService.existsWithUsername(username)) {
+            throw authException;
         } else {
-            response.getWriter().write("Login failed: Invalid username!");
+            throw authException;
         }
     }
 }

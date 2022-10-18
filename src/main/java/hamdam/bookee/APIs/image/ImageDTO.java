@@ -10,7 +10,7 @@ import org.springframework.beans.BeanUtils;
 @Setter
 @NoArgsConstructor
 public class ImageDTO {
-    private long id;
+    private Long id;
     // TODO: 9/2/22 name & json
     @JsonProperty("image_name")
     private String imageName;

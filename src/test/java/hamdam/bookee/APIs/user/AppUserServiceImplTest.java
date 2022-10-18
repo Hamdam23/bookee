@@ -116,7 +116,7 @@ class AppUserServiceImplTest {
         String username = "test";
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE, MONITOR_USER));
         AppUserEntity user = new AppUserEntity(
-                "niko",  role
+                "niko", role
         );
         user.setPassword("very_good_password");
         when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.of(user));
@@ -227,7 +227,8 @@ class AppUserServiceImplTest {
         //when
         //then
         assertThatThrownBy(() -> underTest.updateUser(request, userId))
-                .isInstanceOf(LimitedPermissionException.class);}
+                .isInstanceOf(LimitedPermissionException.class);
+    }
 
     @Test
     @WithMockUser(username = "henk")
@@ -491,7 +492,7 @@ class AppUserServiceImplTest {
     void deleteUser_throwsExceptionWhenUserDoesNotHavePermission() {
         //given
         Long userId = 1L;
-        AppRoleEntity role = new AppRoleEntity("USER",Collections.emptySet());
+        AppRoleEntity role = new AppRoleEntity("USER", Collections.emptySet());
         AppUserEntity user = new AppUserEntity("Nicola",
                 "niko",
                 role);

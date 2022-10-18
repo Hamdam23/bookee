@@ -34,7 +34,7 @@ public class ImageController {
     }
 
     @GetMapping("{id}")
-    public ImageDTO getImageByID(@PathVariable long id) {
+    public ImageDTO getImageByID(@PathVariable Long id) {
         return imageService.getImageByID(id);
     }
 
@@ -44,7 +44,7 @@ public class ImageController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<ApiResponse> deleteImage(@PathVariable long id) {
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long id) {
         // TODO: 9/2/22 return full json response
         return new ResponseEntity<>(imageService.deleteImageById(id), HttpStatus.OK);
     }

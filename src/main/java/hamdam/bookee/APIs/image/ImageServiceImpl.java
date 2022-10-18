@@ -49,6 +49,7 @@ public class ImageServiceImpl implements ImageService {
         return imageRepository.save(new ImageEntity(name, location));
     }
 
+    //TODO
     @Override
     public FileSystemResource downloadImage(String name) {
         ImageEntity imageEntity = imageRepository.findByImageName(name)
@@ -58,7 +59,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageDTO getImageByID(long id) {
+    public ImageDTO getImageByID(Long id) {
         return new ImageDTO(imageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id)));
     }
@@ -69,14 +70,14 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ApiResponse deleteImageById(long id) {
+    public ApiResponse deleteImageById(Long id) {
         if (!imageRepository.existsById(id)) {
             throw new ResourceNotFoundException("Image", "id", id);
         }
 
         imageRepository.deleteById(id);
         return new ApiResponse(
-                HttpStatus.OK,
+                HttpStatus.NO_CONTENT,
                 LocalDateTime.now(),
                 "Image with id: " + id + " successfully deleted!"
         );

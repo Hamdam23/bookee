@@ -48,7 +48,6 @@ public class AppUserServiceImpl implements AppUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         // TODO: 9/2/22 write mapper method/class for AppUser <-> User
         return new User(
-                // TODO: 9/2/22 handle get() call
                 user.getUserName(),
                 user.getPassword(),
                 user.getRole().getPermissions().stream().map(

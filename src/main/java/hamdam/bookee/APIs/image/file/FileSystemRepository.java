@@ -13,13 +13,13 @@ public class FileSystemRepository {
 
     public String writeFilePath(byte[] content, Path path) throws IOException {
         Files.write(path, content);
-
         return path.toAbsolutePath().toString();
     }
 
     public FileSystemResource readFileFromPath(Path path) {
         try {
             return new FileSystemResource(path);
+            //TODO test catch part
         } catch (Exception exception) {
             throw new ResourceNotFoundException("location", "Image", path.toAbsolutePath().toString());
         }
