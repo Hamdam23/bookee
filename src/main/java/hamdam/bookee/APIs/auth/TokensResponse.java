@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.auth;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.role.Permissions;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TokensResponse {
     @JsonProperty("access_token")
     private String accessToken;

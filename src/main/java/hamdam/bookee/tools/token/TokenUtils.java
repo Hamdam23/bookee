@@ -39,10 +39,10 @@ public class TokenUtils {
         return verifier.verify(token);
     }
 
-    public static String getUsernameFromToken(String header) {
+    public static String getUsernameFromToken(String header, boolean isAccessToken) {
         try {
             String token = header.substring("Bearer ".length());
-            DecodedJWT decodedJWT = TokenUtils.decodeToken(token, true);
+            DecodedJWT decodedJWT = TokenUtils.decodeToken(token, isAccessToken);
             return decodedJWT.getSubject();
             // TODO refactor naming Exception Handling classes
         } catch (com.auth0.jwt.exceptions.JWTDecodeException | AlgorithmMismatchException jwtDecodeException) {
@@ -74,7 +74,7 @@ public class TokenUtils {
 
         return new TokensResponse(
                 createToken(username, role, true),
-                DATE_FORMAT.format(System.currentTimeMillis())
+                DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000))
         );
     }
 
