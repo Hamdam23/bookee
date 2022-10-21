@@ -18,8 +18,6 @@ public interface AppUserService extends UserDetailsService {
 
     AppUserResponseDTO getUserById(Long id);
 
-    // TODO: 9/2/22 don't use entity as update request argument
-    //  fvck u
     AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id);
 
     AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO);
@@ -28,7 +26,6 @@ public interface AppUserService extends UserDetailsService {
 
     ApiResponse deleteUser(Long id);
 
-    // TODO: 9/2/22 rename (!)
     boolean existsWithUsername(String username);
 
     AppUserEntity getUserByUsername(String username);

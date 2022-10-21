@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRoleEntity;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.jwt_token.JWTDecodeException;
@@ -52,28 +53,22 @@ public class TokenUtils {
         }
     }
 
-    public static TokensResponse getTokenResponse(String username, AppUserRepository userRepository) {
-        AppRoleEntity role = userRepository.findAppUserByUserName(username).orElseThrow(
-                () -> new ResourceNotFoundException("User", "username", username)
-        ).getRole();
+    public static TokensResponse getTokenResponse(AppUserEntity user) {
 
         return new TokensResponse(
-                createToken(username, role, true),
+                createToken(user.getUserName(), user.getRole(), true),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000)),
-                createToken(username, role, false),
+                createToken(user.getUserName(), user.getRole(), false),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000 * 24 * 20)),
-                role.getRoleName(),
-                role.getPermissions()
+                user.getRole().getRoleName(),
+                user.getRole().getPermissions()
         );
     }
 
-    public static TokensResponse getAccessTokenResponse(String username, AppUserRepository userRepository) {
-        AppRoleEntity role = userRepository.findAppUserByUserName(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username))
-                .getRole();
+    public static TokensResponse getAccessTokenResponse(AppUserEntity user) {
 
         return new TokensResponse(
-                createToken(username, role, true),
+                createToken(user.getUserName(), user.getRole(), true),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000))
         );
     }

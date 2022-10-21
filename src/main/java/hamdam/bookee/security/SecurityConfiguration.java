@@ -4,7 +4,6 @@ import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.security.filters.AuthenticationFilterConfigurer;
 import hamdam.bookee.security.filters.AuthorizationFilter;
 import hamdam.bookee.security.handlers.AccessDeniedExceptionHandler;
-import hamdam.bookee.security.handlers.AuthenticationEntryPointHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +22,6 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http,
-            AuthenticationEntryPointHandler entryPoint,
             AccessDeniedExceptionHandler accessDeniedHandler,
             AuthenticationFilterConfigurer authenticationFilterConfigurer,
             AuthorizationFilter authenticationFilter
@@ -64,7 +62,7 @@ public class SecurityConfiguration {
                         API_TOKEN_REFRESH,
                         star(API_IMAGE)).
                 permitAll().anyRequest().authenticated().and().
-                exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(entryPoint);
+                exceptionHandling().accessDeniedHandler(accessDeniedHandler);
         http.apply(authenticationFilterConfigurer);
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

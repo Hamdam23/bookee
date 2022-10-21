@@ -1,10 +1,7 @@
 package hamdam.bookee.APIs.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -24,7 +21,7 @@ public class AuthController {
     }
 
     @GetMapping(API_TOKEN_REFRESH)
-    public TokensResponse refreshToken(HttpServletRequest request) throws IOException {
-        return authService.refreshToken(request.getHeader(AUTHORIZATION));
+    public TokensResponse refreshToken(@RequestHeader(value="Authorization") String header) throws IOException {
+        return authService.refreshToken(header);
     }
 }
