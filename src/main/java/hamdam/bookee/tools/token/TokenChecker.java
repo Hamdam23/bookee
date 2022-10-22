@@ -6,10 +6,8 @@ public class TokenChecker {
 
     public static void checkHeader(String header, boolean isAccessToken){
         if (header == null || !header.startsWith("Bearer ")) {
-            if (isAccessToken) {
-                throw new TokenMissingException("Access token is missing!");
-            }
-            throw new TokenMissingException("Refresh token is missing!");
+            if (isAccessToken) throw new MissingTokenException("Access token is missing!");
+            throw new MissingTokenException("Refresh token is missing!");
         }
     }
 }

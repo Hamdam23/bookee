@@ -26,12 +26,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GenreServiceImplTest {
-
     @InjectMocks
     private GenreServiceImpl underTest;
 
     @Mock
-    private BookRepository bookRepository;
+ private BookRepository bookRepository;
 
     @Mock
     private GenreRepository genreRepository;
