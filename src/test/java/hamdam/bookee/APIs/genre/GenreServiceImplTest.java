@@ -2,6 +2,8 @@ package hamdam.bookee.APIs.genre;
 
 import hamdam.bookee.APIs.book.BookEntity;
 import hamdam.bookee.APIs.book.BookRepository;
+import hamdam.bookee.APIs.genre.helpers.GenreRequestDTO;
+import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -38,11 +40,11 @@ class GenreServiceImplTest {
     @Test
     void addGenre_shouldCreateRoleWhenRequestIsValid() {
         //given
-        GenreDTO dto = new GenreDTO("name", "description");
+        GenreRequestDTO dto = new GenreRequestDTO("name", "description");
         when(genreRepository.save(any())).thenReturn(new GenreEntity(dto));
 
         //when
-        GenreDTO actual = underTest.addGenre(dto);
+        GenreResponseDTO actual = underTest.addGenre(dto);
 
         //then
         verify(genreRepository).save(any());
@@ -57,7 +59,7 @@ class GenreServiceImplTest {
         when(genreRepository.findAll(pageable)).thenReturn(Page.empty(Pageable.ofSize(1)));
 
         //when
-        Page<GenreDTO> actual = underTest.getAllGenres(pageable);
+        Page<GenreResponseDTO> actual = underTest.getAllGenres(pageable);
 
         //then
         verify(genreRepository).findAll(pageable);
@@ -86,7 +88,7 @@ class GenreServiceImplTest {
         when(genreRepository.findById(id)).thenReturn(Optional.of(new GenreEntity()));
 
         //when
-        GenreDTO actual = underTest.getGenreById(id);
+        GenreResponseDTO actual = underTest.getGenreById(id);
 
         //then
         verify(genreRepository).findById(id);
@@ -97,52 +99,61 @@ class GenreServiceImplTest {
     void updateGenre_shouldThrowExceptionWhenIdIsInvalid() {
         //given
         Long id = 1L;
-        GenreDTO genreDTO = new GenreDTO("adventure", "adventure description");
+        GenreRequestDTO genreResponseDTO = new GenreRequestDTO("adventure", "adventure description");
         when(genreRepository.findById(id)).thenReturn(Optional.empty());
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.updateGenre(id, genreDTO))
+        assertThatThrownBy(() -> underTest.updateGenre(id, genreResponseDTO))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageStartingWith("Genre");
     }
 
     @Test
-    void updateGenre_throwsExceptionWhenBooIdIsInvalid() {
+    void updateGenre_throwsExceptionWhenBookIdIsInvalid() {
         //given
         Long id = 1L;
-        GenreDTO genreDTO = new GenreDTO("adventure",
+        GenreRequestDTO genreResponseDTO = new GenreRequestDTO("adventure",
                 "adventure description",
                 List.of(2L)
         );
         when(genreRepository.findById(id)).thenReturn(Optional.of(new GenreEntity()));
-        when(bookRepository.findById(genreDTO.getBooks().get(0))).thenReturn(Optional.empty());
+        when(bookRepository.findById(genreResponseDTO.getBooks().get(0))).thenReturn(Optional.empty());
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.updateGenre(id, genreDTO))
+        assertThatThrownBy(() -> underTest.updateGenre(id, genreResponseDTO))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageStartingWith("Book")
-                .hasMessageContaining(genreDTO.getBooks().get(0).toString());
+                .hasMessageContaining(genreResponseDTO.getBooks().get(0).toString());
     }
 
     @Test
     void updateGenre_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long genreId = 1L;
-        GenreDTO genreDTO = new GenreDTO("horror",
+        BookEntity hobbit = new BookEntity();
+        hobbit.setId(2L);
+        BookEntity naruto = new BookEntity();
+        naruto.setId(3L);
+        GenreRequestDTO genreRequestDTO = new GenreRequestDTO("horror",
                 "horror description",
-                Arrays.asList(2L, 3L));
+                Arrays.asList(hobbit.getId(), naruto.getId()));
         GenreEntity genreEntity = new GenreEntity("adventure",
                 "adventure description");
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(genreEntity));
-        when(bookRepository.findById(any())).thenReturn(Optional.of(new BookEntity()));
+        when(bookRepository.findById(hobbit.getId())).thenReturn(Optional.of(hobbit));
+        when(bookRepository.findById(naruto.getId())).thenReturn(Optional.of(naruto));
+        when(genreRepository.save(genreEntity)).thenReturn(genreEntity);
 
         //when
-        GenreDTO actual = underTest.updateGenre(genreId, genreDTO);
+        GenreResponseDTO actual = underTest.updateGenre(genreId, genreRequestDTO);
 
         //then
-        assertThat(genreDTO).isEqualTo(actual);
+        assertThat(actual.getName()).isEqualTo(genreRequestDTO.getName());
+        assertThat(actual.getDescription()).isEqualTo(genreRequestDTO.getDescription());
+        assertThat(actual.getBooks().get(0)).isEqualTo(genreRequestDTO.getBooks().get(0));
+        assertThat(actual.getBooks().get(1)).isEqualTo(genreRequestDTO.getBooks().get(1));
     }
 
     @Test
