@@ -10,10 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
-import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
-import hamdam.bookee.tools.exceptions.jwt_token.JWTDecodeException;
-import hamdam.bookee.tools.exceptions.jwt_token.SignatureVerificationException;
+import hamdam.bookee.tools.exceptions.jwt_token.AlgorithmMismatchTokenException;
+import hamdam.bookee.tools.exceptions.jwt_token.SignatureTokenException;
 import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,16 +39,9 @@ public class TokenUtils {
     }
 
     public static String getUsernameFromToken(String header, boolean isAccessToken) {
-        try {
-            String token = header.substring("Bearer ".length());
-            DecodedJWT decodedJWT = TokenUtils.decodeToken(token, isAccessToken);
-            return decodedJWT.getSubject();
-            // TODO refactor naming Exception Handling classes
-        } catch (com.auth0.jwt.exceptions.JWTDecodeException | AlgorithmMismatchException jwtDecodeException) {
-            throw new JWTDecodeException(jwtDecodeException.getMessage());
-        } catch (com.auth0.jwt.exceptions.SignatureVerificationException signatureVerificationException) {
-            throw new SignatureVerificationException(signatureVerificationException.getMessage());
-        }
+        String token = header.substring("Bearer ".length());
+        DecodedJWT decodedJWT = TokenUtils.decodeToken(token, isAccessToken);
+        return decodedJWT.getSubject();
     }
 
     public static TokensResponse getTokenResponse(AppUserEntity user) {

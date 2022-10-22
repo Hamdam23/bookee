@@ -29,7 +29,6 @@ public class AppRoleServiceImpl implements AppRoleService {
     @Override
     public AppRoleResponseDTO addRole(AppRoleRequestDTO appRole) {
 
-        // TODO: 9/2/22 check if role name is unique
         if (roleRepository.existsByRoleName(appRole.getRoleName())) {
             throw new DuplicateResourceException("role name");
         }

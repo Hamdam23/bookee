@@ -22,7 +22,6 @@ import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 public class ImageController {
     private final ImageService imageService;
 
-    // TODO: 9/2/22 why additional "/upload" ?
     @PostMapping
     public ImageEntity uploadImage(@ValidFile @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);

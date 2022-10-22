@@ -13,7 +13,6 @@ public interface ImageService {
 
     ImageDTO getImageByID(Long id);
 
-    // TODO: 9/2/22 why it returns ImageDTO, but byId returns Image itself?
     Page<ImageDTO> getAllImages(Pageable pageable);
 
     ApiResponse deleteImageById(Long id);

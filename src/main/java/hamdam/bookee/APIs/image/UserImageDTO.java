@@ -1,10 +1,12 @@
 package hamdam.bookee.APIs.image;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.*;
 
-// TODO: 9/2/22 name
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserImageDTO {
     @JsonProperty("image_id")
     private Long imageId;

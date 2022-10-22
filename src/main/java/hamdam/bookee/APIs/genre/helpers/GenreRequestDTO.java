@@ -1,11 +1,10 @@
-package hamdam.bookee.APIs.genre;
+package hamdam.bookee.APIs.genre.helpers;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -15,10 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GenreDTO {
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Long id;
-
+public class GenreRequestDTO {
     @NotBlank(message = "name can not be blank!")
     private String name;
 
@@ -28,18 +24,8 @@ public class GenreDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> books;
 
-    public GenreDTO(String name, String description) {
+    public GenreRequestDTO(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    public GenreDTO(GenreEntity entity){
-        BeanUtils.copyProperties(entity, this);
-    }
-
-    public GenreDTO(String name, String description, List<Long> books) {
-        this.name = name;
-        this.description = description;
-        this.books = books;
     }
 }

@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
-// TODO: 9/2/22 naming
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +15,6 @@ import javax.validation.constraints.NotNull;
 public class ReviewRequestDTO {
     @NotNull
     private State state;
-    // TODO: 9/2/22 add description, admin can write description when declining role request
     private String description;
 
     public ReviewRequestDTO(State state) {

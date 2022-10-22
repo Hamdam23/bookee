@@ -1,6 +1,6 @@
 package hamdam.bookee.tools.token;
 
-import hamdam.bookee.tools.exceptions.jwt_token.TokenMissingException;
+import hamdam.bookee.tools.exceptions.jwt_token.MissingTokenException;
 
 public class TokenChecker {
 

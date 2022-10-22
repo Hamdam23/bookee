@@ -17,7 +17,6 @@ public class ImageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: 9/2/22 name & json
     @JsonProperty("image_name")
     private String imageName;
 

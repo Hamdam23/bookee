@@ -43,7 +43,8 @@ public class BookEntity {
     private List<AppUserEntity> authors = new ArrayList<>();
 
     // TODO: 9/2/22 it is better to make rating float/double
-    @DecimalMax("10.0") @DecimalMin("0.0")
+    @DecimalMax("10.0")
+    @DecimalMin("0.0")
     private Double rating;
 
     @NotEmpty(message = "genres can not be empty!")

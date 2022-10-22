@@ -14,7 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class AppRoleRequestDTO {
 
-    // TODO: 9/2/22 name & json
     @JsonProperty("role_name")
     @NotBlank(message = "role_name name can not be blank!")
     private String roleName;

@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class UserOnRoleRequestDTO {
+
     private String name;
     @JsonProperty("username")
     private String userName;

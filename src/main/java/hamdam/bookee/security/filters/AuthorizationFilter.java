@@ -6,7 +6,8 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserService;
-import hamdam.bookee.tools.exceptions.jwt_token.UnknownTokenException;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
+import hamdam.bookee.tools.exceptions.jwt_token.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -70,6 +71,16 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(username, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
+        } catch (MissingTokenException exception) {
+            resolver.resolveException(request, response, null, exception);
+        } catch (ResourceNotFoundException exception) {
+            resolver.resolveException(request, response, null, new UserTokenException());
+        } catch (AlgorithmMismatchException exception) {
+            resolver.resolveException(request, response, null, new AlgorithmMismatchTokenException());
+        } catch (SignatureVerificationException exception) {
+            resolver.resolveException(request, response, null, new SignatureTokenException());
+        } catch (TokenExpiredException exception) {
+            resolver.resolveException(request, response, null, new ExpiredTokenException());
         } catch (Exception exception) {
             resolver.resolveException(request, response, null, new UnknownTokenException());
         }

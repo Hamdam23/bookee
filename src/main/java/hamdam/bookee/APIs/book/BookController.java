@@ -24,7 +24,7 @@ public class BookController {
     public BookDTO addBook(@Valid @RequestBody BookDTO book) {
         // TODO: 9/2/22 return full json response
         return bookService.addBook(book);
-    }
+}
 
     @GetMapping
     public PagedResponse<BookDTO> getAllBooks(Pageable pageable) {

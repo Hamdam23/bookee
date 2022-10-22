@@ -11,11 +11,10 @@ import org.springframework.beans.BeanUtils;
 @NoArgsConstructor
 public class ImageDTO {
     private Long id;
-    // TODO: 9/2/22 name & json
     @JsonProperty("image_name")
     private String imageName;
 
-    public ImageDTO(ImageEntity entity){
+    public ImageDTO(ImageEntity entity) {
         BeanUtils.copyProperties(entity, this);
     }
 }

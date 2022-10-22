@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-// TODO: 9/2/22 naming
 @Entity
 @Table(name = "roles")
 @Getter
@@ -28,15 +27,13 @@ public class AppRoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: 9/2/22 naming & json property
-    @Column(unique = true, nullable = false)
     @JsonProperty("role_name")
+    @Column(unique = true, nullable = false)
     @NotBlank(message = "role_name name can not be blank!")
     private String roleName;
 
-    // TODO: 9/2/22 set column to nullable false
-    @Column(nullable = false)
     @JsonProperty("is_default")
+    @Column(nullable = false)
     private boolean isDefault = false;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -26,8 +26,6 @@ public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) {
-        resolver.resolveException(
-                request, response, null, new LimitedPermissionException()
-        );
+        resolver.resolveException(request, response, null, new LimitedPermissionException());
     }
 }

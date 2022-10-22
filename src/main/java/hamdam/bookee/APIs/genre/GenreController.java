@@ -1,5 +1,7 @@
 package hamdam.bookee.APIs.genre;
 
+import hamdam.bookee.APIs.genre.helpers.GenreRequestDTO;
+import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +22,23 @@ public class GenreController {
     private final GenreService genreService;
 
     @PostMapping
-    public GenreDTO addGenre(@Valid @RequestBody GenreDTO genre) {
+    public GenreResponseDTO addGenre(@Valid @RequestBody GenreRequestDTO genre) {
         // TODO: 9/2/22 return full json response
         return genreService.addGenre(genre);
     }
 
     @GetMapping
-    public PagedResponse<GenreDTO> getAllGenres(Pageable pageable) {
+    public PagedResponse<GenreResponseDTO> getAllGenres(Pageable pageable) {
         return new PagedResponse<>(genreService.getAllGenres(pageable));
     }
 
     @GetMapping("/{id}")
-    public GenreDTO getGenreByID(@PathVariable Long id) {
+    public GenreResponseDTO getGenreByID(@PathVariable Long id) {
         return genreService.getGenreById(id);
     }
 
     @PatchMapping("/{id}")
-    public GenreDTO updateGenre(@PathVariable Long id, @Valid @RequestBody GenreDTO genre) {
+    public GenreResponseDTO updateGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDTO genre) {
         genreService.updateGenre(id, genre);
         // TODO: 9/2/22 return full json response
         return genreService.updateGenre(id, genre);
