@@ -12,7 +12,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
-// TODO: 9/2/22 naming
 @Entity
 @Table(name = "role_requests")
 @Getter
@@ -24,7 +23,6 @@ public class RequestEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: 9/2/22 maybe default value is also user_id (or app_user_id), why do you need @JoinColumn
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private AppUserEntity user;

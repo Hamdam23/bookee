@@ -10,7 +10,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-// TODO: 9/2/22 naming is not clear, what is it for?
 @Component
 public class AccessDeniedExceptionHandler implements AccessDeniedHandler {
 

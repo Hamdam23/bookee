@@ -32,7 +32,6 @@ public class GenreEntity {
     @Size(max = 200, message = "description size is too long!")
     private String description;
 
-    // TODO: 9/2/22 implement this:
     //TODO when genre deleted corresponding book's genre should be set to "null"
     @ManyToMany(mappedBy = "genres")
     private List<BookEntity> books = new ArrayList<>();

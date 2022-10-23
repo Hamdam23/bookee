@@ -18,7 +18,6 @@ spring:
         format_sql: true
         ddl-auto: none
     generate-ddl: false
-  #todo set format-sql to true for more readable sql = DONE(04.09.22)
 
   #file stuff
   servlet:
@@ -32,6 +31,3 @@ file_upload_path: "/home/hamdam/Pictures/bookee/"
 server:
   error:
     include-stacktrace: never
-
-#todo I recommend using YAML for this = DONE(04.09.22)
-

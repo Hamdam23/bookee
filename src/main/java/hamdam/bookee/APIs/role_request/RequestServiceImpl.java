@@ -110,7 +110,6 @@ public class RequestServiceImpl implements RequestService {
     //
     @Override
     public void deleteRequest(Long id) {
-        // TODO: 9/2/22 there is enough to call existsById()
         RequestEntity requestEntity = requestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role request", "id", id)
         );

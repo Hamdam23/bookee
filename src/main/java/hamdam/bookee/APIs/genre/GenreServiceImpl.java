@@ -47,7 +47,6 @@ public class GenreServiceImpl implements GenreService {
                 -> new ResourceNotFoundException("Genre", "id", id));
         BeanUtils.copyProperties(genreRequestDTO, oldGenre, "id");
 
-        // TODO: 9/2/22 why calling copyProperties?
         List<BookEntity> books = new ArrayList<>();
         genreRequestDTO.getBooks().forEach(bookId -> {
             BookEntity book = bookRepository.findById(bookId).orElseThrow(()

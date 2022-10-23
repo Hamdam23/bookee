@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class RoleRequestResponse {
-    // TODO: 9/2/22 why using separate properties, Response (DTO) can be like RequestEntity
     private Long id;
     private UserOnRoleRequestDTO user;
     private String requestedRole;
