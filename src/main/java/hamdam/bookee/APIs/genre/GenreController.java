@@ -23,7 +23,6 @@ public class GenreController {
 
     @PostMapping
     public GenreResponseDTO addGenre(@Valid @RequestBody GenreRequestDTO genre) {
-        // TODO: 9/2/22 return full json response
         return genreService.addGenre(genre);
     }
 
@@ -40,13 +39,11 @@ public class GenreController {
     @PatchMapping("/{id}")
     public GenreResponseDTO updateGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDTO genre) {
         genreService.updateGenre(id, genre);
-        // TODO: 9/2/22 return full json response
         return genreService.updateGenre(id, genre);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteGenre(@PathVariable Long id) {
-        // TODO: 9/2/22 return full json response
         return new ResponseEntity<>(genreService.deleteGenre(id), HttpStatus.NO_CONTENT);
     }
 }

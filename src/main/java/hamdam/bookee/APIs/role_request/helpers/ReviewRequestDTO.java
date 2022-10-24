@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDTO {
+
     @NotNull
     private State state;
     private String description;

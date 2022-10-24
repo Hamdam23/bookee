@@ -1,20 +1,18 @@
 #In Progress
-*. delete db on heroku -> push code to heroku branch -> deploy (I changed creation of tables on V1 flyway)
 2. Tests
-3. Code comments, README, etc.
-4. API documentation
-5. Downloadable Postman collection
-21. use Mapper classes for each package! if required, create separate DTOs for request and response
-22. review auth package
+3. Code comments, README, API documentation, Downloadable Postman collection.
+21. use Mapper classes for each package!
 26. change list of extensions to dynamic list on @ValidFile
 27. use constants class for every package
 35. user env variable for encoded password
 36. implementation of Genres and Books is changed, test of them needs to be changed
 37. get secret from environment variable
+*. delete db on heroku -> push code to heroku branch -> deploy (I changed creation of tables on V1 flyway)
 
 #Done
 -1. Database migration
-6. Project packaging
+4. if required, create separate DTOs for request and response
+-6. Project packaging
 -7. filter package vs security package
 -8. handle Optional.get() warnings
 -9. don't use @Data lombok annotation in entities
@@ -29,6 +27,7 @@
 -*18. getAllGenres - response: without books | getGenreById - response: with books
 -19. user 'id' property everywhere instead of name or username or something-name
 -20. problem: can not insert data  on the table 'book_author' table
+-22. review auth package
 -23. wtf - I don't have set permission-to-role request?
 -24. editing/deleting only user-self should be done
 -*25. create checkUserAuthority method

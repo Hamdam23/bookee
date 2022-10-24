@@ -16,6 +16,6 @@ public class SetUserImageDTO {
     private String location;
 
     public SetUserImageDTO(ImageEntity entity) {
-        BeanUtils.copyProperties(entity ,this);
+        BeanUtils.copyProperties(entity, this);
     }
 }

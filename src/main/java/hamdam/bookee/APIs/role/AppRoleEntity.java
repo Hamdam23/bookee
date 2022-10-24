@@ -46,7 +46,7 @@ public class AppRoleEntity {
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "requestedRole")
     private List<RequestEntity> roleRequests;
 
     public AppRoleEntity(AppRoleRequestDTO dto) {

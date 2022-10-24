@@ -51,14 +51,11 @@ public class AppUserController {
     @PatchMapping(SET_IMAGE_TO_USER + "/{id}")
     public AppUserResponseDTO setImageToUser(@PathVariable Long id, @RequestBody UserImageDTO dto) {
         userService.setImageToUser(id, dto);
-        // TODO: 9/2/22 return full json response
         return userService.setImageToUser(id, dto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {
-
-        // TODO: 9/2/22 return full json response
         return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.NO_CONTENT);
     }
 }

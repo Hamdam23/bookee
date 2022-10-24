@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class EmptyFileValidator implements ConstraintValidator<ValidFile, MultipartFile>{
+public class EmptyFileValidator implements ConstraintValidator<ValidFile, MultipartFile> {
 
     @Override
     public boolean isValid(MultipartFile value, ConstraintValidatorContext context) {

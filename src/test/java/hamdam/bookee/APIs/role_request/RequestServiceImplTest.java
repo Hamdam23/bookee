@@ -226,7 +226,7 @@ class RequestServiceImplTest {
         verify(requestRepository).save(any());
 
         assertThat(actual.getUser().getUserName()).isEqualTo(actualRequest.getUser().getUserName());
-        assertThat(actual.getRequestedRole()).isEqualTo(actualRequest.getRole().getRoleName());
+        assertThat(actual.getRequestedRole()).isEqualTo(actualRequest.getRequestedRole().getRoleName());
         assertThat(actual.getState()).isEqualTo(actualRequest.getState());
     }
 

@@ -40,7 +40,6 @@ public class AppUserEntity {
     @ManyToOne
     private AppRoleEntity role;
 
-    // TODO: 9/2/22 name & json
     @OneToOne
     @JsonProperty("user_image")
     private ImageEntity userImage;
@@ -59,7 +58,7 @@ public class AppUserEntity {
         this.setUserImage(image);
     }
 
-    public AppUserEntity(String userName, AppRoleEntity role){
+    public AppUserEntity(String userName, AppRoleEntity role) {
         this.userName = userName;
         this.role = role;
     }

@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.role;
 
-// TODO: 9/2/22 naming
 public enum Permissions {
 
     GET_BOOK,

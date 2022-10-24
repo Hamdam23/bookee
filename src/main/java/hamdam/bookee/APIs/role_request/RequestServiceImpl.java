@@ -10,9 +10,9 @@ import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import hamdam.bookee.tools.exceptions.roleRequest.AlreadyHasInProgressRequestException;
+import hamdam.bookee.tools.exceptions.roleRequest.IncorrectStateValueException;
 import hamdam.bookee.tools.exceptions.roleRequest.NotAccessibleRequestException;
 import hamdam.bookee.tools.exceptions.roleRequest.NotAllowedRoleOnRequestException;
-import hamdam.bookee.tools.exceptions.roleRequest.IncorrectStateValueException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -71,7 +71,7 @@ public class RequestServiceImpl implements RequestService {
         }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
         responseList.forEach(response -> {
-            RoleRequestResponse requestResponse = new RoleRequestResponse(response, response.getRole().getRoleName());
+            RoleRequestResponse requestResponse = new RoleRequestResponse(response, response.getRequestedRole().getRoleName());
             requestResponses.add(requestResponse);
         });
         return requestResponses;
@@ -97,14 +97,14 @@ public class RequestServiceImpl implements RequestService {
 
         AppUserEntity user = requestEntity.getUser();
         if (review.getState().equals(ACCEPTED)) {
-            user.setRole(requestEntity.getRole());
+            user.setRole(requestEntity.getRequestedRole());
             userRepository.save(user);
         }
 
         requestEntity.setState(review.getState());
         requestRepository.save(requestEntity);
 
-        return new RoleRequestResponse(requestEntity, requestEntity.getRole().getRoleName());
+        return new RoleRequestResponse(requestEntity, requestEntity.getRequestedRole().getRoleName());
     }
 
     //
@@ -112,7 +112,7 @@ public class RequestServiceImpl implements RequestService {
     public void deleteRequest(Long id) {
         RequestEntity requestEntity = requestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role request", "id", id)
-        );
+                );
 
         AppUserEntity currentUser = getUserByRequest(userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(currentUser);

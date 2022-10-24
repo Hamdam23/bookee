@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class LimitedPermissionException extends ApiException {
 
-    public LimitedPermissionException(){
+    public LimitedPermissionException() {
         super(HttpStatus.FORBIDDEN, "You do not have valid permission to access the operation!");
     }
 }

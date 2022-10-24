@@ -46,8 +46,7 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_GENRE + "/**").hasAuthority(Permissions.DELETE_GENRE.name());
 
         http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER).hasAuthority(Permissions.MONITOR_USER.name());
-        http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER + "/**").hasAuthority(Permissions.GET_USER.name());
-//        http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + "/**").hasAuthority(Permissions.UPDATE_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER + "/**").hasAnyAuthority(Permissions.GET_USER.name(), Permissions.MONITOR_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + API_SET_ROLE_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());
 
@@ -67,7 +66,7 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    private String star(String endpoint){
+    private String star(String endpoint) {
         return endpoint + "/**";
     }
 }

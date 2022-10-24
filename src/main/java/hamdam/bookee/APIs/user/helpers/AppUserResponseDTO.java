@@ -18,7 +18,7 @@ public class AppUserResponseDTO {
     private SetUserImageDTO image;
 
     public AppUserResponseDTO(AppUserEntity entity) {
-        BeanUtils.copyProperties(entity, this, "id");
+        BeanUtils.copyProperties(entity, this);
         if (entity.getRole() != null)
             this.role = new AppUserRoleDTO(entity.getRole());
         if (entity.getUserImage() != null)

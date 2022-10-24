@@ -35,7 +35,8 @@ public class BookDTO {
     @NotEmpty(message = "authors can not be empty!")
     private List<Long> authors = new ArrayList<>();
 
-    @DecimalMax("10.0") @DecimalMin("0.0")
+    @DecimalMax("10.0")
+    @DecimalMin("0.0")
     private Double rating;
 
     @NotEmpty(message = "genres can not be empty!")

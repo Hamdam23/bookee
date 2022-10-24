@@ -27,7 +27,7 @@ public class BookEntity {
     @NotBlank(message = "name can not be blank!")
     private String name;
 
-    @Size(max = 30, message = "tagline size is too long!")
+    @Size(max = 100, message = "tagline size is too long!")
     private String tagline;
 
     @Size(max = 200, message = "description size is too long!")

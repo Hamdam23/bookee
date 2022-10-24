@@ -186,7 +186,6 @@ public class AppUserServiceImpl implements AppUserService {
         }
     }
 
-    // TODO: 9/2/22 needs rename (and maybe some docs)
     @Override
     public boolean existsWithUsername(String username) {
         return userRepository.existsByUserName(username);

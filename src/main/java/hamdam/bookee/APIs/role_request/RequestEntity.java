@@ -27,10 +27,8 @@ public class RequestEntity {
     @JoinColumn(name = "user_id")
     private AppUserEntity user;
 
-    // TODO: 9/2/22 AppUser contains AppRole, why you need this property
-    // TODO: 9/2/22 if it is for requested role, then rename property or add comment
     @ManyToOne(optional = false)
-    private AppRoleEntity role;
+    private AppRoleEntity requestedRole;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @UpdateTimestamp
@@ -42,14 +40,14 @@ public class RequestEntity {
     @Size(max = 200, message = "Description size is too long!")
     private String description;
 
-    public RequestEntity(AppUserEntity user, AppRoleEntity role, State state) {
+    public RequestEntity(AppUserEntity user, AppRoleEntity requestedRole, State state) {
         this.user = user;
-        this.role = role;
+        this.requestedRole = requestedRole;
         this.state = state;
     }
 
-    public RequestEntity(AppUserEntity user, AppRoleEntity role) {
+    public RequestEntity(AppUserEntity user, AppRoleEntity requestedRole) {
         this.user = user;
-        this.role = role;
+        this.requestedRole = requestedRole;
     }
 }

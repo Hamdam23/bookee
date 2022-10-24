@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class IncorrectStateValueException extends ApiException {
 
-    public IncorrectStateValueException(String message){
+    public IncorrectStateValueException(String message) {
         super(HttpStatus.BAD_REQUEST, message);
     }
 }

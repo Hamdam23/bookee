@@ -22,9 +22,8 @@ public class BookController {
 
     @PostMapping
     public BookDTO addBook(@Valid @RequestBody BookDTO book) {
-        // TODO: 9/2/22 return full json response
         return bookService.addBook(book);
-}
+    }
 
     @GetMapping
     public PagedResponse<BookDTO> getAllBooks(Pageable pageable) {
@@ -38,13 +37,11 @@ public class BookController {
 
     @PatchMapping("/{id}")
     public BookDTO updateBook(@PathVariable Long id, @Valid @RequestBody BookDTO newBook) {
-        // TODO: 9/2/22 return full json response
         return bookService.updateBook(newBook, id);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteBook(@PathVariable Long id) {
-        // TODO: 9/2/22 return full json response
         return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.NO_CONTENT);
     }
 }
