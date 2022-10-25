@@ -43,7 +43,7 @@ class ImageServiceImplTest {
     @InjectMocks
     private ImageServiceImpl underTest;
 
-    private static final String imagesDirectory = "/home/hamdam/Pictures/bookee/";
+    private static final String imagesDirectory = System.getProperty("user.home");
 
     @Test
     void uploadImage_returnsValidDataWhenFileNameIsNotNull() throws IOException {
