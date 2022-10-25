@@ -106,7 +106,7 @@ class GenreServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.updateGenre(id, genreResponseDTO))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageStartingWith("Genre");
+                .hasMessageContaining(id.toString());
     }
 
     @Test
@@ -124,7 +124,7 @@ class GenreServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.updateGenre(id, genreResponseDTO))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageStartingWith("Book")
+                .hasMessageContaining(String.valueOf(genreResponseDTO.getBooks().get(0)))
                 .hasMessageContaining(genreResponseDTO.getBooks().get(0).toString());
     }
 
