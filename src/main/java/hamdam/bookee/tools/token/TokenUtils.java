@@ -3,16 +3,16 @@ package hamdam.bookee.tools.token;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
-import hamdam.bookee.tools.exceptions.jwt_token.AlgorithmMismatchTokenException;
-import hamdam.bookee.tools.exceptions.jwt_token.SignatureTokenException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,19 +21,37 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-public class TokenUtils {
+@Component
+public class TokenUtils implements InitializingBean {
 
-    // TODO: 9/2/22 get secret from environment variable
-    private static final Algorithm ACCESS_ALGORITHM = Algorithm.HMAC256("secret".getBytes());
-    private static final Algorithm REFRESH_ALGORITHM = Algorithm.HMAC384("secret".getBytes());
+    private final String SECRET;
+    private static long accessTokenValidity;
+    private static long refreshTokenValidity;
+
+    private static Algorithm accessTokenAlgorithm;
+    private static Algorithm refreshTokenAlgorithm;
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+    public TokenUtils(@Value("${jwt.secret}") String secret,
+                      @Value("${jwt.access-token-validity}") long accessTokenValidity,
+                      @Value("${jwt.refresh-token-validity}") long refreshTokenValidity) {
+        this.SECRET = secret;
+        this.accessTokenValidity = accessTokenValidity;
+        this.refreshTokenValidity = refreshTokenValidity;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        accessTokenAlgorithm = Algorithm.HMAC256(SECRET.getBytes());
+        refreshTokenAlgorithm = Algorithm.HMAC384(SECRET.getBytes());
+    }
 
     public static DecodedJWT decodeToken(String token, boolean isAccessToken) {
         JWTVerifier verifier;
         if (isAccessToken) {
-            verifier = JWT.require(ACCESS_ALGORITHM).build();
+            verifier = JWT.require(accessTokenAlgorithm).build();
         } else {
-            verifier = JWT.require(REFRESH_ALGORITHM).build();
+            verifier = JWT.require(refreshTokenAlgorithm).build();
         }
         return verifier.verify(token);
     }
@@ -48,9 +66,9 @@ public class TokenUtils {
 
         return new TokensResponse(
                 createToken(user.getUserName(), user.getRole(), true),
-                DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000)),
+                DATE_FORMAT.format(new Date(System.currentTimeMillis() + accessTokenValidity)),
                 createToken(user.getUserName(), user.getRole(), false),
-                DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000 * 24 * 20)),
+                DATE_FORMAT.format(new Date(System.currentTimeMillis() + refreshTokenValidity)),
                 user.getRole().getRoleName(),
                 user.getRole().getPermissions()
         );
@@ -60,7 +78,7 @@ public class TokenUtils {
 
         return new TokensResponse(
                 createToken(user.getUserName(), user.getRole(), true),
-                DATE_FORMAT.format(new Date(System.currentTimeMillis() + 3600000))
+                DATE_FORMAT.format(new Date(System.currentTimeMillis() + accessTokenValidity))
         );
     }
 
@@ -69,15 +87,15 @@ public class TokenUtils {
         if (isAccessToken) {
             return JWT.create()
                     .withSubject(username)
-                    .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
+                    .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenValidity))
                     .withClaim("role", role.getRoleName())
-                    .sign(ACCESS_ALGORITHM);
+                    .sign(accessTokenAlgorithm);
         } else {
             return JWT.create()
                     .withSubject(username)
-                    .withExpiresAt(new Date(System.currentTimeMillis() + 3600000 * 24 * 20))
+                    .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenValidity))
                     .withClaim("role", role.getRoleName())
-                    .sign(REFRESH_ALGORITHM);
+                    .sign(refreshTokenAlgorithm);
         }
     }
 

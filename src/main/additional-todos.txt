@@ -1,12 +1,12 @@
 #In Progress
-2. Tests
-3. Code comments, README, API documentation, Downloadable Postman collection.
-21. use Mapper classes for each package!
+37. get secret from environment variable
 26. change list of extensions to dynamic list on @ValidFile
+36. implementation of Genres and Books is changed, test of them needs to be changed
 27. use constants class for every package
 35. user env variable for encoded password
-36. implementation of Genres and Books is changed, test of them needs to be changed
-37. get secret from environment variable
+21. use Mapper classes for each package!
+2. Tests
+3. Code comments, README, API documentation, Downloadable Postman collection.
 *. delete db on heroku -> push code to heroku branch -> deploy (I changed creation of tables on V1 flyway)
 
 #Done
