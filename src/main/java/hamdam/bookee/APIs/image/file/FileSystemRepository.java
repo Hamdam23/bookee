@@ -20,7 +20,7 @@ public class FileSystemRepository {
         try {
             return new FileSystemResource(path);
             //TODO test catch part
-        } catch (Exception exception) {
+        } catch (IllegalArgumentException exception) {
             throw new ResourceNotFoundException("location", "Image", path.toAbsolutePath().toString());
         }
     }

@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.user;
 
+import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
@@ -13,6 +14,7 @@ import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
+import hamdam.bookee.tools.exceptions.role.NoDefaultRoleException;
 import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +42,7 @@ import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE;
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +65,86 @@ class AppUserServiceImplTest {
 
     @InjectMocks
     private AppUserServiceImpl underTest;
+
+    @Test
+    void saveUser_throwsExceptionWhenUsernameIsDuplicate() {
+        //given
+        String username = "niko";
+        when(appUserRepository.existsByUserName(username)).thenReturn(true);
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.saveUser(new RegistrationRequest(null, username, null, null)))
+                .isInstanceOf(DuplicateResourceException.class)
+                .hasMessageContaining(username);
+        verify(appUserRepository).existsByUserName(username);
+    }
+
+    @Test
+    void saveUser_throwsExceptionWhenImageIdIsInvalid() {
+        //given
+        String username = "niko";
+        Long imageId = 1L;
+        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+        when(imageRepository.findById(imageId)).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.saveUser(new RegistrationRequest(null, username, null, imageId)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining(imageId.toString());
+        verify(appUserRepository).existsByUserName(username);
+        verify(imageRepository).findById(imageId);
+    }
+
+    @Test
+    void saveUser_throwsExceptionWhenNoDefaultRoleAvailable() {
+        //given
+        String username = "niko";
+        Long imageId = 1L;
+        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+        when(imageRepository.findById(imageId)).thenReturn(Optional.of(new ImageEntity()));
+        when(appRoleRepository.findFirstByIsDefaultIsTrue()).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.saveUser(
+                new RegistrationRequest(null, username, "12345", imageId))
+        ).isInstanceOf(NoDefaultRoleException.class);
+        verify(appUserRepository).existsByUserName(username);
+        verify(imageRepository).findById(imageId);
+        verify(appRoleRepository).findFirstByIsDefaultIsTrue();
+    }
+
+    @Test
+    void saveUser_returnValidDataWhenRequestIsValid() {
+        //given
+        String name = "Nicola";
+        String username = "niko";
+        String password = "12345";
+        Long imageId = 1L;
+        AppUserEntity user = new AppUserEntity(
+                name, username, "very_secret_password"
+        );
+        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+        when(imageRepository.findById(imageId)).thenReturn(Optional.of(new ImageEntity()));
+        when(appRoleRepository.findFirstByIsDefaultIsTrue()).thenReturn(Optional.of(new AppRoleEntity()));
+        when(appUserRepository.save(any())).thenReturn(user);
+
+        //when
+        underTest.saveUser(new RegistrationRequest(name, username, password, imageId));
+
+        //then
+        verify(appUserRepository).existsByUserName(username);
+        verify(imageRepository).findById(imageId);
+        verify(appRoleRepository).findFirstByIsDefaultIsTrue();
+        ArgumentCaptor<AppUserEntity> argumentCaptor = ArgumentCaptor.forClass(AppUserEntity.class);
+        verify(appUserRepository).save(argumentCaptor.capture());
+        AppUserEntity actual = argumentCaptor.getValue();
+        verify(appUserRepository).save(any());
+
+        assertThat(actual.getUserName()).isEqualTo(username);
+    }
 
     @Test
     void getAppUserById_shouldThrowExceptionWhenUserIdIsInvalid() {

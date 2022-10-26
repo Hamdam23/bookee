@@ -4,7 +4,6 @@ import hamdam.bookee.APIs.image.file.FileSystemRepository;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

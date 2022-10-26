@@ -1,7 +1,7 @@
 package hamdam.bookee.APIs.image;
 
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -25,7 +25,7 @@ class ImageRepositoryTest {
     void findByImageName_returnEmptyDataWhenNoImageByName() {
         //given
         //when
-        Optional<ImageEntity> actual =  underTest.findByImageName("name");
+        Optional<ImageEntity> actual = underTest.findByImageName("name");
 
         //then
         assertThat(actual).isEmpty();
@@ -38,10 +38,11 @@ class ImageRepositoryTest {
         ImageEntity expected = underTest.save(new ImageEntity(name, "location"));
 
         //when
-        Optional<ImageEntity> actual =  underTest.findByImageName(name);
+        Optional<ImageEntity> actual = underTest.findByImageName(name);
 
         //then
-        assertThat(actual.get().getImageName()).isEqualTo(expected.getImageName());
+        ImageEntity image = actual.orElseThrow(() -> new ResourceNotFoundException("Image", "name", name));
+        assertThat(image.getImageName()).isEqualTo(expected.getImageName());
     }
 
 }

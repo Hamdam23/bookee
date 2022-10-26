@@ -59,12 +59,15 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void saveUser(RegistrationRequest request) {
         if (existsWithUsername(request.getUsername())) {
-            throw new DuplicateResourceException("username");
+            throw new DuplicateResourceException("User", "username", request.getUsername());
         }
-        AppUserEntity appUserEntity = new AppUserEntity(request,
-                imageRepository.findById(request.getImageId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId())));
 
+        AppUserEntity appUserEntity = new AppUserEntity(request);
+
+        if (request.getImageId() != null) {
+            appUserEntity.setUserImage(imageRepository.findById(request.getImageId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId())));
+        }
         appUserEntity.setPassword(passwordEncoder.encode(request.getPassword()));
         AppRoleEntity role = roleRepository.findFirstByIsDefaultIsTrue()
                 .orElseThrow(NoDefaultRoleException::new);

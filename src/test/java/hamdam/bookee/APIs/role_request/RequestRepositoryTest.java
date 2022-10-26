@@ -34,6 +34,38 @@ class RequestRepositoryTest {
     }
 
     @Test
+    void existsByUserAndState_shouldReturnFalseWhenUserIsNull() {
+        //given
+        //when
+        boolean actual = underTest.existsByUserAndState(null, IN_PROGRESS);
+
+        //then
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    void existsByUserAndState_shouldReturnFalseWhenStateIsNull() {
+        //given
+        AppUserEntity userLi = userRepository.save(new AppUserEntity("Li", "li", "pass"));
+
+        //when
+        boolean actual = underTest.existsByUserAndState(userLi, null);
+
+        //then
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    void existsByUserAndState_shouldReturnFalseWhenUserAndStateIsNull() {
+        //given
+        //when
+        boolean actual = underTest.existsByUserAndState(null, null);
+
+        //then
+        assertThat(actual).isFalse();
+    }
+
+    @Test
     void existsByUserAndState_shouldReturnFalseWhenUserDoesNotHaveRoleRequest() {
         //given
         AppUserEntity userLi = userRepository.save(new AppUserEntity("Li", "li", "pass"));
@@ -76,6 +108,16 @@ class RequestRepositoryTest {
     }
 
     @Test
+    void findAllByState_shouldReturnEmptyListWhenStateIsNull() {
+        //given
+        //when
+        List<RequestEntity> actual = underTest.findAllByState(null);
+
+        //then
+        assertThat(actual.isEmpty()).isTrue();
+    }
+
+    @Test
     void findAllByState_shouldReturnEmptyListWhenNoRoleRequestByState() {
         //given
         //when
@@ -106,6 +148,16 @@ class RequestRepositoryTest {
 
         //then
         assertThat(expected.size()).isEqualTo(actual.size());
+    }
+
+    @Test
+    void findAllByUser_shouldReturnEmptyListWhenUserIsNull() {
+        //given
+        //when
+        List<RequestEntity> actual = underTest.findAllByUser(null);
+
+        //then
+        assertThat(actual.isEmpty()).isTrue();
     }
 
     @Test

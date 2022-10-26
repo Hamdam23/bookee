@@ -28,7 +28,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsEmptyDataIfNoRoleExists() {
+    void findFirstByIsDefaultIsTrue_returnsEmptyDataIfNoRoleExists() {
         //when
         Optional<AppRoleEntity> actual = underTest.findFirstByIsDefaultIsTrue();
 
@@ -37,7 +37,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsEmptyDataIfSingleNonDefaultRoleExists() {
+    void findFirstByIsDefaultIsTrue_returnsEmptyDataIfSingleNonDefaultRoleExists() {
         //given
         underTest.save(new AppRoleEntity(
                 "ADMIN",
@@ -53,7 +53,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsValidDataIfSingleDefaultRoleExists() {
+    void findFirstByIsDefaultIsTrue_returnsValidDataIfSingleDefaultRoleExists() {
         //given
         AppRoleEntity expected = underTest.save(new AppRoleEntity(
                 "USER",
@@ -70,7 +70,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsValidDataIfContainsMultipleNonDefaultRolesAndSingleDefaultRole() {
+    void findFirstByIsDefaultIsTrue_returnsValidDataIfContainsMultipleNonDefaultRolesAndSingleDefaultRole() {
         //given
         AppRoleEntity expected = underTest.save(new AppRoleEntity(
                 "USER",
@@ -97,7 +97,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnsValidDataWhenMultipleNonDefaultRolesAndMultipleDefaultRolesAvailable() {
+    void findFirstByIsDefaultIsTrue_returnsValidDataWhenMultipleNonDefaultRolesAndMultipleDefaultRolesAvailable() {
         //given
         AppRoleEntity expected = underTest.save(new AppRoleEntity(
                 "USER1",
@@ -129,7 +129,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnEmptyDataWhenNoRoleOrderedByTimeStampDesc() {
+    void findAllByOrderByTimeStampDesc_returnEmptyDataWhenNoRoleOrderedByTimeStampDesc() {
         //given
         //when
         Page<AppRoleEntity> roles = underTest.findAllByOrderByTimeStampDesc(PageRequest.of(0, 1));
@@ -139,7 +139,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailable() {
+    void findAllByOrderByTimeStampDesc_returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailable() {
         //given
         List<AppRoleEntity> actual = new ArrayList<>();
         actual.add(underTest.save(new AppRoleEntity(
@@ -170,7 +170,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailableAndRoleUpdated() {
+    void findAllByOrderByTimeStampDesc_returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailableAndRoleUpdated() {
         //given
         List<AppRoleEntity> actual = new ArrayList<>();
         actual.add(underTest.save(new AppRoleEntity(
@@ -205,7 +205,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnTrueWhenRoleNameExists() {
+    void existsByRoleName_returnTrueWhenRoleNameExists() {
         // given
         String roleName = "USER";
         underTest.save(new AppRoleEntity(roleName));
@@ -218,7 +218,7 @@ class AppRoleRepositoryTest {
     }
 
     @Test
-    void returnFalseWhenRoleNameDoesNotExists() {
+    void existsByRoleName_returnFalseWhenRoleNameDoesNotExists() {
         // given
         String roleName = "USER";
         underTest.save(new AppRoleEntity(roleName));
@@ -228,5 +228,15 @@ class AppRoleRepositoryTest {
 
         //then
         assertFalse(expected);
+    }
+
+    @Test
+    void existsByRoleName_returnFalseWhenRoleNameIsNull() {
+        //given
+        //when
+        boolean actual = underTest.existsByRoleName(null);
+
+        //then
+        assertThat(actual).isFalse();
     }
 }

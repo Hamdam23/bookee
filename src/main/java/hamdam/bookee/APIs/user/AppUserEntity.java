@@ -51,11 +51,9 @@ public class AppUserEntity {
     @UpdateTimestamp
     private LocalDateTime timeStamp;
 
-    public AppUserEntity(RegistrationRequest dto, ImageEntity image) {
+    public AppUserEntity(RegistrationRequest dto) {
         this.setName(dto.getName());
         this.setUserName(dto.getUsername());
-        this.setPassword(dto.getPassword());
-        this.setUserImage(image);
     }
 
     public AppUserEntity(String userName, AppRoleEntity role) {

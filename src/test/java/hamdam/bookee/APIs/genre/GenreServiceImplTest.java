@@ -32,7 +32,7 @@ class GenreServiceImplTest {
     private GenreServiceImpl underTest;
 
     @Mock
- private BookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @Mock
     private GenreRepository genreRepository;
@@ -152,8 +152,7 @@ class GenreServiceImplTest {
         //then
         assertThat(actual.getName()).isEqualTo(genreRequestDTO.getName());
         assertThat(actual.getDescription()).isEqualTo(genreRequestDTO.getDescription());
-        assertThat(actual.getBooks().get(0)).isEqualTo(genreRequestDTO.getBooks().get(0));
-        assertThat(actual.getBooks().get(1)).isEqualTo(genreRequestDTO.getBooks().get(1));
+        assertThat(actual.getBooks()).isEqualTo(genreRequestDTO.getBooks());
     }
 
     @Test
