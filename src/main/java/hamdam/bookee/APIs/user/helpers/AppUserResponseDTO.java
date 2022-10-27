@@ -13,7 +13,7 @@ public class AppUserResponseDTO {
 
     private Long id;
     private String name;
-    private String userName;
+    private String username;
     private AppUserRoleDTO role;
     private SetUserImageDTO image;
 

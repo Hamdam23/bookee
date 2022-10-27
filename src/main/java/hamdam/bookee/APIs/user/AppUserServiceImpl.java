@@ -44,11 +44,11 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUserEntity user = userRepository.findAppUserByUserName(username)
+        AppUserEntity user = userRepository.findAppUserByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         // TODO: 9/2/22 write mapper method/class for AppUser <-> User
         return new User(
-                user.getUserName(),
+                user.getUsername(),
                 user.getPassword(),
                 user.getRole().getPermissions().stream().map(
                         permission -> new SimpleGrantedAuthority(permission.name())
@@ -100,11 +100,11 @@ public class AppUserServiceImpl implements AppUserService {
                 );
             }
 
-            if (!request.getUsername().equals(existingUser.getUserName()) &&
-                    userRepository.existsByUserName(request.getUsername())) {
+            if (!request.getUsername().equals(existingUser.getUsername()) &&
+                    userRepository.existsByUsername(request.getUsername())) {
                 throw new DuplicateResourceException("username", "User", request.getUsername());
             }
-            existingUser.setUserName(request.getUsername());
+            existingUser.setUsername(request.getUsername());
             existingUser.setName(request.getName());
 
             return new AppUserResponseDTO(userRepository.save(existingUser));
@@ -191,12 +191,12 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public boolean existsWithUsername(String username) {
-        return userRepository.existsByUserName(username);
+        return userRepository.existsByUsername(username);
     }
 
     @Override
     public AppUserEntity getUserByUsername(String username) {
-        return userRepository.findAppUserByUserName(username)
+        return userRepository.findAppUserByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 

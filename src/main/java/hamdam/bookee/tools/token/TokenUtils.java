@@ -65,9 +65,9 @@ public class TokenUtils implements InitializingBean {
     public static TokensResponse getTokenResponse(AppUserEntity user) {
 
         return new TokensResponse(
-                createToken(user.getUserName(), user.getRole(), true),
+                createToken(user.getUsername(), user.getRole(), true),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + accessTokenValidity)),
-                createToken(user.getUserName(), user.getRole(), false),
+                createToken(user.getUsername(), user.getRole(), false),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + refreshTokenValidity)),
                 user.getRole().getRoleName(),
                 user.getRole().getPermissions()
@@ -77,7 +77,7 @@ public class TokenUtils implements InitializingBean {
     public static TokensResponse getAccessTokenResponse(AppUserEntity user) {
 
         return new TokensResponse(
-                createToken(user.getUserName(), user.getRole(), true),
+                createToken(user.getUsername(), user.getRole(), true),
                 DATE_FORMAT.format(new Date(System.currentTimeMillis() + accessTokenValidity))
         );
     }

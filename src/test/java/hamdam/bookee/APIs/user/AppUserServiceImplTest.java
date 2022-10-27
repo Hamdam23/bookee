@@ -70,14 +70,14 @@ class AppUserServiceImplTest {
     void saveUser_throwsExceptionWhenUsernameIsDuplicate() {
         //given
         String username = "niko";
-        when(appUserRepository.existsByUserName(username)).thenReturn(true);
+        when(appUserRepository.existsByUsername(username)).thenReturn(true);
 
         //when
         //then
         assertThatThrownBy(() -> underTest.saveUser(new RegistrationRequest(null, username, null, null)))
                 .isInstanceOf(DuplicateResourceException.class)
                 .hasMessageContaining(username);
-        verify(appUserRepository).existsByUserName(username);
+        verify(appUserRepository).existsByUsername(username);
     }
 
     @Test
@@ -85,7 +85,7 @@ class AppUserServiceImplTest {
         //given
         String username = "niko";
         Long imageId = 1L;
-        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+        when(appUserRepository.existsByUsername(username)).thenReturn(false);
         when(imageRepository.findById(imageId)).thenReturn(Optional.empty());
 
         //when
@@ -93,7 +93,7 @@ class AppUserServiceImplTest {
         assertThatThrownBy(() -> underTest.saveUser(new RegistrationRequest(null, username, null, imageId)))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining(imageId.toString());
-        verify(appUserRepository).existsByUserName(username);
+        verify(appUserRepository).existsByUsername(username);
         verify(imageRepository).findById(imageId);
     }
 
@@ -102,7 +102,7 @@ class AppUserServiceImplTest {
         //given
         String username = "niko";
         Long imageId = 1L;
-        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+        when(appUserRepository.existsByUsername(username)).thenReturn(false);
         when(imageRepository.findById(imageId)).thenReturn(Optional.of(new ImageEntity()));
         when(appRoleRepository.findFirstByIsDefaultIsTrue()).thenReturn(Optional.empty());
 
@@ -111,7 +111,7 @@ class AppUserServiceImplTest {
         assertThatThrownBy(() -> underTest.saveUser(
                 new RegistrationRequest(null, username, "12345", imageId))
         ).isInstanceOf(NoDefaultRoleException.class);
-        verify(appUserRepository).existsByUserName(username);
+        verify(appUserRepository).existsByUsername(username);
         verify(imageRepository).findById(imageId);
         verify(appRoleRepository).findFirstByIsDefaultIsTrue();
     }
@@ -126,7 +126,7 @@ class AppUserServiceImplTest {
         AppUserEntity user = new AppUserEntity(
                 name, username, "very_secret_password"
         );
-        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+        when(appUserRepository.existsByUsername(username)).thenReturn(false);
         when(imageRepository.findById(imageId)).thenReturn(Optional.of(new ImageEntity()));
         when(appRoleRepository.findFirstByIsDefaultIsTrue()).thenReturn(Optional.of(new AppRoleEntity()));
         when(appUserRepository.save(any())).thenReturn(user);
@@ -135,7 +135,7 @@ class AppUserServiceImplTest {
         underTest.saveUser(new RegistrationRequest(name, username, password, imageId));
 
         //then
-        verify(appUserRepository).existsByUserName(username);
+        verify(appUserRepository).existsByUsername(username);
         verify(imageRepository).findById(imageId);
         verify(appRoleRepository).findFirstByIsDefaultIsTrue();
         ArgumentCaptor<AppUserEntity> argumentCaptor = ArgumentCaptor.forClass(AppUserEntity.class);
@@ -143,7 +143,7 @@ class AppUserServiceImplTest {
         AppUserEntity actual = argumentCaptor.getValue();
         verify(appUserRepository).save(any());
 
-        assertThat(actual.getUserName()).isEqualTo(username);
+        assertThat(actual.getUsername()).isEqualTo(username);
     }
 
     @Test
@@ -182,7 +182,7 @@ class AppUserServiceImplTest {
     void loadUserByUsername_throwsExceptionWhenUsernameIsInvalid() {
         //given
         String username = "test";
-        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.empty());
+        when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.empty());
 
         //when
         //then
@@ -202,14 +202,14 @@ class AppUserServiceImplTest {
                 "niko", role
         );
         user.setPassword("very_good_password");
-        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.of(user));
 
         //when
         UserDetails actual = underTest.loadUserByUsername(username);
 
         //then
-        verify(appUserRepository).findAppUserByUserName(username);
-        assertThat(actual.getUsername()).isEqualTo(user.getUserName());
+        verify(appUserRepository).findAppUserByUsername(username);
+        assertThat(actual.getUsername()).isEqualTo(user.getUsername());
         assertThat(actual.getPassword()).isEqualTo(user.getPassword());
         assertThat(actual.getAuthorities()).isEqualTo(user.getRole().getPermissions().stream().map(
                 permission -> new SimpleGrantedAuthority(permission.name())
@@ -276,7 +276,7 @@ class AppUserServiceImplTest {
         user.setId(1L);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(imageRepository.findById(request.getImageId())).thenReturn(Optional.empty());
 
         //when
@@ -305,7 +305,7 @@ class AppUserServiceImplTest {
         user.setId(4L);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
         //then
@@ -329,7 +329,7 @@ class AppUserServiceImplTest {
         user.setId(userId);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(imageRepository.findById(request.getImageId())).thenReturn(Optional.empty());
 
         //when
@@ -358,9 +358,9 @@ class AppUserServiceImplTest {
         image.setId(6L);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(imageRepository.findById(request.getImageId())).thenReturn(Optional.of(image));
-        when(appUserRepository.existsByUserName(request.getUsername())).thenReturn(true);
+        when(appUserRepository.existsByUsername(request.getUsername())).thenReturn(true);
 
         //when
         //then
@@ -392,7 +392,7 @@ class AppUserServiceImplTest {
         image.setId(6L);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(requestedUser));
-        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+        when(appUserRepository.findAppUserByUsername(currentUser.getUsername())).thenReturn(Optional.of(currentUser));
         when(imageRepository.findById(request.getImageId())).thenReturn(Optional.of(image));
         when(appUserRepository.save(requestedUser)).thenReturn(requestedUser);
 
@@ -403,7 +403,7 @@ class AppUserServiceImplTest {
         verify(appUserRepository).save(requestedUser);
 
         assertThat(actual.getName()).isEqualTo(request.getName());
-        assertThat(actual.getUserName()).isEqualTo(request.getUsername());
+        assertThat(actual.getUsername()).isEqualTo(request.getUsername());
         assertThat(actual.getImage().getId()).isEqualTo(image.getId());
     }
 
@@ -417,13 +417,13 @@ class AppUserServiceImplTest {
         AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(2L);
 
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
         //then
         assertThatThrownBy(() -> underTest.setImageToUser(userId, imageDTO))
                 .isInstanceOf(LimitedPermissionException.class);
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+        verify(appUserRepository).findAppUserByUsername(user.getUsername());
     }
 
     @Test
@@ -436,13 +436,13 @@ class AppUserServiceImplTest {
         AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(2L);
 
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
         //then
         assertThatThrownBy(() -> underTest.setImageToUser(userId, imageDTO))
                 .isInstanceOf(LimitedPermissionException.class);
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+        verify(appUserRepository).findAppUserByUsername(user.getUsername());
     }
 
     @Test
@@ -456,7 +456,7 @@ class AppUserServiceImplTest {
         AppUserEntity user = new AppUserEntity("Nicola", "niko", role);
         user.setId(3L);
 
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(imageRepository.findById(imageDTO.getImageId())).thenReturn(Optional.empty());
 
         //when
@@ -466,7 +466,7 @@ class AppUserServiceImplTest {
                 .hasMessageContaining("Image")
                 .hasMessageContaining("id")
                 .hasMessageContaining(imageDTO.getImageId().toString());
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+        verify(appUserRepository).findAppUserByUsername(user.getUsername());
         verify(imageRepository).findById(imageDTO.getImageId());
     }
 
@@ -484,7 +484,7 @@ class AppUserServiceImplTest {
         ImageEntity image = new ImageEntity("alien", "solar-system/earth");
         image.setId(4L);
 
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
         when(imageRepository.findById(imageDTO.getImageId())).thenReturn(Optional.of(image));
         when(appUserRepository.save(user)).thenReturn(user);
@@ -493,11 +493,11 @@ class AppUserServiceImplTest {
         AppUserResponseDTO actual = underTest.setImageToUser(userId, imageDTO);
 
         //then
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+        verify(appUserRepository).findAppUserByUsername(user.getUsername());
         verify(appUserRepository).findById(userId);
         verify(imageRepository).findById(imageDTO.getImageId());
         verify(appUserRepository).save(user);
-        assertThat(actual.getUserName()).isEqualTo(user.getUserName());
+        assertThat(actual.getUsername()).isEqualTo(user.getUsername());
         assertThat(actual.getName()).isEqualTo(user.getName());
         assertThat(actual.getRole().getId()).isEqualTo(user.getRole().getId());
         assertThat(actual.getImage().getId()).isEqualTo(image.getId());
@@ -544,7 +544,7 @@ class AppUserServiceImplTest {
         verify(appRoleRepository).findById(roleDTO.getRoleId());
         verify(appUserRepository).save(user);
         assertThat(actual.getName()).isEqualTo(user.getName());
-        assertThat(actual.getUserName()).isEqualTo(user.getUserName());
+        assertThat(actual.getUsername()).isEqualTo(user.getUsername());
         assertThat(actual.getRole().getId()).isEqualTo(role.getId());
     }
 
@@ -581,13 +581,13 @@ class AppUserServiceImplTest {
                 role);
         user.setId(2L);
         when(appUserRepository.existsById(userId)).thenReturn(true);
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
         //then
         assertThatThrownBy(() -> underTest.deleteUser(userId))
                 .isInstanceOf(LimitedPermissionException.class);
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+        verify(appUserRepository).findAppUserByUsername(user.getUsername());
     }
 
     @Test
@@ -600,14 +600,14 @@ class AppUserServiceImplTest {
                 "niko",
                 role);
         user.setId(2L);
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(appUserRepository.existsById(userId)).thenReturn(true);
 
         //when
         ApiResponse actual = underTest.deleteUser(userId);
 
         //then
-        verify(appUserRepository).findAppUserByUserName(user.getUserName());
+        verify(appUserRepository).findAppUserByUsername(user.getUsername());
         verify(appUserRepository).existsById(userId);
         verify(appUserRepository).deleteById(userId);
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -632,7 +632,7 @@ class AppUserServiceImplTest {
         currentUser.setId(2L);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+        when(appUserRepository.findAppUserByUsername(currentUser.getUsername())).thenReturn(Optional.of(currentUser));
 
         //when
         //then
@@ -659,7 +659,7 @@ class AppUserServiceImplTest {
         currentUser.setId(userId);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+        when(appUserRepository.findAppUserByUsername(currentUser.getUsername())).thenReturn(Optional.of(currentUser));
 
         //when
         //then
@@ -668,7 +668,7 @@ class AppUserServiceImplTest {
                 .hasMessageContaining(request.getNewPassword())
                 .hasMessageContaining(request.getConfirmNewPassword());
         verify(appUserRepository).findById(userId);
-        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+        verify(appUserRepository).findAppUserByUsername(currentUser.getUsername());
     }
 
     @Test
@@ -690,7 +690,7 @@ class AppUserServiceImplTest {
         currentUser.setId(userId);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+        when(appUserRepository.findAppUserByUsername(currentUser.getUsername())).thenReturn(Optional.of(currentUser));
 
         //when
         //then
@@ -700,7 +700,7 @@ class AppUserServiceImplTest {
                 .hasMessageContaining(request.getOldPassword())
                 .hasMessageContaining(request.getNewPassword());
         verify(appUserRepository).findById(userId);
-        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+        verify(appUserRepository).findAppUserByUsername(currentUser.getUsername());
     }
 
     @Test
@@ -722,7 +722,7 @@ class AppUserServiceImplTest {
         currentUser.setId(userId);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+        when(appUserRepository.findAppUserByUsername(currentUser.getUsername())).thenReturn(Optional.of(currentUser));
 
         //when
         //then
@@ -731,7 +731,7 @@ class AppUserServiceImplTest {
                 .hasMessageContaining(request.getOldPassword())
                 .hasMessageContaining("user's password");
         verify(appUserRepository).findById(userId);
-        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+        verify(appUserRepository).findAppUserByUsername(currentUser.getUsername());
     }
 
     @Test
@@ -753,7 +753,7 @@ class AppUserServiceImplTest {
         currentUser.setId(userId);
 
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(appUserRepository.findAppUserByUserName(currentUser.getUserName())).thenReturn(Optional.of(currentUser));
+        when(appUserRepository.findAppUserByUsername(currentUser.getUsername())).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.matches(request.getOldPassword(), user.getPassword())).thenReturn(true);
         when(passwordEncoder.encode(request.getNewPassword())).thenReturn("encoded_new_password");
         when(appUserRepository.save(user)).thenReturn(user);
@@ -767,20 +767,20 @@ class AppUserServiceImplTest {
         AppUserEntity actual = userArgCaptor.getValue();
         assertThat(actual.getPassword()).isEqualTo(passwordEncoder.encode(request.getNewPassword()));
         verify(appUserRepository).findById(userId);
-        verify(appUserRepository).findAppUserByUserName(currentUser.getUserName());
+        verify(appUserRepository).findAppUserByUsername(currentUser.getUsername());
     }
 
     @Test
     void userExistsWithUsername_returnFalseWhenUserNameIsInvalid() {
         //given
         String username = "test";
-        when(appUserRepository.existsByUserName(username)).thenReturn(false);
+        when(appUserRepository.existsByUsername(username)).thenReturn(false);
 
         //when
         boolean actual = underTest.existsWithUsername(username);
 
         //then
-        verify(appUserRepository).existsByUserName(username);
+        verify(appUserRepository).existsByUsername(username);
         assertThat(actual).isFalse();
     }
 
@@ -788,13 +788,13 @@ class AppUserServiceImplTest {
     void userExistsWithUsername_returnTrueWhenUserNameIsValid() {
         //given
         String username = "test";
-        when(appUserRepository.existsByUserName(username)).thenReturn(true);
+        when(appUserRepository.existsByUsername(username)).thenReturn(true);
 
         //when
         boolean actual = underTest.existsWithUsername(username);
 
         //then
-        verify(appUserRepository).existsByUserName(username);
+        verify(appUserRepository).existsByUsername(username);
         assertThat(actual).isTrue();
     }
 
@@ -802,7 +802,7 @@ class AppUserServiceImplTest {
     void getUserByUsername_throwsExceptionWhenUsernameIsInvalid() {
         //given
         String username = "test";
-        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.empty());
+        when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.empty());
 
         //when
         //then
@@ -817,13 +817,13 @@ class AppUserServiceImplTest {
         //given
         String username = "test";
         AppUserEntity user = new AppUserEntity(username, new AppRoleEntity());
-        when(appUserRepository.findAppUserByUserName(username)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.of(user));
 
         //when
         underTest.getUserByUsername(username);
 
         //then
-        verify(appUserRepository).findAppUserByUserName(username);
-        assertThat(user.getUserName()).isEqualTo(username);
+        verify(appUserRepository).findAppUserByUsername(username);
+        assertThat(user.getUsername()).isEqualTo(username);
     }
 }

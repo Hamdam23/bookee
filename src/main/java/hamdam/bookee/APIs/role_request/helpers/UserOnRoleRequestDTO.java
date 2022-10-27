@@ -13,7 +13,7 @@ public class UserOnRoleRequestDTO {
 
     private String name;
     @JsonProperty("username")
-    private String userName;
+    private String username;
     @JsonProperty("user_role")
     private String userRole;
     @JsonProperty("user_image")

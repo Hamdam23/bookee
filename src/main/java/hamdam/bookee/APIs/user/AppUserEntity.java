@@ -32,7 +32,7 @@ public class AppUserEntity {
 
     @NotBlank(message = "username can not be blank!")
     @Column(unique = true)
-    private String userName;
+    private String username;
 
     @NotBlank(message = "password can not be blank!")
     private String password;
@@ -53,30 +53,30 @@ public class AppUserEntity {
 
     public AppUserEntity(RegistrationRequest dto) {
         this.setName(dto.getName());
-        this.setUserName(dto.getUsername());
+        this.setUsername(dto.getUsername());
     }
 
-    public AppUserEntity(String userName, AppRoleEntity role) {
-        this.userName = userName;
+    public AppUserEntity(String username, AppRoleEntity role) {
+        this.username = username;
         this.role = role;
     }
 
-    public AppUserEntity(String name, String userName, String password) {
+    public AppUserEntity(String name, String username, String password) {
         this.name = name;
-        this.userName = userName;
+        this.username = username;
         this.password = password;
     }
 
-    public AppUserEntity(String name, String userName, String password, LocalDateTime timeStamp) {
+    public AppUserEntity(String name, String username, String password, LocalDateTime timeStamp) {
         this.name = name;
-        this.userName = userName;
+        this.username = username;
         this.password = password;
         this.timeStamp = timeStamp;
     }
 
-    public AppUserEntity(String name, String userName, AppRoleEntity role) {
+    public AppUserEntity(String name, String username, AppRoleEntity role) {
         this.name = name;
-        this.userName = userName;
+        this.username = username;
         this.role = role;
     }
 }

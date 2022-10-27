@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.user;
 
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +29,17 @@ class AppUserRepositoryTest {
     }
 
     @Test
-    void existsByUserName_returnFalseWhenUserNameIsNull() {
+    void existsByUsername_returnFalseWhenUsernameIsNull() {
         //given
         //when
-        boolean expected = underTest.existsByUserName(null);
+        boolean expected = underTest.existsByUsername(null);
 
         //then
         assertFalse(expected);
     }
 
     @Test
-    void existsByUserName_returnFalseWhenUserDoesNotExistsWithUserName() {
+    void existsByUsername_returnFalseWhenUserDoesNotExistsWithUsername() {
         //given
         String username = "user_kh";
         underTest.save(
@@ -48,14 +49,14 @@ class AppUserRepositoryTest {
         );
 
         //when
-        boolean expected = underTest.existsByUserName(username + " test");
+        boolean expected = underTest.existsByUsername(username + " test");
 
         //then
         assertFalse(expected);
     }
 
     @Test
-    void existsByUserName_returnTrueWhenUserExistsWithUserName() {
+    void existsByUsername_returnTrueWhenUserExistsWithUsername() {
         //given
         String username = "hamdam_kh";
         underTest.save(
@@ -65,26 +66,36 @@ class AppUserRepositoryTest {
         );
 
         //when
-        boolean expected = underTest.existsByUserName(username);
+        boolean expected = underTest.existsByUsername(username);
 
         //then
         assertTrue(expected);
     }
 
     @Test
-    void findAppUserByUserName_returnEmptyDataWhenUserNotFoundWithUserName() {
+    void findAppUserByUsername_returnEmptyDataWhenUsernameIsNull() {
         //given
-        String username = "hamdam";
-
         //when
-        Optional<AppUserEntity> expected = underTest.findAppUserByUserName(username);
+        Optional<AppUserEntity> expected = underTest.findAppUserByUsername(null);
 
         //then
         assertTrue(expected.isEmpty());
     }
 
     @Test
-    void findAppUserByUserName_returnValidDataWhenUserFoundWithUserName() {
+    void findAppUserByUsername_returnEmptyDataWhenUserNotFoundWithUsername() {
+        //given
+        String username = "hamdam";
+
+        //when
+        Optional<AppUserEntity> expected = underTest.findAppUserByUsername(username);
+
+        //then
+        assertTrue(expected.isEmpty());
+    }
+
+    @Test
+    void findAppUserByUsername_returnValidDataWhenUserFoundWithUsername() {
         //given
         String username = "hamdam";
         AppUserEntity actual = underTest.save(
@@ -94,10 +105,11 @@ class AppUserRepositoryTest {
         );
 
         //when
-        Optional<AppUserEntity> expected = underTest.findAppUserByUserName(username);
+        Optional<AppUserEntity> expected = underTest.findAppUserByUsername(username);
 
         //then
-        assertThat(actual.getId()).isEqualTo(expected.get().getId());
+        AppUserEntity user = expected.orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        assertThat(actual.getId()).isEqualTo(user.getId());
     }
 
     @Test
@@ -191,7 +203,7 @@ class AppUserRepositoryTest {
                 )
         ));
         AppUserEntity updated = actual.get(2);
-        updated.setUserName(updated.getUserName() + " UPDATED");
+        updated.setUsername(updated.getUsername() + " UPDATED");
         updated = underTest.save(updated);
 
         //when

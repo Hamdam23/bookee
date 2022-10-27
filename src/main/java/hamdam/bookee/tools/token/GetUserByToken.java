@@ -8,8 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-
 @Component
 public class GetUserByToken {
 
@@ -26,7 +24,7 @@ public class GetUserByToken {
             username = (String) principal;
         }
 
-        return userRepository.findAppUserByUserName(username)
+        return userRepository.findAppUserByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 }

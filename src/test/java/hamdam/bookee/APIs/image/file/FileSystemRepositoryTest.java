@@ -33,15 +33,15 @@ class FileSystemRepositoryTest {
     }
 
     @Test
-    void readFileFromPath_throwsExceptionWhenPathIsInValid() {
+    void readFileFromPath_throwsExceptionWhenPathIsInvalid() {
         //given
         Path invalidPath = null;
         Path path = fileSystem.getPath("jsdvnkjsdvksjvn");
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.readFileFromPath(path))
-                .isInstanceOf(ResourceNotFoundException.class);
+        assertThatThrownBy(() -> underTest.readFileFromPath(null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

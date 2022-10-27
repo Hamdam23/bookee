@@ -113,14 +113,14 @@ class RequestServiceImplTest {
     void postRoleRequest_throwsExceptionWhenUserNotAllowedToRequestRole() {
         //given
         AppUserEntity currUser = new AppUserEntity("Li", "li", "pass");
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(true);
 
         //when
         //then
         assertThatThrownBy(() -> underTest.postRoleRequest(new RoleRequestDTO()))
                 .isInstanceOf(AlreadyHasInProgressRequestException.class);
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
     }
 
     @Test
@@ -133,7 +133,7 @@ class RequestServiceImplTest {
         RoleRequestDTO request = new RoleRequestDTO(role.getId());
 
         AppUserEntity currUser = new AppUserEntity("Li", "li", "pass");
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(role.getId())).thenReturn(Optional.empty());
 
@@ -142,7 +142,7 @@ class RequestServiceImplTest {
         assertThatThrownBy(() -> underTest.postRoleRequest(request))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining(role.getId().toString());
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
         verify(roleRepository).findById(role.getId());
     }
 
@@ -159,7 +159,7 @@ class RequestServiceImplTest {
         RoleRequestDTO request = new RoleRequestDTO(requestedRole.getId());
 
         AppUserEntity currUser = new AppUserEntity("Li", "li", userRole);
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
 
@@ -167,7 +167,7 @@ class RequestServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.postRoleRequest(request))
                 .isInstanceOf(LimitedPermissionException.class);
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
     }
 
     @Test
@@ -183,7 +183,7 @@ class RequestServiceImplTest {
         RoleRequestDTO request = new RoleRequestDTO(requestedRole.getId());
 
         AppUserEntity currUser = new AppUserEntity("Li", "li", userRole);
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
 
@@ -191,7 +191,7 @@ class RequestServiceImplTest {
         //then
         assertThatThrownBy(() -> underTest.postRoleRequest(request))
                 .isInstanceOf(NotAllowedRoleOnRequestException.class);
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
     }
 
     @Test
@@ -207,7 +207,7 @@ class RequestServiceImplTest {
         RequestEntity requestEntity = new RequestEntity(currUser, requestedRole, State.IN_PROGRESS);
         RoleRequestDTO requestDTO = new RoleRequestDTO(requestedRole.getId());
 
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
         when(requestRepository.save(any())).thenReturn(requestEntity);
@@ -216,7 +216,7 @@ class RequestServiceImplTest {
         RoleRequestResponse actual = underTest.postRoleRequest(requestDTO);
 
         //then
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
         verify(requestRepository).existsByUserAndState(currUser, IN_PROGRESS);
         verify(roleRepository).findById(requestedRole.getId());
 
@@ -225,7 +225,7 @@ class RequestServiceImplTest {
         RequestEntity actualRequest = requestArgCaptor.getValue();
         verify(requestRepository).save(any());
 
-        assertThat(actual.getUser().getUserName()).isEqualTo(actualRequest.getUser().getUserName());
+        assertThat(actual.getUser().getUsername()).isEqualTo(actualRequest.getUser().getUsername());
         assertThat(actual.getRequestedRole()).isEqualTo(actualRequest.getRequestedRole().getRoleName());
         assertThat(actual.getState()).isEqualTo(actualRequest.getState());
     }
@@ -244,7 +244,7 @@ class RequestServiceImplTest {
         requestEntities.add(new RequestEntity(currUser, authorRole, State.IN_PROGRESS));
         requestEntities.add(new RequestEntity(currUser, policeRole, DECLINED));
 
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.findAll()).thenReturn(requestEntities);
         when(requestRepository.findAllByUser(currUser)).thenReturn(requestEntities);
 
@@ -252,7 +252,7 @@ class RequestServiceImplTest {
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(null);
 
         //then
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
         verify(requestRepository).findAll();
         verify(requestRepository).findAllByUser(currUser);
         assertThat(actual.size()).isEqualTo(requestEntities.size());
@@ -276,7 +276,7 @@ class RequestServiceImplTest {
         requestEntities.add(new RequestEntity(userJack, authorRole, IN_PROGRESS));
         requestEntities.add(new RequestEntity(currUser, policeRole, DECLINED));
 
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.findAllByState(IN_PROGRESS)).thenReturn(List.of(requestEntities.get(0),
                 requestEntities.get(1), requestEntities.get(2)));
         when(requestRepository.findAllByUser(currUser)).thenReturn(List.of(requestEntities.get(0)));
@@ -285,7 +285,7 @@ class RequestServiceImplTest {
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(IN_PROGRESS);
 
         //then
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
         verify(requestRepository).findAllByState(IN_PROGRESS);
         verify(requestRepository).findAllByUser(currUser);
         assertThat(actual.size()).isEqualTo(1);
@@ -310,14 +310,14 @@ class RequestServiceImplTest {
         requestEntities.add(new RequestEntity(userJack, authorRole, IN_PROGRESS));
         requestEntities.add(new RequestEntity(userAnn, policeRole, DECLINED));
 
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.findAll()).thenReturn(requestEntities);
 
         //when
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(null);
 
         //then
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
         verify(requestRepository).findAll();
         assertThat(actual.size()).isEqualTo(requestEntities.size());
     }
@@ -341,14 +341,14 @@ class RequestServiceImplTest {
         requestEntities.add(new RequestEntity(userJack, authorRole, IN_PROGRESS));
         requestEntities.add(new RequestEntity(userAnn, policeRole, DECLINED));
 
-        when(userRepository.findAppUserByUserName(currUser.getUserName())).thenReturn(Optional.of(currUser));
+        when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(requestRepository.findAllByState(IN_PROGRESS)).thenReturn(List.of(requestEntities.get(1), requestEntities.get(2)));
 
         //when
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(IN_PROGRESS);
 
         //then
-        verify(userRepository).findAppUserByUserName(currUser.getUserName());
+        verify(userRepository).findAppUserByUsername(currUser.getUsername());
         verify(requestRepository).findAllByState(IN_PROGRESS);
         assertThat(actual.size()).isEqualTo(2);
     }
@@ -376,14 +376,14 @@ class RequestServiceImplTest {
         AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
 
         when(requestRepository.findById(id)).thenReturn(Optional.of(new RequestEntity()));
-        when(userRepository.findAppUserByUserName(userAnn.getUserName())).thenReturn(Optional.of(userAnn));
+        when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         //then
         assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequestDTO()))
                 .isInstanceOf(LimitedPermissionException.class);
         verify(requestRepository).findById(id);
-        verify(userRepository).findAppUserByUserName(userAnn.getUserName());
+        verify(userRepository).findAppUserByUsername(userAnn.getUsername());
     }
 
     @Test
@@ -395,14 +395,14 @@ class RequestServiceImplTest {
         AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
 
         when(requestRepository.findById(id)).thenReturn(Optional.of(new RequestEntity()));
-        when(userRepository.findAppUserByUserName(userAnn.getUserName())).thenReturn(Optional.of(userAnn));
+        when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         //then
         assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequestDTO(IN_PROGRESS)))
                 .isInstanceOf(IncorrectStateValueException.class);
         verify(requestRepository).findById(id);
-        verify(userRepository).findAppUserByUserName(userAnn.getUserName());
+        verify(userRepository).findAppUserByUsername(userAnn.getUsername());
     }
 
     @Test
@@ -416,16 +416,16 @@ class RequestServiceImplTest {
         RequestEntity request = new RequestEntity(userAnn, requestedRole, IN_PROGRESS);
 
         when(requestRepository.findById(id)).thenReturn(Optional.of(request));
-        when(userRepository.findAppUserByUserName(userAnn.getUserName())).thenReturn(Optional.of(userAnn));
+        when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         RoleRequestResponse actual = underTest.reviewRequest(id, new ReviewRequestDTO(DECLINED));
 
         //then
         verify(requestRepository).findById(id);
-        verify(userRepository).findAppUserByUserName(userAnn.getUserName());
+        verify(userRepository).findAppUserByUsername(userAnn.getUsername());
         verify(requestRepository).save(request);
-        assertThat(actual.getUser().getUserName()).isEqualTo(userAnn.getUserName());
+        assertThat(actual.getUser().getUsername()).isEqualTo(userAnn.getUsername());
         assertThat(actual.getRequestedRole()).isEqualTo(requestedRole.getRoleName());
         assertThat(actual.getState()).isEqualTo(DECLINED);
     }
@@ -441,16 +441,16 @@ class RequestServiceImplTest {
         RequestEntity request = new RequestEntity(userAnn, requestedRole, IN_PROGRESS);
 
         when(requestRepository.findById(id)).thenReturn(Optional.of(request));
-        when(userRepository.findAppUserByUserName(userAnn.getUserName())).thenReturn(Optional.of(userAnn));
+        when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         RoleRequestResponse actual = underTest.reviewRequest(id, new ReviewRequestDTO(ACCEPTED, "nice"));
 
         //then
         verify(requestRepository).findById(id);
-        verify(userRepository).findAppUserByUserName(userAnn.getUserName());
+        verify(userRepository).findAppUserByUsername(userAnn.getUsername());
         verify(requestRepository).save(request);
-        assertThat(actual.getUser().getUserName()).isEqualTo(userAnn.getUserName());
+        assertThat(actual.getUser().getUsername()).isEqualTo(userAnn.getUsername());
         assertThat(actual.getRequestedRole()).isEqualTo(requestedRole.getRoleName());
         assertThat(actual.getState()).isEqualTo(ACCEPTED);
         assertThat(actual.getDescription()).isEqualTo("nice");
@@ -481,7 +481,7 @@ class RequestServiceImplTest {
         RequestEntity requestEntity = new RequestEntity(userJon, userRole, IN_PROGRESS);
 
         when(requestRepository.findById(id)).thenReturn(Optional.of(requestEntity));
-        when(userRepository.findAppUserByUserName(userAnn.getUserName())).thenReturn(Optional.of(userAnn));
+        when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         //then
@@ -500,7 +500,7 @@ class RequestServiceImplTest {
         RequestEntity requestEntity = new RequestEntity(userAnn, userRole, IN_PROGRESS);
 
         when(requestRepository.findById(id)).thenReturn(Optional.of(requestEntity));
-        when(userRepository.findAppUserByUserName(userAnn.getUserName())).thenReturn(Optional.of(userAnn));
+        when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         underTest.deleteRequest(id);
@@ -520,7 +520,7 @@ class RequestServiceImplTest {
         RequestEntity requestEntity = new RequestEntity(userAnn, userRole, IN_PROGRESS);
 
         when(requestRepository.findById(id)).thenReturn(Optional.of(requestEntity));
-        when(userRepository.findAppUserByUserName(userAnn.getUserName())).thenReturn(Optional.of(userAnn));
+        when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         underTest.deleteRequest(id);

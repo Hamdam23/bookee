@@ -20,7 +20,7 @@ public class RoleRequestResponse {
     public RoleRequestResponse(RequestEntity entity, String requestedRole) {
         this.user = new UserOnRoleRequestDTO(
                 entity.getUser().getName(),
-                entity.getUser().getUserName(),
+                entity.getUser().getUsername(),
                 entity.getUser().getRole().getRoleName(),
                 entity.getUser().getUserImage()
         );

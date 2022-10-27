@@ -98,7 +98,7 @@ class AppRoleServiceImplTest {
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(GET_USER));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
 
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
         //then
@@ -113,7 +113,7 @@ class AppRoleServiceImplTest {
         AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_ROLE));
         AppUserEntity user = new AppUserEntity("Hamdam", role);
 
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
         //then
@@ -131,7 +131,7 @@ class AppRoleServiceImplTest {
         AppUserEntity user = new AppUserEntity("Hamdam", role);
 
         when(appRoleRepository.existsById(id)).thenReturn(true);
-        when(appUserRepository.findAppUserByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
         ApiResponse actual = underTest.deleteRoleById(id);
