@@ -2,7 +2,6 @@ package hamdam.bookee.APIs.image.file;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
-import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.FileSystemResource;
 
@@ -26,22 +25,10 @@ class FileSystemRepositoryTest {
         Path path = fileSystem.getPath("" + imageName);
 
         //when
-        String actual = underTest.writeFilePath(content, path);
+        String actual = underTest.writeFileToPath(content, path);
 
         //then
         assertThat(actual).isEqualTo(path.toAbsolutePath().toString());
-    }
-
-    @Test
-    void readFileFromPath_throwsExceptionWhenPathIsInvalid() {
-        //given
-        Path invalidPath = null;
-        Path path = fileSystem.getPath("jsdvnkjsdvksjvn");
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.readFileFromPath(null))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

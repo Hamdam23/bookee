@@ -34,7 +34,7 @@ public class ImageServiceImpl implements ImageService {
     public ImageEntity uploadImage(MultipartFile file) throws IOException {
         String fileNameWithoutExt = FilenameUtils.removeExtension(file.getOriginalFilename());
         if (fileNameWithoutExt == null) {
-            fileNameWithoutExt = "";
+            fileNameWithoutExt = "image";
         } else {
             fileNameWithoutExt = fileNameWithoutExt.replace(" ", "-");
         }
@@ -42,7 +42,7 @@ public class ImageServiceImpl implements ImageService {
         String name = fileNameWithoutExt + "-" + new Date().getTime() + "." + extension;
         Path path = Paths.get(imagesDirectory + name);
         Files.createDirectories(path.getParent());
-        String location = fileSystemRepository.writeFilePath(file.getBytes(), path);
+        String location = fileSystemRepository.writeFileToPath(file.getBytes(), path);
 
         return imageRepository.save(new ImageEntity(name, location));
     }

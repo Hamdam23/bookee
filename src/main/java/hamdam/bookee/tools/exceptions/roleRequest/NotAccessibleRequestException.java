@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 public class NotAccessibleRequestException extends ApiException {
 
     public NotAccessibleRequestException() {
-        super(HttpStatus.FORBIDDEN, "You can not access the request!");
+        super("You can not access the request!", HttpStatus.FORBIDDEN,
+                "NotAccessibleRequestException", new Object[]{});
     }
 }

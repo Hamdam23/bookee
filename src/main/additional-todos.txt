@@ -1,16 +1,16 @@
 #In Progress
-26. change list of extensions to dynamic list on @ValidFile
-36. implementation of Genres and Books is changed, test of them needs to be changed
-27. use constants class for every package
-35. user env variable for encoded password
-21. use Mapper classes for each package!
 2. Tests
+26. change list of extensions to dynamic list on @ValidFile
+27. use constants class for every package - table names?
+35. use env variable for encoded password
+38. db tables naming
+21. use Mapper classes for each package!
 3. Code comments, README, API documentation, Downloadable Postman collection.
 *. delete db on heroku -> push code to heroku branch -> deploy (I changed creation of tables on V1 flyway)
 
 #Done
 -1. Database migration
-4. if required, create separate DTOs for request and response
+-4. if required, create separate DTOs for request and response
 -6. Project packaging
 -7. filter package vs security package
 -8. handle Optional.get() warnings
@@ -39,4 +39,5 @@
 -*32. get expiry times from app.yaml file
 -33. use common method for createAccessToken and createRefreshToken methods
 -34. it gives 403 with empty response if token is expired
+-36. implementation of Genres and Books is changed, test of them needs to be changed
 -37. get secret from environment variable

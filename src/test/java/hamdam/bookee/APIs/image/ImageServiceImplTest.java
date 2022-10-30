@@ -50,7 +50,7 @@ class ImageServiceImplTest {
         ReflectionTestUtils.setField(underTest, "imagesDirectory", imagesDirectory);
         MultipartFile file = new MockMultipartFile("godzilla.png", "godzilla.png", "image/png", "godzilla".getBytes());
         String location = imagesDirectory + file.getOriginalFilename();
-        when(fileSystemRepository.writeFilePath(any(), any())).thenReturn(location);
+        when(fileSystemRepository.writeFileToPath(any(), any())).thenReturn(location);
         when(imageRepository.save(any())).thenReturn(new ImageEntity(file.getOriginalFilename(), location));
 
         //when
@@ -66,7 +66,7 @@ class ImageServiceImplTest {
         ReflectionTestUtils.setField(underTest, "imagesDirectory", imagesDirectory);
         MultipartFile file = new MockMultipartFile(".png", ".png", "image/png", "godzilla".getBytes());
         String location = imagesDirectory + file.getOriginalFilename();
-        when(fileSystemRepository.writeFilePath(any(), any())).thenReturn(location);
+        when(fileSystemRepository.writeFileToPath(any(), any())).thenReturn(location);
         when(imageRepository.save(any())).thenReturn(new ImageEntity(file.getOriginalFilename(), location));
 
         //when

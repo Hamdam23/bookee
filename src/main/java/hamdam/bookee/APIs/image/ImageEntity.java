@@ -20,6 +20,7 @@ public class ImageEntity {
     @JsonProperty("image_name")
     private String imageName;
 
+    @Column(nullable = false)
     private String location;
 
     public ImageEntity(String imageName, String location) {

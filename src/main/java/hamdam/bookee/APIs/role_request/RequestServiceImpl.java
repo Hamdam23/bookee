@@ -88,7 +88,7 @@ public class RequestServiceImpl implements RequestService {
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             throw new LimitedPermissionException();
         } else if (!review.getState().equals(ACCEPTED) && !review.getState().equals(DECLINED)) {
-            throw new IncorrectStateValueException("State can be either ACCEPTED or DECLINED");
+            throw new IncorrectStateValueException();
         }
 
         if (review.getDescription() != null) {

@@ -47,10 +47,7 @@ public class BookDTO {
 
     public BookDTO(BookEntity entity) {
         BeanUtils.copyProperties(entity, this);
-
-        List<Long> authorIDs = new ArrayList<>();
-        entity.getAuthors().forEach(author ->
-                authorIDs.add(author.getId()));
-        this.authors = authorIDs;
+        this.authors = entity.getAuthors().stream().map(AppUserEntity::getId).collect(Collectors.toList());
+        this.genres = entity.getGenres().stream().map(GenreEntity::getId).collect(Collectors.toList());
     }
 }

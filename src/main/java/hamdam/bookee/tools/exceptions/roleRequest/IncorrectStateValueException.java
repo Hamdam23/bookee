@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public class IncorrectStateValueException extends ApiException {
 
-    public IncorrectStateValueException(String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+    public IncorrectStateValueException() {
+        super("State can be either ACCEPTED or DECLINED", HttpStatus.BAD_REQUEST,
+                "IncorrectStateValueException", new Object[]{});
     }
 }

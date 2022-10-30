@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -21,6 +22,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedEntityGraph(name = "with_permissions", attributeNodes = @NamedAttributeNode(value = "permissions"))
 public class AppRoleEntity {
 
     @Id
@@ -40,9 +42,7 @@ public class AppRoleEntity {
     @UpdateTimestamp
     private LocalDateTime timeStamp;
 
-    // TODO: 9/2/22 why eager?
-    //  I want to make all the permissions displayed when role is called
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
 

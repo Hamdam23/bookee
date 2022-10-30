@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 public class UsernamePasswordWrongException extends ApiException {
 
     public UsernamePasswordWrongException(Type errorType) {
-        super(HttpStatus.UNAUTHORIZED, String.format("%s is wrong", errorType.errorName));
+        super(String.format("%s is wrong", errorType.errorName), HttpStatus.UNAUTHORIZED,
+                "UsernamePasswordWrongException", new Object[]{errorType.errorName});
     }
 
     @Getter

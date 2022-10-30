@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public class PasswordMismatchException extends ApiException {
 
-    public PasswordMismatchException(String value1, String value2) {
-        super(HttpStatus.BAD_REQUEST, String.format("%s does not match with %s!", value1, value2));
+    public PasswordMismatchException(String firstPassword, String secondPassword) {
+        super(String.format("%s does not match with %s!", firstPassword, secondPassword), HttpStatus.BAD_REQUEST,
+                "PasswordMismatchException", new Object[]{firstPassword, secondPassword});
     }
 }

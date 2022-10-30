@@ -100,7 +100,7 @@ public class TokenUtils implements InitializingBean {
     }
 
     // TODO: 9/2/22 needs better name
-    public static void presentToken(
+    public static void sendTokenInBody(
             TokensResponse tokensResponse,
             HttpServletResponse response
     ) throws IOException {

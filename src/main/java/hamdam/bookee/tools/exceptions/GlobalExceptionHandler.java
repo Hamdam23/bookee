@@ -1,5 +1,7 @@
 package hamdam.bookee.tools.exceptions;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -9,9 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final MessageSource messageSource;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleUnknownException(Exception exception) {
@@ -27,9 +33,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse> handleApiException(
             ApiException exception,
-            WebRequest webRequest
+            WebRequest webRequest,
+            Locale locale
     ) {
-        ApiResponse apiResponse = new ApiResponse(exception, webRequest.getDescription(false));
+        ApiResponse apiResponse = new ApiResponse(
+                exception.getStatus(),
+                messageSource.getMessage(exception.getMessageId(), exception.getMessageArgs(), locale),
+                webRequest.getDescription(false));
         return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }
 

@@ -50,7 +50,7 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + API_SET_ROLE_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());
 
-        http.authorizeRequests().antMatchers(HttpMethod.GET, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, API_ROLE + "/**").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.POST, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());

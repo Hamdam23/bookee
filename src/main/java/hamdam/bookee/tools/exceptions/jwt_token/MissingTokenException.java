@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 public class MissingTokenException extends ApiException {
 
     public MissingTokenException(String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+        super(message + " token is missing!", HttpStatus.BAD_REQUEST,
+                "MissingTokenException", new Object[]{message});
     }
 }

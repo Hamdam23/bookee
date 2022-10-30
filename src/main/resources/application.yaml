@@ -6,6 +6,10 @@ spring:
     password: postgres
   flyway:
     baseline-on-migrate: true
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: true
 
   #hibernate stuff
   jpa:

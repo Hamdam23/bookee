@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-// TODO: 9/2/22 do you really need to use this class? You are using username & password to login, in form data (like default implementation).
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -26,11 +25,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AppUserService userService;
     private final HandlerExceptionResolver resolver;
 
+    // TODO you can use default implementation of attemptAuthentication method in UsernamePasswordAuthenticationFilter
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         // TODO: 9/2/22 why in login process we use form data?
-        String username = request.getParameter(SPRING_SECURITY_FORM_USERNAME_KEY);
-        String password = request.getParameter(SPRING_SECURITY_FORM_PASSWORD_KEY);
+        String username = obtainUsername(request);
+        String password = obtainPassword(request);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
@@ -38,7 +38,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         UsernamePasswordWrongException.Type type;
-        if (userService.existsWithUsername(request.getParameter(SPRING_SECURITY_FORM_USERNAME_KEY))) {
+        if (userService.existsWithUsername(obtainUsername(request))) {
             type = UsernamePasswordWrongException.Type.PASSWORD;
         } else {
             type = UsernamePasswordWrongException.Type.USERNAME;
@@ -55,6 +55,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     ) throws IOException {
         UserDetails user = (UserDetails) authResult.getPrincipal();
         TokensResponse tokensResponse = TokenUtils.getTokenResponse(userService.getUserByUsername(user.getUsername()));
-        TokenUtils.presentToken(tokensResponse, response);
+        TokenUtils.sendTokenInBody(tokensResponse, response);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 public class UnknownTokenException extends ApiException {
 
     public UnknownTokenException() {
-        super(HttpStatus.BAD_REQUEST, "Error occurred on token!");
+        super("Error occurred on token!", HttpStatus.BAD_REQUEST,
+                "UnknownTokenException", new Object[]{});
     }
 }
