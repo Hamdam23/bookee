@@ -3,6 +3,8 @@ package hamdam.bookee.APIs.book.helpers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.book.BookEntity;
+import hamdam.bookee.APIs.genre.GenreEntity;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter

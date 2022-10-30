@@ -38,8 +38,6 @@ public class ImageServiceImpl implements ImageService {
         } else {
             fileNameWithoutExt = fileNameWithoutExt.replace(" ", "-");
         }
-        //TODO check for null and empty
-        // isn't it get handled by custom ValidFile annotation?
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         String name = fileNameWithoutExt + "-" + new Date().getTime() + "." + extension;
         Path path = Paths.get(imagesDirectory + name);

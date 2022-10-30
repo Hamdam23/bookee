@@ -19,6 +19,7 @@
     <properties>
         <!-- todo use properties for all dependency versions-->
         <java.version>11</java.version>
+        <postgresql.version>42.5.0</postgresql.version>
     </properties>
 
     <dependencies>
@@ -35,7 +36,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.5.0</version>
+            <version>${postgresql.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
