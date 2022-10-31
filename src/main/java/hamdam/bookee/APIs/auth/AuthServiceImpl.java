@@ -22,14 +22,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokensResponse registerUser(RegistrationRequest request) {
         userService.saveUser(request);
-        return getTokenResponse(userService.getUserByUsername(request.getUsername()));
+        return getTokenResponse(userService.getUserByUsername(request.getUsername(), true));
     }
 
     @Override
     public TokensResponse refreshToken(String header) {
         try {
             checkHeader(header, false);
-            AppUserEntity user = userService.getUserByUsername(getUsernameFromToken(header, false));
+            AppUserEntity user = userService.getUserByUsername(getUsernameFromToken(header, false), false);
             return getAccessTokenResponse(user);
         } catch (MissingTokenException exception) {
             throw exception;

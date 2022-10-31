@@ -54,7 +54,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             Authentication authResult
     ) throws IOException {
         UserDetails user = (UserDetails) authResult.getPrincipal();
-        TokensResponse tokensResponse = TokenUtils.getTokenResponse(userService.getUserByUsername(user.getUsername()));
+        TokensResponse tokensResponse = TokenUtils.getTokenResponse(userService.getUserByUsername(user.getUsername(), true));
         TokenUtils.sendTokenInBody(tokensResponse, response);
     }
 }

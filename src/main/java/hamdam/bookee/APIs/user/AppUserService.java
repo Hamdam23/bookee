@@ -28,7 +28,7 @@ public interface AppUserService extends UserDetailsService {
 
     boolean existsWithUsername(String username);
 
-    AppUserEntity getUserByUsername(String username);
+    AppUserEntity getUserByUsername(String username, boolean withPermissions);
 
     AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id);
 }

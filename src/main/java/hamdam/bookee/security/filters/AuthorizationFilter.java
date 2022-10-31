@@ -61,7 +61,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             String header = request.getHeader(AUTHORIZATION);
             checkHeader(header, true);
             String username = getUsernameFromToken(header, true);
-            AppUserEntity user = appUserService.getUserByUsername(username);
+            AppUserEntity user = appUserService.getUserByUsername(username, true);
             Set<Permissions> permissions = user.getRole().getPermissions();
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
             // TODO use mapper for authorities&permission

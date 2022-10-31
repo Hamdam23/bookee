@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
@@ -44,7 +45,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUserEntity user = userRepository.findAppUserByUsername(username)
+        AppUserEntity user = userRepository.findAppUserByUsernameWithPermission(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         // TODO: 9/2/22 write mapper method/class for AppUser <-> User
         return new User(
@@ -195,9 +196,14 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserEntity getUserByUsername(String username) {
-        return userRepository.findAppUserByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    public AppUserEntity getUserByUsername(String username, boolean withPermissions) {
+        Optional<AppUserEntity> optional;
+        if (withPermissions) {
+            optional = userRepository.findAppUserByUsernameWithPermission(username);
+        } else {
+            optional = userRepository.findAppUserByUsername(username);
+        }
+        return optional.orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 
     AppUserEntity getAppUserById(Long id) {
