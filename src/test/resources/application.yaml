@@ -30,3 +30,8 @@ file_upload_path: "/home/hamdam/Pictures/bookee/"
 server:
   error:
     include-stacktrace: never
+
+jwt:
+  secret: secret
+  access-token-validity: 3600000
+  refresh-token-validity: 1728000000

@@ -182,7 +182,7 @@ class AppUserServiceImplTest {
     void loadUserByUsername_throwsExceptionWhenUsernameIsInvalid() {
         //given
         String username = "test";
-        when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.empty());
+        when(appUserRepository.findAppUserByUsernameWithPermission(username)).thenReturn(Optional.empty());
 
         //when
         //then
@@ -202,13 +202,13 @@ class AppUserServiceImplTest {
                 "niko", role
         );
         user.setPassword("very_good_password");
-        when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.of(user));
+        when(appUserRepository.findAppUserByUsernameWithPermission(username)).thenReturn(Optional.of(user));
 
         //when
         UserDetails actual = underTest.loadUserByUsername(username);
 
         //then
-        verify(appUserRepository).findAppUserByUsername(username);
+        verify(appUserRepository).findAppUserByUsernameWithPermission(username);
         assertThat(actual.getUsername()).isEqualTo(user.getUsername());
         assertThat(actual.getPassword()).isEqualTo(user.getPassword());
         assertThat(actual.getAuthorities()).isEqualTo(user.getRole().getPermissions().stream().map(
@@ -806,7 +806,7 @@ class AppUserServiceImplTest {
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.getUserByUsername(username))
+        assertThatThrownBy(() -> underTest.getUserByUsername(username, false))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("User")
                 .hasMessageContaining(username);
@@ -820,7 +820,7 @@ class AppUserServiceImplTest {
         when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.of(user));
 
         //when
-        underTest.getUserByUsername(username);
+        underTest.getUserByUsername(username, false);
 
         //then
         verify(appUserRepository).findAppUserByUsername(username);
