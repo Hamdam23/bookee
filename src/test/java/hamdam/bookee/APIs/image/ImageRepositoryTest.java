@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.image;
 
-import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +34,14 @@ class ImageRepositoryTest {
     void findByImageName_returnValidDataWhenImageNameIsValid() {
         //given
         String name = "name123456.jpg";
-        ImageEntity expected = underTest.save(new ImageEntity(name, "location"));
+        underTest.save(new ImageEntity(name, "location"));
 
         //when
         Optional<ImageEntity> actual = underTest.findByImageName(name);
 
         //then
-        ImageEntity image = actual.orElseThrow(() -> new ResourceNotFoundException("Image", "name", name));
-        assertThat(image.getImageName()).isEqualTo(expected.getImageName());
+        assertThat(actual).isPresent();
+        assertThat(actual.get().getImageName()).isEqualTo(name);
     }
 
 }

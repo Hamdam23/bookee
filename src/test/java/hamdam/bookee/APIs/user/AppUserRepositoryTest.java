@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +31,10 @@ class AppUserRepositoryTest {
     void existsByUsername_returnFalseWhenUsernameIsNull() {
         //given
         //when
-        boolean expected = underTest.existsByUsername(null);
+        boolean actual = underTest.existsByUsername(null);
 
         //then
-        assertFalse(expected);
+        assertFalse(actual);
     }
 
     @Test
@@ -49,10 +48,10 @@ class AppUserRepositoryTest {
         );
 
         //when
-        boolean expected = underTest.existsByUsername(username + " test");
+        boolean actual = underTest.existsByUsername(username + " test");
 
         //then
-        assertFalse(expected);
+        assertFalse(actual);
     }
 
     @Test
@@ -66,20 +65,20 @@ class AppUserRepositoryTest {
         );
 
         //when
-        boolean expected = underTest.existsByUsername(username);
+        boolean actual = underTest.existsByUsername(username);
 
         //then
-        assertTrue(expected);
+        assertTrue(actual);
     }
 
     @Test
     void findAppUserByUsername_returnEmptyDataWhenUsernameIsNull() {
         //given
         //when
-        Optional<AppUserEntity> expected = underTest.findAppUserByUsername(null);
+        Optional<AppUserEntity> actual = underTest.findAppUserByUsername(null);
 
         //then
-        assertTrue(expected.isEmpty());
+        assertTrue(actual.isEmpty());
     }
 
     @Test
@@ -88,37 +87,37 @@ class AppUserRepositoryTest {
         String username = "hamdam";
 
         //when
-        Optional<AppUserEntity> expected = underTest.findAppUserByUsername(username);
+        Optional<AppUserEntity> actual = underTest.findAppUserByUsername(username);
 
         //then
-        assertTrue(expected.isEmpty());
+        assertTrue(actual.isEmpty());
     }
 
     @Test
     void findAppUserByUsername_returnValidDataWhenUserFoundWithUsername() {
         //given
         String username = "hamdam";
-        AppUserEntity actual = underTest.save(
+        AppUserEntity expected = underTest.save(
                 new AppUserEntity("Hamdam",
                         username,
                         "$2a$10$u.olISwSqjbaZCHADL0fIuw7eBijpqzvfSavgXnPcfniJTwORGNvm")
         );
 
         //when
-        Optional<AppUserEntity> expected = underTest.findAppUserByUsername(username);
+        Optional<AppUserEntity> actual = underTest.findAppUserByUsername(username);
 
         //then
-        AppUserEntity user = expected.orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-        assertThat(actual.getId()).isEqualTo(user.getId());
+        assertThat(actual).isPresent();
+        assertThat(actual.get().getId()).isEqualTo(expected.getId());
     }
 
     @Test
     void findAllByOrderByTimeStampDesc_returnEmptyDataWhenNoUser() {
         //given
-        Page<AppUserEntity> actual = new PageImpl<>(List.of(), Pageable.ofSize(1), 0);
+        Page<AppUserEntity> expected = new PageImpl<>(List.of(), Pageable.ofSize(1), 0);
 
         //when
-        Page<AppUserEntity> expected = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(1));
+        Page<AppUserEntity> actual = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(1));
 
         //then
         assertThat(actual).isEqualTo(expected);
@@ -134,31 +133,31 @@ class AppUserRepositoryTest {
         );
 
         //when
-        Page<AppUserEntity> expected = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(1));
+        Page<AppUserEntity> actual = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(1));
 
         //then
-        assertEquals(expected.getSize(), 1);
+        assertEquals(actual.getSize(), 1);
     }
 
     @Test
     void findAllByOrderByTimeStampDesc_returnOrderedUsersWhenMultipleUsers() {
         //given
-        List<AppUserEntity> actual = new ArrayList<>();
-        actual.add(underTest.save(
+        List<AppUserEntity> expected = new ArrayList<>();
+        expected.add(underTest.save(
                 new AppUserEntity("Phil",
                         "philly",
                         "$2a$10$u.olISwSqjbaZCHADL0fIuw7eBijpqzvfSavgXnPcfniJTwORGNvm",
                         LocalDateTime.now()
                 )
         ));
-        actual.add(underTest.save(
+        expected.add(underTest.save(
                 new AppUserEntity("Bob",
                         "bobby",
                         "$2a$10$u.olISwSqjbaZCHADL0fIuw7eBijpqzvfSavgXnPcfniJTwORGNvm",
                         LocalDateTime.now()
                 )
         ));
-        actual.add(underTest.save(
+        expected.add(underTest.save(
                 new AppUserEntity("Luna",
                         "lun",
                         "$2a$10$u.olISwSqjbaZCHADL0fIuw7eBijpqzvfSavgXnPcfniJTwORGNvm",
@@ -167,54 +166,54 @@ class AppUserRepositoryTest {
         ));
 
         //when
-        Page<AppUserEntity> expected = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(actual.size()));
+        Page<AppUserEntity> actual = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(expected.size()));
 
         //then
-        assertThat(expected.getSize()).isEqualTo(actual.size());
-        assertThat(expected.getContent().get(0).getTimeStamp()).isAfter(
-                expected.getContent().get(1).getTimeStamp());
-        assertThat(expected.getContent().get(1).getTimeStamp()).isAfter(
-                expected.getContent().get(2).getTimeStamp());
+        assertThat(actual.getSize()).isEqualTo(expected.size());
+        assertThat(actual.getContent().get(0).getTimeStamp()).isAfter(
+                actual.getContent().get(1).getTimeStamp());
+        assertThat(actual.getContent().get(1).getTimeStamp()).isAfter(
+                actual.getContent().get(2).getTimeStamp());
     }
 
     @Test
     void findAllByOrderByTimeStampDesc_returnOrderedUsersWhenMultipleUsersWithUpdatedUser() {
         //given
-        List<AppUserEntity> actual = new ArrayList<>();
-        actual.add(underTest.save(
+        List<AppUserEntity> expected = new ArrayList<>();
+        expected.add(underTest.save(
                 new AppUserEntity("Phil",
                         "philly",
                         "$2a$10$u.olISwSqjbaZCHADL0fIuw7eBijpqzvfSavgXnPcfniJTwORGNvm",
                         LocalDateTime.now()
                 )
         ));
-        actual.add(underTest.save(
+        expected.add(underTest.save(
                 new AppUserEntity("Bob",
                         "bobby",
                         "$2a$10$u.olISwSqjbaZCHADL0fIuw7eBijpqzvfSavgXnPcfniJTwORGNvm",
                         LocalDateTime.now()
                 )
         ));
-        actual.add(underTest.save(
+        expected.add(underTest.save(
                 new AppUserEntity("Luna",
                         "lun",
                         "$2a$10$u.olISwSqjbaZCHADL0fIuw7eBijpqzvfSavgXnPcfniJTwORGNvm",
                         LocalDateTime.now()
                 )
         ));
-        AppUserEntity updated = actual.get(2);
+        AppUserEntity updated = expected.get(2);
         updated.setUsername(updated.getUsername() + " UPDATED");
         updated = underTest.save(updated);
 
         //when
-        Page<AppUserEntity> expected = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(actual.size()));
+        Page<AppUserEntity> actual = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(expected.size()));
 
         //then
-        assertThat(expected.getSize()).isEqualTo(actual.size());
-        assertThat(expected.getContent().get(2).getTimeStamp()).isBefore(
-                expected.getContent().get(1).getTimeStamp());
-        assertThat(expected.getContent().get(1).getTimeStamp()).isBefore(
-                expected.getContent().get(0).getTimeStamp());
-        assertThat(expected.getContent().get(0).getId()).isEqualTo(updated.getId());
+        assertThat(actual.getSize()).isEqualTo(expected.size());
+        assertThat(actual.getContent().get(2).getTimeStamp()).isBefore(
+                actual.getContent().get(1).getTimeStamp());
+        assertThat(actual.getContent().get(1).getTimeStamp()).isBefore(
+                actual.getContent().get(0).getTimeStamp());
+        assertThat(actual.getContent().get(0).getId()).isEqualTo(updated.getId());
     }
 }
