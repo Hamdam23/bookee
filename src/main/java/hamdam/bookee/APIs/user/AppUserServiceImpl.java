@@ -91,10 +91,10 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public AppUserResponseDTO updateUser(AppUserRequestDTO request, Long id) {
         AppUserEntity existingUser = getAppUserById(id);
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        if (currentUser.getRole().getPermissions().contains(MONITOR_USER)
-                || currentUser.getId().equals(id)) {
+        if (requestingUser.getRole().getPermissions().contains(MONITOR_USER)
+                || requestingUser.getId().equals(id)) {
             if (request.getImageId() != null) {
                 existingUser.setUserImage(imageRepository.findById(request.getImageId())
                         .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId()))
@@ -117,9 +117,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO) {
 
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
+        if (requestingUser.getId().equals(id) || requestingUser.getRole().getPermissions().contains(MONITOR_USER)) {
             ImageEntity imageEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                     -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
             );
@@ -146,9 +146,9 @@ public class AppUserServiceImpl implements AppUserService {
             throw new ResourceNotFoundException("User", "id", id);
         }
 
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
+        if (requestingUser.getId().equals(id) || requestingUser.getRole().getPermissions().contains(MONITOR_USER)) {
 
             userRepository.deleteById(id);
 
@@ -165,9 +165,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id) {
         AppUserEntity user = getAppUserById(id);
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        if (currentUser.getId().equals(id)) {
+        if (requestingUser.getId().equals(id)) {
             String oldPassword = passwordDTO.getOldPassword();
             String newPassword = passwordDTO.getNewPassword();
             String confirmedPassword = passwordDTO.getConfirmNewPassword();

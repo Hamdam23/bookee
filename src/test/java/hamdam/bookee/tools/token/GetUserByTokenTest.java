@@ -13,7 +13,7 @@ class GetUserByTokenTest {
     private AppUserRepository appUserRepository;
 
     @Autowired
-    GetUserByToken underTest;
+    private GetUserByToken underTest;
 
     @Test
     void throwsExceptionWhenUserNameIsInvalid() {

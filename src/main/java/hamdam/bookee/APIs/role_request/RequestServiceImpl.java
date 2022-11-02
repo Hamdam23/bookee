@@ -36,13 +36,13 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RoleRequestResponse postRoleRequest(RoleRequestDTO roleRequestDTO) {
-        AppUserEntity currentUser = getUserByRequest(userRepository);
-        if (requestRepository.existsByUserAndState(currentUser, IN_PROGRESS)) {
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        if (requestRepository.existsByUserAndState(requestingUser, IN_PROGRESS)) {
             throw new AlreadyHasInProgressRequestException();
         }
         AppRoleEntity role = roleRepository.findById(roleRequestDTO.getRoleId()).orElseThrow(
                 () -> new ResourceNotFoundException("Role", "id", roleRequestDTO.getRoleId()));
-        Set<Permissions> permissionsSet = getUserPermissions(currentUser);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
 
         if (!permissionsSet.contains(CREATE_ROLE_REQUEST)) {
             throw new LimitedPermissionException();
@@ -50,7 +50,7 @@ public class RequestServiceImpl implements RequestService {
             throw new NotAllowedRoleOnRequestException();
         }
         RequestEntity requestEntity =
-                requestRepository.save(new RequestEntity(currentUser, role, State.IN_PROGRESS));
+                requestRepository.save(new RequestEntity(requestingUser, role, State.IN_PROGRESS));
 
         return new RoleRequestResponse(requestEntity, role.getRoleName());
     }
@@ -64,10 +64,10 @@ public class RequestServiceImpl implements RequestService {
             responseList = requestRepository.findAllByState(state);
         }
 
-        AppUserEntity appUserEntity = getUserByRequest(userRepository);
-        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
-            responseList = requestRepository.findAllByUser(appUserEntity);
+            responseList = requestRepository.findAllByUser(requestingUser);
         }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
         responseList.forEach(response -> {
@@ -82,8 +82,8 @@ public class RequestServiceImpl implements RequestService {
         RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
-        AppUserEntity appUserEntity = getUserByRequest(userRepository);
-        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
 
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             throw new LimitedPermissionException();
@@ -114,12 +114,12 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role request", "id", id)
                 );
 
-        AppUserEntity currentUser = getUserByRequest(userRepository);
-        Set<Permissions> permissionsSet = getUserPermissions(currentUser);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
         if (permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             requestRepository.deleteById(id);
         } else {
-            if (roleRequestBelongsUser(currentUser, requestEntity)) {
+            if (roleRequestBelongsUser(requestingUser, requestEntity)) {
                 requestRepository.deleteById(id);
             } else {
                 throw new NotAccessibleRequestException();

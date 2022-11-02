@@ -46,9 +46,9 @@ public class AppRoleServiceImpl implements AppRoleService {
     @Override
     public ApiResponse deleteRoleById(Long id) {
 
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        if (currentUser.getRole().getPermissions().contains(MONITOR_ROLE)) {
+        if (requestingUser.getRole().getPermissions().contains(MONITOR_ROLE)) {
             if (!roleRepository.existsById(id)) throw new ResourceNotFoundException("Role", "id", id);
             roleRepository.deleteById(id);
 
