@@ -6,6 +6,7 @@ import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
+import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
@@ -813,17 +814,35 @@ class AppUserServiceImplTest {
     }
 
     @Test
-    void getUserByUsername_shouldReturnValidDataWhenUsernameIsValid() {
+    void getUserByUsername_shouldReturnUserWithPermissionsWhenUsernameIsValid() {
+        //given
+        String username = "test";
+        AppRoleEntity role = new AppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppUserEntity user = new AppUserEntity(username, role);
+        when(appUserRepository.findAppUserByUsernameWithPermission(username)).thenReturn(Optional.of(user));
+
+        //when
+        AppUserEntity actual = underTest.getUserByUsername(username, true);
+
+        //then
+        verify(appUserRepository).findAppUserByUsernameWithPermission(username);
+        assertThat(actual.getUsername()).isEqualTo(username);
+        assertThat(actual.getRole().getPermissions()).contains(Permissions.MONITOR_USER);
+    }
+
+    @Test
+    void getUserByUsername_shouldReturnUserWithoutPermissionsWhenUsernameIsValid() {
         //given
         String username = "test";
         AppUserEntity user = new AppUserEntity(username, new AppRoleEntity());
         when(appUserRepository.findAppUserByUsername(username)).thenReturn(Optional.of(user));
 
         //when
-        underTest.getUserByUsername(username, false);
+        AppUserEntity actual = underTest.getUserByUsername(username, false);
 
         //then
         verify(appUserRepository).findAppUserByUsername(username);
         assertThat(user.getUsername()).isEqualTo(username);
+        assertThat(actual.getRole().getPermissions()).isEmpty();
     }
 }
