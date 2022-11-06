@@ -8,6 +8,7 @@ import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserService;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.jwt_token.*;
+import hamdam.bookee.tools.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,8 +26,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import static hamdam.bookee.tools.constants.Endpoints.*;
-import static hamdam.bookee.tools.utils.TokenUtils.checkHeader;
-import static hamdam.bookee.tools.utils.TokenUtils.getUsernameFromToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
@@ -35,11 +34,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final AppUserService appUserService;
     private final HandlerExceptionResolver resolver;
+    private final TokenUtils tokenUtils;
 
     public AuthorizationFilter(AppUserService appUserService,
-                               @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+                               @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, TokenUtils tokenUtils) {
         this.appUserService = appUserService;
         this.resolver = resolver;
+        this.tokenUtils = tokenUtils;
     }
 
     @Override
@@ -47,8 +48,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         return path.equals(API_REGISTER) ||
                 path.equals(API_LOGIN) ||
-                path.equals(API_TOKEN_REFRESH) ||
-                path.equals(API_ROLE);
+                path.equals(API_TOKEN_REFRESH);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     ) {
         try {
             String header = request.getHeader(AUTHORIZATION);
-            checkHeader(header, true);
-            String username = getUsernameFromToken(header, true);
+            tokenUtils.checkHeader(header, true);
+            String username = tokenUtils.getUsernameFromToken(header, true);
             AppUserEntity user = appUserService.getUserByUsername(username, true);
             Set<Permissions> permissions = user.getRole().getPermissions();
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

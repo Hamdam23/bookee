@@ -25,29 +25,24 @@ import java.util.Map;
 @Component
 public class TokenUtils implements InitializingBean {
 
-    private final String SECRET;
-    private static long accessTokenValidity;
-    private static long refreshTokenValidity;
+    @Value("${jwt.secret}")
+    private String secret;
+    @Value("${jwt.access-token-validity}")
+    private long accessTokenValidity;
+    @Value("${jwt.refresh-token-validity}")
+    private long refreshTokenValidity;
 
-    private static Algorithm accessTokenAlgorithm;
-    private static Algorithm refreshTokenAlgorithm;
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
-    public TokenUtils(@Value("${jwt.secret}") String secret,
-                      @Value("${jwt.access-token-validity}") long accessTokenValidity,
-                      @Value("${jwt.refresh-token-validity}") long refreshTokenValidity) {
-        this.SECRET = secret;
-        this.accessTokenValidity = accessTokenValidity;
-        this.refreshTokenValidity = refreshTokenValidity;
-    }
+    private Algorithm accessTokenAlgorithm;
+    private Algorithm refreshTokenAlgorithm;
+    private final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Override
     public void afterPropertiesSet() {
-        accessTokenAlgorithm = Algorithm.HMAC256(SECRET.getBytes());
-        refreshTokenAlgorithm = Algorithm.HMAC384(SECRET.getBytes());
+        accessTokenAlgorithm = Algorithm.HMAC256(secret.getBytes());
+        refreshTokenAlgorithm = Algorithm.HMAC384(secret.getBytes());
     }
 
-    public static DecodedJWT decodeToken(String token, boolean isAccessToken) {
+    public DecodedJWT decodeToken(String token, boolean isAccessToken) {
         JWTVerifier verifier;
         if (isAccessToken) {
             verifier = JWT.require(accessTokenAlgorithm).build();
@@ -57,13 +52,13 @@ public class TokenUtils implements InitializingBean {
         return verifier.verify(token);
     }
 
-    public static String getUsernameFromToken(String header, boolean isAccessToken) {
+    public String getUsernameFromToken(String header, boolean isAccessToken) {
         String token = header.substring("Bearer ".length());
-        DecodedJWT decodedJWT = TokenUtils.decodeToken(token, isAccessToken);
+        DecodedJWT decodedJWT = decodeToken(token, isAccessToken);
         return decodedJWT.getSubject();
     }
 
-    public static TokensResponse getTokenResponse(AppUserEntity user) {
+    public TokensResponse getTokenResponse(AppUserEntity user) {
 
         return new TokensResponse(
                 createToken(user.getUsername(), user.getRole(), true),
@@ -75,7 +70,7 @@ public class TokenUtils implements InitializingBean {
         );
     }
 
-    public static TokensResponse getAccessTokenResponse(AppUserEntity user) {
+    public TokensResponse getAccessTokenResponse(AppUserEntity user) {
 
         return new TokensResponse(
                 createToken(user.getUsername(), user.getRole(), true),
@@ -83,7 +78,7 @@ public class TokenUtils implements InitializingBean {
         );
     }
 
-    public static String createToken(String username, AppRoleEntity role, boolean isAccessToken) {
+    public String createToken(String username, AppRoleEntity role, boolean isAccessToken) {
 
         if (isAccessToken) {
             return JWT.create()
@@ -100,7 +95,7 @@ public class TokenUtils implements InitializingBean {
         }
     }
 
-    public static void sendTokenInBody(
+    public void sendTokenInBody(
             TokensResponse tokensResponse,
             HttpServletResponse response
     ) throws IOException {
@@ -112,7 +107,7 @@ public class TokenUtils implements InitializingBean {
         new ObjectMapper().writeValue(response.getOutputStream(), data);
     }
 
-    public static void checkHeader(String header, boolean isAccessToken) {
+    public void checkHeader(String header, boolean isAccessToken) {
         if (header == null || !header.startsWith("Bearer ")) {
             if (isAccessToken) throw new MissingTokenException("Access");
             throw new MissingTokenException("Refresh");

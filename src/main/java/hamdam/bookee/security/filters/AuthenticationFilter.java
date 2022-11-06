@@ -24,6 +24,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final AppUserService userService;
     private final HandlerExceptionResolver resolver;
+    private final TokenUtils tokenUtils;
 
     // TODO you can use default implementation of attemptAuthentication method in UsernamePasswordAuthenticationFilter
     @Override
@@ -54,7 +55,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             Authentication authResult
     ) throws IOException {
         UserDetails user = (UserDetails) authResult.getPrincipal();
-        TokensResponse tokensResponse = TokenUtils.getTokenResponse(userService.getUserByUsername(user.getUsername(), true));
-        TokenUtils.sendTokenInBody(tokensResponse, response);
+        TokensResponse tokensResponse = tokenUtils.getTokenResponse(userService.getUserByUsername(user.getUsername(), true));
+        tokenUtils.sendTokenInBody(tokensResponse, response);
     }
 }
