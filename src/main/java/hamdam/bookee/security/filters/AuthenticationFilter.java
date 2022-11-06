@@ -3,7 +3,7 @@ package hamdam.bookee.security.filters;
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.user.AppUserService;
 import hamdam.bookee.tools.exceptions.user.UsernamePasswordWrongException;
-import hamdam.bookee.tools.utils.TokenUtils;
+import hamdam.bookee.tools.utils.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +24,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final AppUserService userService;
     private final HandlerExceptionResolver resolver;
-    private final TokenUtils tokenUtils;
+    private final TokenProvider tokenProvider;
 
     // TODO you can use default implementation of attemptAuthentication method in UsernamePasswordAuthenticationFilter
     @Override
@@ -55,7 +55,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             Authentication authResult
     ) throws IOException {
         UserDetails user = (UserDetails) authResult.getPrincipal();
-        TokensResponse tokensResponse = tokenUtils.getTokenResponse(userService.getUserByUsername(user.getUsername(), true));
-        tokenUtils.sendTokenInBody(tokensResponse, response);
+        TokensResponse tokensResponse = tokenProvider.getTokenResponse(userService.getUserByUsername(user.getUsername(), true));
+        tokenProvider.sendTokenInBody(tokensResponse, response);
     }
 }

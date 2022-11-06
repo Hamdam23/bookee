@@ -7,7 +7,7 @@ import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserService;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.jwt_token.*;
-import hamdam.bookee.tools.utils.TokenUtils;
+import hamdam.bookee.tools.utils.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,20 +16,20 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final AppUserService userService;
-    private final TokenUtils tokenUtils;
+    private final TokenProvider tokenProvider;
 
     @Override
     public TokensResponse registerUser(RegistrationRequest request) {
         userService.saveUser(request);
-        return tokenUtils.getTokenResponse(userService.getUserByUsername(request.getUsername(), true));
+        return tokenProvider.getTokenResponse(userService.getUserByUsername(request.getUsername(), true));
     }
 
     @Override
     public TokensResponse refreshToken(String header) {
         try {
-            tokenUtils.checkHeader(header, false);
-            AppUserEntity user = userService.getUserByUsername(tokenUtils.getUsernameFromToken(header, false), false);
-            return tokenUtils.getAccessTokenResponse(user);
+            tokenProvider.checkHeader(header, false);
+            AppUserEntity user = userService.getUserByUsername(tokenProvider.getUsernameFromToken(header, false), false);
+            return tokenProvider.getAccessTokenResponse(user);
         } catch (MissingTokenException exception) {
             throw exception;
         } catch (ResourceNotFoundException exception) {

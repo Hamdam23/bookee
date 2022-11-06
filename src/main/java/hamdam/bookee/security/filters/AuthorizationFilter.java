@@ -8,7 +8,7 @@ import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserService;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.jwt_token.*;
-import hamdam.bookee.tools.utils.TokenUtils;
+import hamdam.bookee.tools.utils.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,13 +34,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final AppUserService appUserService;
     private final HandlerExceptionResolver resolver;
-    private final TokenUtils tokenUtils;
+    private final TokenProvider tokenProvider;
 
     public AuthorizationFilter(AppUserService appUserService,
-                               @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, TokenUtils tokenUtils) {
+                               @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, TokenProvider tokenProvider) {
         this.appUserService = appUserService;
         this.resolver = resolver;
-        this.tokenUtils = tokenUtils;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -59,8 +59,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     ) {
         try {
             String header = request.getHeader(AUTHORIZATION);
-            tokenUtils.checkHeader(header, true);
-            String username = tokenUtils.getUsernameFromToken(header, true);
+            tokenProvider.checkHeader(header, true);
+            String username = tokenProvider.getUsernameFromToken(header, true);
             AppUserEntity user = appUserService.getUserByUsername(username, true);
             Set<Permissions> permissions = user.getRole().getPermissions();
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

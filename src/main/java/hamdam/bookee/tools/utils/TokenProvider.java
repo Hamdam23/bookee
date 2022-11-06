@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
-public class TokenUtils implements InitializingBean {
+public class TokenProvider implements InitializingBean {
 
     @Value("${jwt.secret}")
     private String secret;
