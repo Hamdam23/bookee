@@ -1,6 +1,7 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.APIs.image.ImagEntity;
+import hamdam.bookee.APIs.auth.RegistrationRequest;
+import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
@@ -13,33 +14,29 @@ import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
+import hamdam.bookee.tools.exceptions.role.NoDefaultRoleException;
 import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
-import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
+import static hamdam.bookee.tools.utils.SecurityUtils.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class AppUserServiceImpl implements AppUserService, UserDetailsService {
+public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository userRepository;
     private final AppRoleRepository roleRepository;
@@ -48,75 +45,86 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AppUserEntity> user = userRepository.findAppUserByUserName(username);
+        AppUserEntity user = userRepository.findAppUserByUsernameWithPermission(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         // TODO: 9/2/22 write mapper method/class for AppUser <-> User
-        // TODO TODO
         return new User(
-                // TODO: 9/2/22 handle get() call
-                user.get().getUserName(),
-                user.get().getPassword(),
-                user.get().getRole().getPermissions().stream().map(
+                user.getUsername(),
+                user.getPassword(),
+                user.getRole().getPermissions().stream().map(
                         permission -> new SimpleGrantedAuthority(permission.name())
                 ).collect(Collectors.toList())
         );
     }
 
     @Override
-    public Page<AppUserResponseDTO> getAllUsers(@PageableDefault Pageable pageable) {
+    public void saveUser(RegistrationRequest request) {
+        if (existsWithUsername(request.getUsername())) {
+            throw new DuplicateResourceException("User", "username", request.getUsername());
+        }
+
+        AppUserEntity appUserEntity = new AppUserEntity(request);
+
+        if (request.getImageId() != null) {
+            appUserEntity.setUserImage(imageRepository.findById(request.getImageId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId())));
+        }
+        appUserEntity.setPassword(passwordEncoder.encode(request.getPassword()));
+        AppRoleEntity role = roleRepository.findFirstByIsDefaultIsTrue()
+                .orElseThrow(NoDefaultRoleException::new);
+        appUserEntity.setRole(role);
+        userRepository.save(appUserEntity);
+    }
+
+    @Override
+    public Page<AppUserResponseDTO> getAllUsers(Pageable pageable) {
         return userRepository.findAllByOrderByTimeStampDesc(pageable).map(AppUserResponseDTO::new);
     }
 
     @Override
     public AppUserResponseDTO getUserById(Long id) {
-        // TODO: 9/2/22 custom exception
         return new AppUserResponseDTO(userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id))
         );
     }
 
     @Override
-    public AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id) {
-        // TODO: 9/2/22 code duplication
-        AppUserEntity requestedUser = getAppUserById(id);
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+    public AppUserResponseDTO updateUser(AppUserRequestDTO request, Long id) {
+        AppUserEntity existingUser = getAppUserById(id);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        if (currentUser.getRole().getPermissions().contains(MONITOR_USER) && newUser.getRoleId() != null) {
-            requestedUser.setRole(roleRepository.findById(newUser.getRoleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Role", "id", newUser.getRoleId()))
-            );
-        }
+        if (requestingUser.getRole().getPermissions().contains(MONITOR_USER)
+                || requestingUser.getId().equals(id)) {
+            if (request.getImageId() != null) {
+                existingUser.setUserImage(imageRepository.findById(request.getImageId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Image", "id", request.getImageId()))
+                );
+            }
 
-        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
-            requestedUser.setUserImage(imageRepository.findById(newUser.getImageId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id))
-            );
+            if (!request.getUsername().equals(existingUser.getUsername()) &&
+                    userRepository.existsByUsername(request.getUsername())) {
+                throw new DuplicateResourceException("username", "User", request.getUsername());
+            }
+            existingUser.setUsername(request.getUsername());
+            existingUser.setName(request.getName());
 
-            requestedUser.setName(newUser.getName());
-            requestedUser.setUserName(newUser.getUserName());
-
-            return new AppUserResponseDTO(userRepository.save(requestedUser));
+            return new AppUserResponseDTO(userRepository.save(existingUser));
         } else {
             throw new LimitedPermissionException();
         }
-
     }
 
     @Override
-    @Transactional
     public AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO) {
 
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
-            userRepository.findById(id).orElseThrow(()
-                    -> new ResourceNotFoundException("User", "id", id)
-            );
-            ImagEntity imagEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
+        if (requestingUser.getId().equals(id) || requestingUser.getRole().getPermissions().contains(MONITOR_USER)) {
+            ImageEntity imageEntity = imageRepository.findById(imageDTO.getImageId()).orElseThrow(()
                     -> new ResourceNotFoundException("Image", "id", imageDTO.getImageId())
             );
-            // TODO: 9/2/22 code duplication
             AppUserEntity user = getAppUserById(id);
-            user.setUserImage(imagEntity);
+            user.setUserImage(imageEntity);
             return new AppUserResponseDTO(userRepository.save(user));
         } else {
             throw new LimitedPermissionException();
@@ -124,28 +132,24 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     }
 
     @Override
-    @Transactional
     public AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO roleDTO) {
-        AppUserEntity user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User", "id", id)
-        );
-        AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId()).orElseThrow(
-                () -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId())
-        );
+        AppUserEntity user = getAppUserById(id);
+        AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId()));
         user.setRole(appRoleEntity);
-        // TODO: 9/2/22 you can return value from repository method call
         return new AppUserResponseDTO(userRepository.save(user));
     }
 
     @Override
     public ApiResponse deleteUser(Long id) {
-        // TODO: 9/2/22 searching for image or user? imageRepository? why?
-        AppUserEntity currentUser = getUserByRequest(userRepository);
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User", "id", id);
+        }
 
-        if (currentUser.getId().equals(id) || currentUser.getRole().getPermissions().contains(MONITOR_USER)) {
-            userRepository.findById(id).orElseThrow(()
-                    -> new ResourceNotFoundException("User", "id", id)
-            );
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+
+        if (requestingUser.getId().equals(id) || requestingUser.getRole().getPermissions().contains(MONITOR_USER)) {
+
             userRepository.deleteById(id);
 
             return new ApiResponse(
@@ -158,38 +162,21 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         }
     }
 
-    // TODO: 9/2/22 needs rename (and maybe some docs)
-    @Override
-    public boolean isPasswordInvalid(String username) {
-        return userRepository.existsByUserName(username);
-    }
-
-    @Override
-    public AppUserEntity getUserByUsername(String username) {
-        return userRepository.findAppUserByUserName(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-    }
-
     @Override
     public AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id) {
-        AppUserEntity user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User", "id", id)
-        );
+        AppUserEntity user = getAppUserById(id);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
 
-        AppUserEntity currentUser = getUserByRequest(userRepository);
-
-        if (currentUser.getId().equals(id)) {
+        if (requestingUser.getId().equals(id)) {
             String oldPassword = passwordDTO.getOldPassword();
             String newPassword = passwordDTO.getNewPassword();
             String confirmedPassword = passwordDTO.getConfirmNewPassword();
 
-            if (oldPassword.equals(newPassword)) {
-                throw new DuplicateResourceException("passwords", oldPassword, newPassword);
-            }
-            // logic is written that throws the same exception as the next if logic,
-            // just because I need different responses.
             if (!newPassword.equals(confirmedPassword)) {
                 throw new PasswordMismatchException(newPassword, confirmedPassword);
+            }
+            if (oldPassword.equals(newPassword)) {
+                throw new DuplicateResourceException("passwords", oldPassword, newPassword);
             }
             if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
                 throw new PasswordMismatchException(oldPassword, "user's password");
@@ -203,9 +190,24 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         }
     }
 
-    private AppUserEntity getAppUserById(Long id) {
+    @Override
+    public boolean existsWithUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public AppUserEntity getUserByUsername(String username, boolean withPermissions) {
+        Optional<AppUserEntity> optional;
+        if (withPermissions) {
+            optional = userRepository.findAppUserByUsernameWithPermission(username);
+        } else {
+            optional = userRepository.findAppUserByUsername(username);
+        }
+        return optional.orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    }
+
+    AppUserEntity getAppUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
-
 }

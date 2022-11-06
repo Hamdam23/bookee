@@ -22,9 +22,8 @@ import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 public class ImageController {
     private final ImageService imageService;
 
-    // TODO: 9/2/22 why additional "/upload" ?
     @PostMapping
-    public ImagEntity uploadImage(@ValidFile @RequestParam MultipartFile file) throws Exception {
+    public ImageEntity uploadImage(@ValidFile @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
     }
 
@@ -34,7 +33,7 @@ public class ImageController {
     }
 
     @GetMapping("{id}")
-    public ImageDTO getImageByID(@PathVariable long id) {
+    public ImageDTO getImageByID(@PathVariable Long id) {
         return imageService.getImageByID(id);
     }
 
@@ -44,8 +43,7 @@ public class ImageController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<ApiResponse> deleteImage(@PathVariable long id) {
-        // TODO: 9/2/22 return full json response
+    public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long id) {
         return new ResponseEntity<>(imageService.deleteImageById(id), HttpStatus.OK);
     }
 }

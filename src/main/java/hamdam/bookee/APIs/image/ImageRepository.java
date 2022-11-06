@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ImageRepository extends JpaRepository<ImagEntity, Long> {
-    // TODO: 9/2/22 in some repositories: findSomethingBySomethingName(), in others: findBySomethingName. write as only one of them
-    Optional<ImagEntity> findByImageName(String name);
+public interface ImageRepository extends JpaRepository<ImageEntity, Long> {
+    Optional<ImageEntity> findByImageName(String name);
 }

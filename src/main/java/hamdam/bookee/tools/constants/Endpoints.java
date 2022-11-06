@@ -1,8 +1,6 @@
 package hamdam.bookee.tools.constants;
 
 public final class Endpoints {
-    // TODO: 9/2/22 why there is v1 in some endpoints, and there isn't in others?
-    //  Decided to get rid of 'v1'
     public static final String API_USER = "/api/users";
     public static final String API_SET_ROLE_USER = "/set-role-to-user";
     public static final String SET_IMAGE_TO_USER = "/set-image-to-user";

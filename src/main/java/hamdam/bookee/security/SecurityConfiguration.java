@@ -4,7 +4,6 @@ import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.security.filters.AuthenticationFilterConfigurer;
 import hamdam.bookee.security.filters.AuthorizationFilter;
 import hamdam.bookee.security.handlers.AccessDeniedExceptionHandler;
-import hamdam.bookee.security.handlers.AuthenticationEntryPointHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +22,6 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http,
-            AuthenticationEntryPointHandler entryPoint,
             AccessDeniedExceptionHandler accessDeniedHandler,
             AuthenticationFilterConfigurer authenticationFilterConfigurer,
             AuthorizationFilter authenticationFilter
@@ -47,14 +45,12 @@ public class SecurityConfiguration {
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_GENRE + "/**").hasAuthority(Permissions.UPDATE_GENRE.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_GENRE + "/**").hasAuthority(Permissions.DELETE_GENRE.name());
 
-        // TODO test get and get + "/**"
         http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER).hasAuthority(Permissions.MONITOR_USER.name());
-        http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER + "/**").hasAuthority(Permissions.GET_USER.name());
-//        http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + "/**").hasAuthority(Permissions.UPDATE_USER.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, API_USER + "/**").hasAnyAuthority(Permissions.GET_USER.name(), Permissions.MONITOR_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_USER + API_SET_ROLE_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_USER + "/**").hasAuthority(Permissions.MONITOR_USER.name());
 
-        http.authorizeRequests().antMatchers(HttpMethod.GET, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());
+        http.authorizeRequests().antMatchers(HttpMethod.GET, API_ROLE + "/**").permitAll();
         http.authorizeRequests().antMatchers(HttpMethod.POST, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());
         http.authorizeRequests().antMatchers(HttpMethod.PATCH, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());
         http.authorizeRequests().antMatchers(HttpMethod.DELETE, API_ROLE + "/**").hasAuthority(Permissions.MONITOR_ROLE.name());
@@ -64,13 +60,13 @@ public class SecurityConfiguration {
                         API_TOKEN_REFRESH,
                         star(API_IMAGE)).
                 permitAll().anyRequest().authenticated().and().
-                exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(entryPoint);
+                exceptionHandling().accessDeniedHandler(accessDeniedHandler);
         http.apply(authenticationFilterConfigurer);
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    private String star(String endpoint){
+    private String star(String endpoint) {
         return endpoint + "/**";
     }
 }

@@ -1,32 +1,34 @@
-package hamdam.bookee.APIs.genre;
+package hamdam.bookee.APIs.genre.helpers;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import hamdam.bookee.APIs.book.BookEntity;
+import hamdam.bookee.APIs.genre.GenreEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class GenreDTO {
+@NoArgsConstructor
+public class GenreResponseDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
 
-    @NotBlank(message = "name can not be blank!")
     private String name;
 
-    @Size(max = 200, message = "description size is too long!")
     private String description;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> books;
 
-    public GenreDTO(GenreEntity entity){
+    public GenreResponseDTO(GenreEntity entity) {
         BeanUtils.copyProperties(entity, this);
+        this.books = entity.getBooks().stream().map(BookEntity::getId).collect(Collectors.toList());
     }
 }

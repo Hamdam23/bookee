@@ -3,49 +3,51 @@ package hamdam.bookee.APIs.role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
+import hamdam.bookee.APIs.role_request.RequestEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
-// TODO: 9/2/22 naming
 @Entity
 @Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedEntityGraph(name = "with_permissions", attributeNodes = @NamedAttributeNode(value = "permissions"))
 public class AppRoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    // TODO: 9/2/22 naming & json property
-    @Column(unique = true, nullable = false)
     @JsonProperty("role_name")
+    @Column(unique = true, nullable = false)
     @NotBlank(message = "role_name name can not be blank!")
     private String roleName;
 
-    // TODO: 9/2/22 set column to nullable false
-    @Column(nullable = false)
     @JsonProperty("is_default")
+    @Column(nullable = false)
     private boolean isDefault = false;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @UpdateTimestamp
     private LocalDateTime timeStamp;
 
-    // TODO: 9/2/22 why eager?
-    //  I want to make all the permissions displayed when role is called
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
+
+    @OneToMany(mappedBy = "requestedRole")
+    private List<RequestEntity> roleRequests;
 
     public AppRoleEntity(AppRoleRequestDTO dto) {
         this.roleName = dto.getRoleName();
@@ -57,5 +59,14 @@ public class AppRoleEntity {
         this.roleName = roleName;
         this.isDefault = isDefault;
         this.timeStamp = timeStamp;
+    }
+
+    public AppRoleEntity(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public AppRoleEntity(String roleName, Set<Permissions> permissions) {
+        this.roleName = roleName;
+        this.permissions = permissions;
     }
 }

@@ -9,6 +9,9 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends JpaRepository<RequestEntity, Long>, JpaSpecificationExecutor<RequestEntity> {
+    boolean existsByUserAndState(AppUserEntity user, State state);
+
     List<RequestEntity> findAllByState(State state);
+
     List<RequestEntity> findAllByUser(AppUserEntity user);
 }

@@ -27,13 +27,12 @@ public class BookEntity {
     @NotBlank(message = "name can not be blank!")
     private String name;
 
-    @Size(max = 30, message = "tagline size is too long!")
+    @Size(max = 100, message = "tagline size is too long!")
     private String tagline;
 
     @Size(max = 200, message = "description size is too long!")
     private String description;
 
-    // TODO: 9/2/22 make author AppUser, not string
     @NotEmpty(message = "authors can not be empty!")
     @ManyToMany
     @JoinTable(name = "book_author",
@@ -42,8 +41,8 @@ public class BookEntity {
     )
     private List<AppUserEntity> authors = new ArrayList<>();
 
-    // TODO: 9/2/22 it is better to make rating float/double
-    @DecimalMax("10.0") @DecimalMin("0.0")
+    @DecimalMax("10.0")
+    @DecimalMin("0.0")
     private Double rating;
 
     @NotEmpty(message = "genres can not be empty!")
@@ -55,7 +54,6 @@ public class BookEntity {
     private List<GenreEntity> genres = new ArrayList<>();
 
     public BookEntity(BookDTO bookDTO) {
-        // TODO: 9/2/22 use BeanUtils.copyProperties()
         BeanUtils.copyProperties(bookDTO, this, "id");
     }
 }

@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = EmptyFileValidator.class)
 public @interface ValidFile {
 
-    String message() default "{Uploading files other than {jpg, jpeg, png} prohibited!}";
+    String message() default "{Uploading files other than /.jpg, /.jpeg, /.png} not allowed!}";
 
     Class<?>[] groups() default {};
 

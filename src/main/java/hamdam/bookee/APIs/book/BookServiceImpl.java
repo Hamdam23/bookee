@@ -5,8 +5,8 @@ import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -37,12 +37,7 @@ public class BookServiceImpl implements BookService {
         });
         bookEntity.setAuthors(authors);
 
-        List<GenreEntity> genres = new ArrayList<>();
-        book.getGenres().forEach(aLong -> {
-            GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
-                    -> new ResourceNotFoundException("Genre", "id", aLong));
-            genres.add(genre);
-        });
+        List<GenreEntity> genres = getGenreEntities(book.getGenres());
         bookEntity.setGenres(genres);
 
         bookRepository.save(bookEntity);
@@ -60,20 +55,14 @@ public class BookServiceImpl implements BookService {
                 -> new ResourceNotFoundException("Book", "id", id)));
     }
 
-    // TODO: 9/2/22 see todos in GenreServiceImpl:updateGenre
     @Override
     public BookDTO updateBook(BookDTO bookDTO, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
         BeanUtils.copyProperties(bookDTO, oldBook, "id");
 
-        List<GenreEntity> genreEntities = new ArrayList<>();
-        bookDTO.getGenres().forEach(aLong -> {
-            GenreEntity genre = genreRepository.findById(id).orElseThrow(()
-                    -> new ResourceNotFoundException("Genre", "id", aLong));
-            genreEntities.add(genre);
-        });
-        oldBook.setGenres(genreEntities);
+        List<GenreEntity> genres = getGenreEntities(bookDTO.getGenres());
+        oldBook.setGenres(genres);
         bookRepository.save(oldBook);
 
         return bookDTO;
@@ -81,8 +70,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public ApiResponse deleteBook(Long id) {
-        // TODO: 9/2/22 existsById is enough
-        if (!bookRepository.existsById(id)){
+        if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("Book", "id", id);
         }
         bookRepository.deleteById(id);
@@ -92,5 +80,16 @@ public class BookServiceImpl implements BookService {
                 LocalDateTime.now(),
                 "Book with id: " + id + " successfully deleted!"
         );
+    }
+
+    private List<GenreEntity> getGenreEntities(List<Long> genreIds) {
+        List<GenreEntity> genreEntities = new ArrayList<>();
+        genreIds.forEach(aLong -> {
+            GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Genre", "id", aLong));
+            genreEntities.add(genre);
+        });
+
+        return genreEntities;
     }
 }

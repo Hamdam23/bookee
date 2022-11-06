@@ -6,6 +6,10 @@ spring:
     password: postgres
   flyway:
     baseline-on-migrate: true
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: true
 
   #hibernate stuff
   jpa:
@@ -18,20 +22,21 @@ spring:
         format_sql: true
         ddl-auto: none
     generate-ddl: false
-  #todo set format-sql to true for more readable sql = DONE(04.09.22)
 
   #file stuff
   servlet:
     multipart:
       max-file-size: 20MB
 
-#todo imho, file path must be read from ENV variable
-#todo also, test this on deployment (heroku)
-file_upload_path: "/home/hamdam/Pictures/bookee/"
-
 server:
   error:
     include-stacktrace: never
 
-#todo I recommend using YAML for this = DONE(04.09.22)
+#todo imho, file path must be read from ENV variable
+#todo also, test this on deployment (heroku)
+file_upload_path: "/home/hamdam/Pictures/bookee/"
 
+jwt:
+  secret: secret
+  access-token-validity: 3600000
+  refresh-token-validity: 1728000000

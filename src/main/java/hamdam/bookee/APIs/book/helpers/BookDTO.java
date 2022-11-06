@@ -3,6 +3,8 @@ package hamdam.bookee.APIs.book.helpers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.book.BookEntity;
+import hamdam.bookee.APIs.genre.GenreEntity;
+import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -35,7 +38,8 @@ public class BookDTO {
     @NotEmpty(message = "authors can not be empty!")
     private List<Long> authors = new ArrayList<>();
 
-    @DecimalMax("10.0") @DecimalMin("0.0")
+    @DecimalMax("10.0")
+    @DecimalMin("0.0")
     private Double rating;
 
     @NotEmpty(message = "genres can not be empty!")
@@ -43,10 +47,7 @@ public class BookDTO {
 
     public BookDTO(BookEntity entity) {
         BeanUtils.copyProperties(entity, this);
-
-        List<Long> authorIDs = new ArrayList<>();
-        entity.getAuthors().forEach(author ->
-                authorIDs.add(author.getId()));
-        this.authors = authorIDs;
+        this.authors = entity.getAuthors().stream().map(AppUserEntity::getId).collect(Collectors.toList());
+        this.genres = entity.getGenres().stream().map(GenreEntity::getId).collect(Collectors.toList());
     }
 }

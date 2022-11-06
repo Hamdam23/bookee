@@ -21,9 +21,9 @@ public class ApiResponse {
     private String message;
     private String details;
 
-    public ApiResponse(ApiException apiException, String details) {
-        this.status = apiException.getStatus();
-        this.message = apiException.getMessage();
+    public ApiResponse(HttpStatus status, String message, String details) {
+        this.status = status;
+        this.message = message;
         this.details = details;
         this.timestamp = LocalDateTime.now();
     }

@@ -3,15 +3,16 @@ package hamdam.bookee.APIs.role_request;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role_request.helpers.ReviewStateDTO;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
-import hamdam.bookee.tools.exceptions.roleRequest.IncorrectRequestedRoleName;
+import hamdam.bookee.tools.exceptions.roleRequest.AlreadyHasInProgressRequestException;
 import hamdam.bookee.tools.exceptions.roleRequest.IncorrectStateValueException;
-import hamdam.bookee.tools.exceptions.roleRequest.IncorrectUserOnRoleRequest;
+import hamdam.bookee.tools.exceptions.roleRequest.NotAccessibleRequestException;
+import hamdam.bookee.tools.exceptions.roleRequest.NotAllowedRoleOnRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +23,8 @@ import java.util.Set;
 
 import static hamdam.bookee.APIs.role.Permissions.CREATE_ROLE_REQUEST;
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE_REQUEST;
-import static hamdam.bookee.APIs.role_request.State.ACCEPTED;
-import static hamdam.bookee.APIs.role_request.State.DECLINED;
-import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
+import static hamdam.bookee.APIs.role_request.State.*;
+import static hamdam.bookee.tools.utils.SecurityUtils.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -36,113 +36,100 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RoleRequestResponse postRoleRequest(RoleRequestDTO roleRequestDTO) {
-        // TODO: 9/2/22 why are you creating RequestEntity here? Create it where it needed with constructor arguments
-        //  Done
-
-        // TODO: 9/2/22 why using setters? use them as constructor arguments
-        //  Done
-
-        AppUserEntity appUserEntity = getUserByRequest(userRepository);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        if (requestRepository.existsByUserAndState(requestingUser, IN_PROGRESS)) {
+            throw new AlreadyHasInProgressRequestException();
+        }
         AppRoleEntity role = roleRepository.findById(roleRequestDTO.getRoleId()).orElseThrow(
                 () -> new ResourceNotFoundException("Role", "id", roleRequestDTO.getRoleId()));
-        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
 
         if (!permissionsSet.contains(CREATE_ROLE_REQUEST)) {
-            throw new IncorrectUserOnRoleRequest();
+            throw new LimitedPermissionException();
         } else if (role.getPermissions().contains(MONITOR_ROLE_REQUEST)) {
-            throw new IncorrectRequestedRoleName();
+            throw new NotAllowedRoleOnRequestException();
         }
-        RequestEntity requestEntity = new RequestEntity(appUserEntity, role, State.IN_PROGRESS);
-        requestRepository.save(requestEntity);
+        RequestEntity requestEntity =
+                requestRepository.save(new RequestEntity(requestingUser, role, State.IN_PROGRESS));
 
         return new RoleRequestResponse(requestEntity, role.getRoleName());
     }
 
-    // TODO: 9/2/22 rename (gets not all role requests in some situations)
-    // TODO: 9/2/22 method needs big code refactor
-    // TODO: 9/2/22 add feature: admin (not user with roleName="admin", but user with appropriate permission) can see role requests of specific user or all users
     @Override
-    public List<RoleRequestResponse> getAllRoleRequests(State reviewState) {
+    public List<RoleRequestResponse> getAllRoleRequests(State state) {
         List<RequestEntity> responseList;
-        if (reviewState == null) {
+        if (state == null) {
             responseList = requestRepository.findAll();
         } else {
-            responseList = requestRepository.findAllByState(reviewState);
+            responseList = requestRepository.findAllByState(state);
         }
 
-        AppUserEntity appUserEntity = getUserByRequest(userRepository);
-        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
-        // change ADMIN permission -> MONITOR_ROLE_REQUEST
-        if (!permissionsSet.contains(MONITOR_ROLE_REQUEST) && !responseList.isEmpty()) {
-            responseList = requestRepository.findAllByUser(appUserEntity);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
+        if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
+            responseList = requestRepository.findAllByUser(requestingUser);
         }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
         responseList.forEach(response -> {
-            RoleRequestResponse requestResponse = new RoleRequestResponse(response, response.getRole().getRoleName());
+            RoleRequestResponse requestResponse = new RoleRequestResponse(response, response.getRequestedRole().getRoleName());
             requestResponses.add(requestResponse);
         });
         return requestResponses;
     }
 
-    // TODO: 9/2/22 static use of AppRole!
-    // TODO: 9/2/22 AppRole is dynamic, use it dynamically!
-    // TODO: 9/2/22 there must be other case(s) in switch
-    // TODO: 9/2/22 why .setState() call inside case?
-    // TODO: 9/2/22 handle get() call
     @Override
-    public RoleRequestResponse reviewRequest(Long id, ReviewStateDTO reviewState) {
+    public RoleRequestResponse reviewRequest(Long id, ReviewRequestDTO review) {
         RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
-        AppUserEntity appUserEntity = getUserByRequest(userRepository);
-        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
 
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             throw new LimitedPermissionException();
-        } else if (reviewState.getState() == null ||
-                (!reviewState.getState().equals(ACCEPTED) &&
-                        !reviewState.getState().equals(DECLINED))
-        ) {
-            throw new IncorrectStateValueException("State can be either ACCEPTED or DECLINED");
+        } else if (!review.getState().equals(ACCEPTED) && !review.getState().equals(DECLINED)) {
+            throw new IncorrectStateValueException();
+        }
+
+        if (review.getDescription() != null) {
+            requestEntity.setDescription(review.getDescription());
         }
 
         AppUserEntity user = requestEntity.getUser();
-
-        requestEntity.setState(reviewState.getState());
-
-        if (reviewState.getState().equals(ACCEPTED)) {
-            user.setRole(requestEntity.getRole());
+        if (review.getState().equals(ACCEPTED)) {
+            user.setRole(requestEntity.getRequestedRole());
+            userRepository.save(user);
         }
 
+        requestEntity.setState(review.getState());
         requestRepository.save(requestEntity);
-        userRepository.save(user);
-        return new RoleRequestResponse(requestEntity, requestEntity.getRole().getRoleName());
+
+        return new RoleRequestResponse(requestEntity, requestEntity.getRequestedRole().getRoleName());
     }
 
     //
     @Override
     public void deleteRequest(Long id) {
-        // TODO: 9/2/22 there is enough to call existsById()
-        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Role request", "id", id)
-        );
+        RequestEntity requestEntity = requestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role request", "id", id)
+                );
 
-        AppUserEntity appUserEntity = getUserByRequest(userRepository);
-        Set<Permissions> permissionsSet = getUserPermissions(appUserEntity);
+        AppUserEntity requestingUser = getUserByRequest(userRepository);
+        Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
         if (permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             requestRepository.deleteById(id);
         } else {
-            if (roleRequestBelongUser(appUserEntity, requestEntity)) {
+            if (roleRequestBelongsUser(requestingUser, requestEntity)) {
                 requestRepository.deleteById(id);
             } else {
-                throw new LimitedPermissionException();
+                throw new NotAccessibleRequestException();
             }
         }
 
         requestRepository.save(requestEntity);
     }
 
-    private boolean roleRequestBelongUser(AppUserEntity user, RequestEntity requestEntity) {
+    boolean roleRequestBelongsUser(AppUserEntity user, RequestEntity requestEntity) {
         return Objects.equals(requestEntity.getUser().getId(), user.getId());
     }
 

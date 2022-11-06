@@ -12,18 +12,18 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ImagEntity {
+public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: 9/2/22 name & json
     @JsonProperty("image_name")
     private String imageName;
 
+    @Column(nullable = false)
     private String location;
 
-    public ImagEntity(String imageName, String location) {
+    public ImageEntity(String imageName, String location) {
         this.imageName = imageName;
         this.location = location;
     }
