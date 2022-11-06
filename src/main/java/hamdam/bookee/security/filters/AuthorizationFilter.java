@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import static hamdam.bookee.tools.constants.Endpoints.*;
-import static hamdam.bookee.tools.token.TokenChecker.checkHeader;
-import static hamdam.bookee.tools.token.TokenUtils.getUsernameFromToken;
+import static hamdam.bookee.tools.utils.TokenUtils.checkHeader;
+import static hamdam.bookee.tools.utils.TokenUtils.getUsernameFromToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component

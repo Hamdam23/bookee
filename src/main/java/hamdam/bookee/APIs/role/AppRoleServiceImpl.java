@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE;
-import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
+import static hamdam.bookee.tools.utils.SecurityUtils.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor

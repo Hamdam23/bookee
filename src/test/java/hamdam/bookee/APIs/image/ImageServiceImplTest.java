@@ -45,6 +45,22 @@ class ImageServiceImplTest {
     private static final String imagesDirectory = System.getProperty("user.home");
 
     @Test
+    void uploadImage_returnsValidDataWhenFileNameNull() throws IOException {
+        //given
+        ReflectionTestUtils.setField(underTest, "imagesDirectory", imagesDirectory);
+        MultipartFile file = new MockMultipartFile("godzilla", ".png", "image/png", "godzilla".getBytes());
+        String location = imagesDirectory + file.getOriginalFilename() + "image";
+        when(fileSystemRepository.writeFileToPath(any(), any())).thenReturn(location);
+        when(imageRepository.save(any())).thenReturn(new ImageEntity(file.getOriginalFilename(), location));
+
+        //when
+        ImageEntity actual = underTest.uploadImage(file);
+
+        //then
+        assertThat(actual.getLocation()).contains("image");
+    }
+
+    @Test
     void uploadImage_returnsValidDataWhenFileNameIsNotNull() throws IOException {
         //given
         ReflectionTestUtils.setField(underTest, "imagesDirectory", imagesDirectory);
@@ -90,7 +106,7 @@ class ImageServiceImplTest {
     }
 
     @Test
-    void downloadImage_returnValidDataWhenRequestIsValid() throws IOException {
+    void downloadImage_returnValidDataWhenRequestIsValid() {
         //given
         String godzilla = "godzilla";
         ImageEntity image = new ImageEntity(godzilla, imagesDirectory + godzilla);

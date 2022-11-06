@@ -33,7 +33,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public ImageEntity uploadImage(MultipartFile file) throws IOException {
         String fileNameWithoutExt = FilenameUtils.removeExtension(file.getOriginalFilename());
-        if (fileNameWithoutExt == null) {
+        if (fileNameWithoutExt == null || fileNameWithoutExt.isBlank()) {
             fileNameWithoutExt = "image";
         } else {
             fileNameWithoutExt = fileNameWithoutExt.replace(" ", "-");

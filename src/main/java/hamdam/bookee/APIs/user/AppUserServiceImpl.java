@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
-import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
+import static hamdam.bookee.tools.utils.SecurityUtils.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor

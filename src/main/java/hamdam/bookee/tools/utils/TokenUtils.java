@@ -1,4 +1,4 @@
-package hamdam.bookee.tools.token;
+package hamdam.bookee.tools.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.auth.TokensResponse;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
+import hamdam.bookee.tools.exceptions.jwt_token.MissingTokenException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -99,7 +100,6 @@ public class TokenUtils implements InitializingBean {
         }
     }
 
-    // TODO: 9/2/22 needs better name
     public static void sendTokenInBody(
             TokensResponse tokensResponse,
             HttpServletResponse response
@@ -110,5 +110,12 @@ public class TokenUtils implements InitializingBean {
                 }
         );
         new ObjectMapper().writeValue(response.getOutputStream(), data);
+    }
+
+    public static void checkHeader(String header, boolean isAccessToken) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            if (isAccessToken) throw new MissingTokenException("Access");
+            throw new MissingTokenException("Refresh");
+        }
     }
 }

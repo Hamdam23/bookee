@@ -1,4 +1,4 @@
-package hamdam.bookee.tools.token;
+package hamdam.bookee.tools.utils;
 
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
@@ -6,12 +6,9 @@ import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
-@Component
-public class GetUserByToken {
+public class SecurityUtils {
 
-    // TODO: 05/10/22 test
     public static AppUserEntity getUserByRequest(AppUserRepository userRepository) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

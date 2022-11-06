@@ -12,4 +12,10 @@ public class RegistrationRequest {
     private String username;
     private String password;
     private Long imageId;
+
+    public RegistrationRequest(String name, String username, String password) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+    }
 }

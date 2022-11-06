@@ -10,8 +10,7 @@ import hamdam.bookee.tools.exceptions.jwt_token.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static hamdam.bookee.tools.token.TokenChecker.checkHeader;
-import static hamdam.bookee.tools.token.TokenUtils.*;
+import static hamdam.bookee.tools.utils.TokenUtils.*;
 
 @Service
 @RequiredArgsConstructor

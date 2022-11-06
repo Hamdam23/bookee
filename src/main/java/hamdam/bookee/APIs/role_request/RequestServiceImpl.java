@@ -24,7 +24,7 @@ import java.util.Set;
 import static hamdam.bookee.APIs.role.Permissions.CREATE_ROLE_REQUEST;
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE_REQUEST;
 import static hamdam.bookee.APIs.role_request.State.*;
-import static hamdam.bookee.tools.token.GetUserByToken.getUserByRequest;
+import static hamdam.bookee.tools.utils.SecurityUtils.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor
