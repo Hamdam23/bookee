@@ -1,6 +1,7 @@
 package hamdam.bookee.tools.exceptions;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -18,6 +21,8 @@ import java.util.Locale;
 public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxFileSize;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleUnknownException(Exception exception) {
@@ -55,8 +60,30 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse(
                 HttpStatus.BAD_REQUEST,
                 LocalDateTime.now(),
-                "Bad Request",
+                "Bad Request!",
                 errorMessage
+        );
+        return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException exception) {
+        ApiResponse apiResponse = new ApiResponse(
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(),
+                "Bad Request!",
+                exception.getMessage()
+        );
+        return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
+        ApiResponse apiResponse = new ApiResponse(
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(),
+                "File size exceeded!",
+                "Maximum upload size exceeded; Configured maximum size is " + maxFileSize
         );
         return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }
