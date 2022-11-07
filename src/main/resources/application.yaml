@@ -11,7 +11,7 @@ spring:
     encoding: UTF-8
     fallback-to-system-locale: true
 
-  #hibernate
+  #hibernate stuff
   jpa:
     hibernate:
       ddl-auto: update
