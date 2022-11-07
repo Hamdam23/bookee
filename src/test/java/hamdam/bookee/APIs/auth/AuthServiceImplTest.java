@@ -49,16 +49,16 @@ class AuthServiceImplTest {
         assertThat(actual.getRefreshToken()).isNotBlank();
     }
 
-    @Test
-    void refreshToken_returnValidResponseWhenRequestIsValid() {
-        //given
-        String header = "Bearer ";
-        AppUserEntity user = new AppUserEntity("niko", new AppRoleEntity("role"));
-        when(tokenProvider.getUsernameFromToken(header, false)).thenReturn();
-
-        //when
-
-        //then
-    }
+//    @Test
+//    void refreshToken_returnValidResponseWhenRequestIsValid() {
+//        //given
+//        String header = "Bearer ";
+//        AppUserEntity user = new AppUserEntity("niko", new AppRoleEntity("role"));
+//        when(tokenProvider.getUsernameFromToken(header, false)).thenReturn();
+//
+//        //when
+//
+//        //then
+//    }
 
 }
