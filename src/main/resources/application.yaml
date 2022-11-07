@@ -14,7 +14,7 @@ spring:
   #hibernate stuff
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL95Dialect
