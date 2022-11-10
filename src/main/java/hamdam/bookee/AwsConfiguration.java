@@ -13,17 +13,21 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class AwsConfiguration {
 
-    @Value("${aws.access_key_id}")
+    @Value("${credentials.access_key}")
     private String awsAccessKey;
 
-    @Value("${aws.secret_access_key}")
+    @Value("${credentials.secret_access_key}")
     private String awsSecretKey;
+
+    @Value("${region.static}")
+    private String region;
 
     @Primary
     @Bean
     public AmazonS3 amazonSQSAsync() {
-        return AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.EU_CENTRAL_1)
+        return AmazonS3ClientBuilder
+                .standard()
+                .withRegion(region)
                 .withCredentials(
                         new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKey, awsSecretKey)))
                 .build();

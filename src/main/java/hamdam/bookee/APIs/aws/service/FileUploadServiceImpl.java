@@ -33,7 +33,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     @Autowired
     private AmazonS3 amazonS3;
 
-    @Value("${aws.bucket}")
+    @Value("${bucket}")
     private String bucketName;
 
     @Override
