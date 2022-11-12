@@ -9,6 +9,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import hamdam.bookee.APIs.aws.payload.FileUpload;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +35,11 @@ public class FileUploadServiceImpl implements FileUploadService {
     @Autowired
     private AmazonS3 amazonS3;
 
-    @Value("${bucket}")
+    @Value("${aws.s3.bucket}")
     private String bucketName;
 
     @Override
-    public String fileUplaod(MultipartFile file) {
+    public String fileUpload(MultipartFile file) {
         String fileName = "";
         try {
             fileName = UUID.randomUUID() + file.getOriginalFilename();
@@ -54,7 +56,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public List<FileUpload> getBucketfiles() {
+    public List<FileUpload> getBucketFiles() {
         return amazonS3.listObjectsV2(bucketName).getObjectSummaries().stream()
                 .map(file -> new FileUpload(file.getKey(), file.getSize(), file.getETag()))
                 .collect(Collectors.toList());

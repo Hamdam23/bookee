@@ -40,3 +40,17 @@ jwt:
   secret: secret
   access-token-validity: 3600000
   refresh-token-validity: 1728000000
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    stack:
+      auto: false
+    region:
+      static: eu-central-1
+
+aws:
+  s3:
+    bucket: bookee-app

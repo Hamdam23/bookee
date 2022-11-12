@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface FileUploadService {
 
-	String fileUplaod(MultipartFile file);
+	String fileUpload(MultipartFile file);
 
-	List<FileUpload> getBucketfiles();
+	List<FileUpload> getBucketFiles();
 
 	String deleteFile(String fileName);
 
