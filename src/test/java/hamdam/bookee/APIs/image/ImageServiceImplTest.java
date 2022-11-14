@@ -36,38 +36,14 @@ class ImageServiceImplTest {
     @InjectMocks
     private ImageServiceImpl underTest;
 
-    private static final String bucketName = "very good bucketName";
+    private static final String BUCKET_NAME = "very good bucketName";
 
     @Test
-    void getUniqueFileName_shouldReturnValidDataWhenFileNameIsNull() {
+    void uploadImage_returnsValidDataWhenFileIsValid() throws IOException {
         //given
-        MultipartFile file = new MockMultipartFile("godzilla", ".png", "image/png", "godzilla".getBytes());
-
-        //when
-        String actual = underTest.getUniqueFileName(file);
-
-        //then
-        assertThat(actual).contains("image");
-    }
-
-    @Test
-    void getUniqueFileName_shouldReturnValidDataWhenFileNameIsNotNull() {
-        //given
-        MultipartFile file = new MockMultipartFile("godzilla", "tes t.png", "image/png", "godzilla".getBytes());
-
-        //when
-        String actual = underTest.getUniqueFileName(file);
-
-        //then
-        assertThat(actual).contains("-");
-    }
-
-    @Test
-    void uploadImage_returnsValidDataWhenFileNameNull() throws IOException {
-        //given
-        ReflectionTestUtils.setField(underTest, "bucketName", bucketName);
-        MultipartFile file = new MockMultipartFile("godzilla", ".png", "image/png", "godzilla".getBytes());
-        String url = bucketName + file.getOriginalFilename() + "image";
+        ReflectionTestUtils.setField(underTest, "bucketName", BUCKET_NAME);
+        MultipartFile file = new MockMultipartFile("godzilla", "godzilla.png", "image/png", "godzilla".getBytes());
+        String url = BUCKET_NAME + file.getOriginalFilename();
         when(s3Repository.writeFileToS3(any(), any(), any())).thenReturn(url);
         when(imageRepository.save(any())).thenReturn(new ImageEntity(file.getOriginalFilename(), url));
 
@@ -75,13 +51,13 @@ class ImageServiceImplTest {
         ImageEntity actual = underTest.uploadImage(file);
 
         //then
-        assertThat(actual.getLocation()).contains("image");
+        assertThat(actual.getLocation()).contains("godzilla");
     }
 
     @Test
     void getImageByID_throwsExceptionWhenIdIsInvalid() {
         //given
-        when(imageRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(imageRepository.findById(any())).thenReturn(Optional.empty());
 
         //when
         //then
@@ -129,11 +105,10 @@ class ImageServiceImplTest {
         when(imageRepository.findById(id)).thenReturn(Optional.of(image));
 
         //when
-        ApiResponse actual = underTest.deleteImageById(id);
+        underTest.deleteImageById(id);
 
         //then
         verify(imageRepository).findById(id);
         verify(imageRepository).deleteById(id);
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }

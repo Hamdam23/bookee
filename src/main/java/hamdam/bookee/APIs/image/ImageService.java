@@ -9,5 +9,5 @@ public interface ImageService {
 
     ImageDTO getImageByID(Long id);
 
-    ApiResponse deleteImageById(Long id);
+    void deleteImageById(Long id);
 }

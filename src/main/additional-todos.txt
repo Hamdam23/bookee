@@ -6,7 +6,6 @@
 38. db tables naming
 21. use Mapper classes for each package!
 3. Code comments, README, API documentation, Downloadable Postman collection.
-*. delete db on heroku -> push code to heroku branch -> deploy (I changed creation of tables on V1 flyway)
 
 #Done
 -1. Database migration

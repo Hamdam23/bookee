@@ -26,10 +26,19 @@ public class BookServiceImpl implements BookService {
     private final GenreRepository genreRepository;
     private final AppUserRepository userRepository;
 
+    /**
+     * It takes a bookDTO, creates a bookEntity from it,
+     * gets the authors and genres from the database,
+     * and saves the bookEntity to the database
+     *
+     * @param book the book object that is passed in the request body
+     * @return BookDTO
+     */
     @Override
     public BookDTO addBook(BookDTO book) {
         BookEntity bookEntity = new BookEntity(book);
         List<AppUserEntity> authors = new ArrayList<>();
+        // Getting the authors from the database and adding them to the bookEntity
         book.getAuthors().forEach(aLong -> {
             AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
                     -> new ResourceNotFoundException("Author", "id", aLong));

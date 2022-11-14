@@ -1,3 +1,6 @@
+/**
+ * This class is responsible for handling all requests related to role requests
+ */
 package hamdam.bookee.APIs.role_request;
 
 import hamdam.bookee.APIs.role.AppRoleEntity;
@@ -77,6 +80,13 @@ public class RequestServiceImpl implements RequestService {
         return requestResponses;
     }
 
+    /**
+     * > This function is used to review a role request
+     *
+     * @param id The id of the request to be reviewed
+     * @param review The review object that contains the state and description of the review.
+     * @return A RoleRequestResponse object is being returned.
+     */
     @Override
     public RoleRequestResponse reviewRequest(Long id, ReviewRequestDTO review) {
         RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
@@ -85,6 +95,8 @@ public class RequestServiceImpl implements RequestService {
         AppUserEntity requestingUser = getUserByRequest(userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
 
+        // This is checking if the user has the permission to monitor role requests.
+        // If they do not, then they are not allowed to review a request.
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             throw new LimitedPermissionException();
         } else if (!review.getState().equals(ACCEPTED) && !review.getState().equals(DECLINED)) {
@@ -107,7 +119,6 @@ public class RequestServiceImpl implements RequestService {
         return new RoleRequestResponse(requestEntity, requestEntity.getRequestedRole().getRoleName());
     }
 
-    //
     @Override
     public void deleteRequest(Long id) {
         RequestEntity requestEntity = requestRepository.findById(id)
@@ -133,6 +144,12 @@ public class RequestServiceImpl implements RequestService {
         return Objects.equals(requestEntity.getUser().getId(), user.getId());
     }
 
+    /**
+     * Get the permissions of a user by getting the permissions of the role of the user.
+     *
+     * @param user The user object that is being authenticated.
+     * @return A set of permissions.
+     */
     public Set<Permissions> getUserPermissions(AppUserEntity user) {
         return user.getRole().getPermissions();
     }

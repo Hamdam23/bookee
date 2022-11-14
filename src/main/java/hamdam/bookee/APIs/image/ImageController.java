@@ -10,6 +10,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 
 @RestController
@@ -31,6 +33,13 @@ public class ImageController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long id) {
-        return new ResponseEntity<>(imageService.deleteImageById(id), HttpStatus.OK);
+        imageService.deleteImageById(id);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        HttpStatus.OK,
+                        LocalDateTime.now(),
+                        "Image with id: " + id + " successfully deleted!"
+                ), HttpStatus.OK
+        );
     }
 }

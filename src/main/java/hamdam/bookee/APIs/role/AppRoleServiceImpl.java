@@ -26,6 +26,12 @@ public class AppRoleServiceImpl implements AppRoleService {
     private final AppRoleRepository roleRepository;
     private final AppUserRepository userRepository;
 
+    /**
+     * > If the role name already exists, throw a DuplicateResourceException, otherwise save the role
+     *
+     * @param appRole The request object that contains the role name.
+     * @return A new AppRoleResponseDTO object is being returned.
+     */
     @Override
     public AppRoleResponseDTO addRole(AppRoleRequestDTO appRole) {
 
