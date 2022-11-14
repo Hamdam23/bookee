@@ -1,19 +1,13 @@
 package hamdam.bookee.APIs.image;
 
+import hamdam.bookee.APIs.image.helpers.ImageDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
     ImageEntity uploadImage(MultipartFile file) throws Exception;
 
-    FileSystemResource downloadImage(String location);
-
     ImageDTO getImageByID(Long id);
-
-    Page<ImageDTO> getAllImages(Pageable pageable);
 
     ApiResponse deleteImageById(Long id);
 }

@@ -1,7 +1,7 @@
 package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.auth.RegistrationRequest;
-import hamdam.bookee.APIs.image.UserImageDTO;
+import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;

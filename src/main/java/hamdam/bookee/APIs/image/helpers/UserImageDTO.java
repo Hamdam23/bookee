@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.image;
+package hamdam.bookee.APIs.image.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
