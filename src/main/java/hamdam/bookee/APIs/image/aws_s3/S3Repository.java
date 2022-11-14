@@ -21,8 +21,7 @@ public class S3Repository {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
         amazonS3.putObject(
-                new PutObjectRequest(
-                        bucketName, fileName, file.getInputStream(), metadata).withCannedAcl(PublicRead)
+                new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata).withCannedAcl(PublicRead)
         );
 
         return amazonS3.getUrl(bucketName, fileName).toString();

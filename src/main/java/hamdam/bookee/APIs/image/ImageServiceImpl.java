@@ -53,7 +53,7 @@ public class ImageServiceImpl implements ImageService {
         );
     }
 
-    private String getUniqueFileName(MultipartFile file) {
+    public String getUniqueFileName(MultipartFile file) {
         String fileNameWithoutExt = FilenameUtils.removeExtension(file.getOriginalFilename());
         if (fileNameWithoutExt == null || fileNameWithoutExt.isBlank()) {
             fileNameWithoutExt = "image";
