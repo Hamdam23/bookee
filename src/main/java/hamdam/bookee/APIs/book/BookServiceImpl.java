@@ -5,16 +5,13 @@ import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,17 +75,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public ApiResponse deleteBook(Long id) {
+    public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new ResourceNotFoundException("Book", "id", id);
         }
         bookRepository.deleteById(id);
-
-        return new ApiResponse(
-                HttpStatus.NO_CONTENT,
-                LocalDateTime.now(),
-                "Book with id: " + id + " successfully deleted!"
-        );
     }
 
     private List<GenreEntity> getGenreEntities(List<Long> genreIds) {

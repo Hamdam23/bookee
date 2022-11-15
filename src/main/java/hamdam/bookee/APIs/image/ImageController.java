@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
+import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 
 @RestController
@@ -38,7 +39,7 @@ public class ImageController {
                 new ApiResponse(
                         HttpStatus.OK,
                         LocalDateTime.now(),
-                        "Image with id: " + id + " successfully deleted!"
+                        getDeletionMessage("Image", id)
                 ), HttpStatus.OK
         );
     }

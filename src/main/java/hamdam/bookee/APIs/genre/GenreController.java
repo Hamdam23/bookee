@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.time.LocalDateTime;
+
+import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 
 @RestController
@@ -44,6 +47,13 @@ public class GenreController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteGenre(@PathVariable Long id) {
-        return new ResponseEntity<>(genreService.deleteGenre(id), HttpStatus.NO_CONTENT);
+        genreService.deleteGenre(id);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        HttpStatus.OK,
+                        LocalDateTime.now(),
+                        getDeletionMessage("Genre", id)
+                ), HttpStatus.OK
+        );
     }
 }

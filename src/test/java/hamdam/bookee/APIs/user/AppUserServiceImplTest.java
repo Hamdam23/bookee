@@ -11,7 +11,6 @@ import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
 import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
-import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -26,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -605,13 +603,12 @@ class AppUserServiceImplTest {
         when(appUserRepository.existsById(userId)).thenReturn(true);
 
         //when
-        ApiResponse actual = underTest.deleteUser(userId);
+        underTest.deleteUser(userId);
 
         //then
         verify(appUserRepository).findAppUserByUsername(user.getUsername());
         verify(appUserRepository).existsById(userId);
         verify(appUserRepository).deleteById(userId);
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test

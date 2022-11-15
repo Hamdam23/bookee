@@ -6,7 +6,6 @@ import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
 import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
-import hamdam.bookee.tools.exceptions.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +23,7 @@ public interface AppUserService extends UserDetailsService {
 
     AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO setUserRoleDTO);
 
-    ApiResponse deleteUser(Long id);
+    void deleteUser(Long id);
 
     boolean existsWithUsername(String username);
 

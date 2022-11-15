@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.time.LocalDateTime;
+
+import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.API_BOOK;
 
 @RestController
@@ -42,7 +45,14 @@ public class BookController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteBook(@PathVariable Long id) {
-        return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.NO_CONTENT);
+        bookService.deleteBook(id);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        HttpStatus.OK,
+                        LocalDateTime.now(),
+                        getDeletionMessage("Book", id)
+                ), HttpStatus.OK
+        );
     }
 }
 

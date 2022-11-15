@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
+import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.*;
 
 @RestController
@@ -56,6 +59,13 @@ public class AppUserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.NO_CONTENT);
+        userService.deleteUser(id);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        HttpStatus.OK,
+                        LocalDateTime.now(),
+                        getDeletionMessage("User", id)
+                ), HttpStatus.OK
+        );
     }
 }

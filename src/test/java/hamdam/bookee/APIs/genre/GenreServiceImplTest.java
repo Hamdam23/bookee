@@ -4,7 +4,6 @@ import hamdam.bookee.APIs.book.BookEntity;
 import hamdam.bookee.APIs.book.BookRepository;
 import hamdam.bookee.APIs.genre.helpers.GenreRequestDTO;
 import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
-import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -176,10 +174,9 @@ class GenreServiceImplTest {
         when(genreRepository.existsById(genreId)).thenReturn(true);
 
         //when
-        ApiResponse actual = underTest.deleteGenre(genreId);
+        underTest.deleteGenre(genreId);
 
         //then
         verify(genreRepository).deleteById(genreId);
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }
