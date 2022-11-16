@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.time.LocalDateTime;
 
 import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
@@ -35,13 +34,12 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public GenreResponseDTO getGenreByID(@PathVariable Long id) {
+    public GenreResponseDTO getGenreById(@PathVariable Long id) {
         return genreService.getGenreById(id);
     }
 
     @PatchMapping("/{id}")
     public GenreResponseDTO updateGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDTO genre) {
-        genreService.updateGenre(id, genre);
         return genreService.updateGenre(id, genre);
     }
 

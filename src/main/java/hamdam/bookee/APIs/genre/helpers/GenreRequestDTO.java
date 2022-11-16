@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.genre.helpers;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,6 @@ public class GenreRequestDTO {
     @Size(max = 200, message = "description size is too long!")
     private String description;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Long> books;
 
     public GenreRequestDTO(String name, String description) {

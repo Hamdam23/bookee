@@ -79,4 +79,11 @@ public class AppUserEntity {
         this.username = username;
         this.role = role;
     }
+
+    public AppUserEntity(String name, String username, String password, AppRoleEntity role) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 }

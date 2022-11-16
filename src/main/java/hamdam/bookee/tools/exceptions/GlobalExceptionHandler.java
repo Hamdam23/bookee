@@ -3,6 +3,7 @@ package hamdam.bookee.tools.exceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -41,9 +42,15 @@ public class GlobalExceptionHandler {
             WebRequest webRequest,
             Locale locale
     ) {
+        String message;
+        try {
+            message = messageSource.getMessage(exception.getMessageId(), exception.getMessageArgs(), locale);
+        } catch (NoSuchMessageException e){
+            message = exception.getMessage();
+        }
         ApiResponse apiResponse = new ApiResponse(
                 exception.getStatus(),
-                messageSource.getMessage(exception.getMessageId(), exception.getMessageArgs(), locale),
+                message,
                 webRequest.getDescription(false));
         return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }
