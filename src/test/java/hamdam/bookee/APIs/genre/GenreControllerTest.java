@@ -64,9 +64,9 @@ class GenreControllerTest {
     @Test
     void addGenre_shouldPostGenre() throws Exception {
         //given
-        GenreRequestDTO request = new GenreRequestDTO("action", "very good desc");
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(Permissions.CREATE_GENRE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        GenreRequestDTO request = new GenreRequestDTO("action", "very good desc");
 
         //when
         ResultActions perform = mockMvc.perform(post(API_GENRE)
@@ -76,11 +76,14 @@ class GenreControllerTest {
                 //      because getAccessTokenResponse also calls createToken method, but in addition to this
                 //      it also does some logic with date time formatting.
                 //      In case of tests you don't need anything related to date time and TokenResponse object.
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.getAccessTokenResponse(user).getAccessToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
         //then
+        GenreResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), GenreResponseDTO.class);
         perform.andExpect(status().isOk());
+        assertThat(response.getName()).isEqualTo(request.getName());
+        assertThat(response.getDescription()).isEqualTo(request.getDescription());
         // TODO: 11/18/22 i think this assertion is not enough, you should also check if genre is saved in database
     }
 
@@ -110,6 +113,9 @@ class GenreControllerTest {
         PagedResponse<GenreResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         // TODO: 11/18/22 i think you should check not only the size of the response, but also the content of the response
+        assertThat(response.getContent().get(0).getId()).isEqualTo(genreList.get(0).getId());
+        assertThat(response.getContent().get(1).getId()).isEqualTo(genreList.get(1).getId());
+        assertThat(response.getContent().get(2).getId()).isEqualTo(genreList.get(2).getId());
         assertThat(response.getTotalElements()).isEqualTo(genreList.size());
     }
 
@@ -140,7 +146,7 @@ class GenreControllerTest {
         //given
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(Permissions.UPDATE_GENRE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-        GenreEntity existingGenre = genreRepository.save(new GenreEntity("dirk", "desc"));
+        GenreEntity existingGenre = genreRepository.save(new GenreEntity("blood-seeker", "desc"));
 
         GenreRequestDTO genreRequest = new GenreRequestDTO(
                 "dirk",
@@ -158,9 +164,10 @@ class GenreControllerTest {
 
         //then
         perform.andExpect(status().isOk()).andDo(print());
-        GenreResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), GenreResponseDTO.class);
-        assertThat(response.getName()).isEqualTo(genreRequest.getName());
-        assertThat(response.getDescription()).isEqualTo(genreRequest.getDescription());
+
+        GenreEntity updatedGenre = genreRepository.findById(existingGenre.getId()).get();
+        assertThat(updatedGenre.getName()).isEqualTo(genreRequest.getName());
+        assertThat(updatedGenre.getDescription()).isEqualTo(genreRequest.getDescription());
         // TODO: 11/18/22 if you want you can check if genre is updated in database (it is optional)
     }
 
