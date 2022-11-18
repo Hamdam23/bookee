@@ -23,7 +23,7 @@ public class AppRoleServiceImpl implements AppRoleService {
     private final AppUserRepository userRepository;
 
     /**
-     * > If the role name already exists, throw a DuplicateResourceException, otherwise save the role
+     * If the role name already exists, throw a DuplicateResourceException, otherwise save the role
      *
      * @param appRole The request object that contains the role name.
      * @return A new AppRoleResponseDTO object is being returned.
@@ -34,9 +34,8 @@ public class AppRoleServiceImpl implements AppRoleService {
         if (roleRepository.existsByRoleName(appRole.getRoleName())) {
             throw new DuplicateResourceException("role name");
         }
-        AppRoleEntity roleEntity = new AppRoleEntity(appRole);
 
-        return new AppRoleResponseDTO(roleRepository.save(roleEntity));
+        return new AppRoleResponseDTO(roleRepository.save(new AppRoleEntity(appRole)));
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.Permissions;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class AppRoleResponseDTO {
 
     @JsonProperty("role_id")
