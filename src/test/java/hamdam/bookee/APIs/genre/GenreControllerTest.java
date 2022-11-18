@@ -72,11 +72,16 @@ class GenreControllerTest {
         ResultActions perform = mockMvc.perform(post(API_GENRE)
                 .contentType(APPLICATION_JSON)
                 .content(Objects.requireNonNull(objectMapper.writeValueAsString(request)))
+                // TODO: 11/18/22 I suggest using createToken method from TokenProvider instead of getAccessTokenResponse
+                //      because getAccessTokenResponse also calls createToken method, but in addition to this
+                //      it also does some logic with date time formatting.
+                //      In case of tests you don't need anything related to date time and TokenResponse object.
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.getAccessTokenResponse(user).getAccessToken())
         );
 
         //then
         perform.andExpect(status().isOk());
+        // TODO: 11/18/22 i think this assertion is not enough, you should also check if genre is saved in database
     }
 
     @Test
@@ -104,6 +109,7 @@ class GenreControllerTest {
         perform.andExpect(status().isOk());
         PagedResponse<GenreResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
+        // TODO: 11/18/22 i think you should check not only the size of the response, but also the content of the response
         assertThat(response.getTotalElements()).isEqualTo(genreList.size());
     }
 
@@ -155,6 +161,7 @@ class GenreControllerTest {
         GenreResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), GenreResponseDTO.class);
         assertThat(response.getName()).isEqualTo(genreRequest.getName());
         assertThat(response.getDescription()).isEqualTo(genreRequest.getDescription());
+        // TODO: 11/18/22 if you want you can check if genre is updated in database (it is optional)
     }
 
     @Test
