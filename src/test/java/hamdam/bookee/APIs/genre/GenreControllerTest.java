@@ -105,7 +105,7 @@ class GenreControllerTest {
         ResultActions perform = mockMvc.perform(get(API_GENRE)
                 .contentType(APPLICATION_JSON)
                 .content(content)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.getAccessTokenResponse(user).getAccessToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
         //then
@@ -131,7 +131,7 @@ class GenreControllerTest {
         ResultActions perform = mockMvc.perform(get(API_GENRE + "/{id}", genre.getId())
                 .contentType(APPLICATION_JSON)
                 .content(content)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.getAccessTokenResponse(user).getAccessToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
         //then
@@ -159,7 +159,7 @@ class GenreControllerTest {
         ResultActions perform = mockMvc.perform(patch(API_GENRE + "/" + existingGenre.getId())
                 .contentType(APPLICATION_JSON)
                 .content(content)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.getAccessTokenResponse(user).getAccessToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
         //then
@@ -181,7 +181,7 @@ class GenreControllerTest {
         //when
         ResultActions perform = mockMvc.perform(delete(API_GENRE + "/" + existingGenre.getId())
                 .contentType(APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.getAccessTokenResponse(user).getAccessToken())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
         //then
