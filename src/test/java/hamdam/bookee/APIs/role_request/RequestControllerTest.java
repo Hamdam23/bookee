@@ -98,6 +98,7 @@ class RequestControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(get(API_ROLE_REQUEST)
+                // TODO: 11/20/22 why do you need this content type?
                 .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
@@ -106,7 +107,9 @@ class RequestControllerTest {
         List<RoleRequestResponse> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
+        // TODO: 11/20/22 it is not a good practice to use hardcoded values in assertions
         assertThat(response.size()).isEqualTo(3);
+        // TODO: 11/20/22 what about checking response content?
     }
 
     @Test
@@ -126,6 +129,7 @@ class RequestControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(get(API_ROLE_REQUEST)
+                // TODO: 11/20/22 why do you need this content type?
                 .contentType(APPLICATION_JSON)
                 .param("status", ACCEPTED.name())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
@@ -135,6 +139,7 @@ class RequestControllerTest {
         List<RoleRequestResponse> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
+        // TODO: 11/20/22 the same todos as in the previous test
         assertThat(response.size()).isEqualTo(2);
     }
 
@@ -161,6 +166,7 @@ class RequestControllerTest {
         RoleRequestResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), RoleRequestResponse.class);
         perform.andExpect(status().isOk());
         assertThat(response.getId()).isEqualTo(existingRequest.getId());
+        // TODO: 11/20/22 it is not a good practice to use hardcoded values in assertions
         assertThat(response.getState()).isEqualTo(DECLINED);
     }
 
@@ -176,6 +182,7 @@ class RequestControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_ROLE_REQUEST + "/" + existingRequest.getId())
+                // TODO: 11/20/22 why do you need this content type?
                 .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );

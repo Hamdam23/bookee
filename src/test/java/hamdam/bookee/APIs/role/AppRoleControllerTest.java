@@ -73,6 +73,7 @@ class AppRoleControllerTest {
         perform.andExpect(status().isOk());
         assertThat(response.getRoleName()).isEqualTo(request.getRoleName());
         assertThat(response.getPermissions()).isEqualTo(request.getPermissions());
+        // TODO: 11/20/22 check if role is saved in db
     }
 
     @Test
@@ -89,6 +90,7 @@ class AppRoleControllerTest {
         roleRepository.saveAll(roleList);
 
         //when
+        // TODO: 11/20/22 why do you need this content?
         String content = Objects.requireNonNull(objectMapper.writeValueAsString(roleList));
         ResultActions perform = mockMvc.perform(get(API_ROLE)
                 .contentType(APPLICATION_JSON)
@@ -100,9 +102,12 @@ class AppRoleControllerTest {
         perform.andExpect(status().isOk());
         PagedResponse<AppRoleResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
+        // TODO: 11/20/22 oh... do you really think this is a good assertion?
+        //      it is like 'simbirg`i' assertion
         assertThat(response.getContent().get(0).getId()).isEqualTo(roleList.get(2).getId());
         assertThat(response.getContent().get(1).getId()).isEqualTo(roleList.get(1).getId());
         assertThat(response.getContent().get(2).getId()).isEqualTo(roleList.get(0).getId());
+        // TODO: 11/20/22 'roleList.size() + 1' seems very strange, do something with it
         assertThat(response.getTotalElements()).isEqualTo(roleList.size() + 1);
     }
 
@@ -115,12 +120,14 @@ class AppRoleControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_ROLE + "/" + existingRole.getId())
+                // TODO: 11/20/22 why do you need this content type?
                 .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
         //then
         perform.andExpect(status().isOk()).andDo(print());
+        // TODO: 11/20/22 check if role is deleted from db
     }
 
 }

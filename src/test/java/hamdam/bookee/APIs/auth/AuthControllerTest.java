@@ -68,11 +68,14 @@ class AuthControllerTest {
         //then
         TokensResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), TokensResponse.class);
         perform.andExpect(status().isOk());
+        // TODO: 11/20/22 checking only access token, refresh token is not checked
         assertThat(response.getAccessToken()).isNotBlank();
         assertThat(response.getAccessTokenExpiry()).isNotBlank();
+        // TODO: 11/20/22 i suggest to check if the user is saved in the database
     }
 
     @Test
+        // TODO: 11/20/22 needs renaming
     void refreshToken_shouldGetRefreshToken() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
