@@ -23,8 +23,8 @@ public class RequestController {
     private final RequestService requestService;
 
     @PostMapping
-    public ResponseEntity<RoleRequestResponse> sendRoleRequest(@Valid @RequestBody RoleRequestDTO roleRequestDTO) {
-        return ResponseEntity.ok().body(requestService.postRoleRequest(roleRequestDTO));
+    public RoleRequestResponse sendRoleRequest(@Valid @RequestBody RoleRequestDTO roleRequestDTO) {
+        return requestService.postRoleRequest(roleRequestDTO);
     }
 
     @GetMapping
@@ -33,9 +33,9 @@ public class RequestController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<RoleRequestResponse> reviewRequest(@PathVariable Long id,
-                                                             @Valid @RequestBody ReviewRequestDTO review) {
-        return ResponseEntity.ok().body(requestService.reviewRequest(id, review));
+    public RoleRequestResponse reviewRequest(@PathVariable Long id,
+                                             @Valid @RequestBody ReviewRequestDTO review) {
+        return requestService.reviewRequest(id, review);
     }
 
     @DeleteMapping("{id}")

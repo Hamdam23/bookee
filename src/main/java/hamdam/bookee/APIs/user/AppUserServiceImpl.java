@@ -8,8 +8,8 @@ import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
+import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -129,7 +129,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO roleDTO) {
+    public AppUserResponseDTO setRoleToUser(Long id, SetRoleUserRequest roleDTO) {
         AppUserEntity user = getAppUserById(id);
         AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId()));
@@ -153,7 +153,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id) {
+    public AppUserResponseDTO updatePassword(UpdatePasswordRequest passwordDTO, Long id) {
         AppUserEntity user = getAppUserById(id);
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 

@@ -4,8 +4,8 @@ import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
+import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,7 +21,7 @@ public interface AppUserService extends UserDetailsService {
 
     AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO);
 
-    AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO setUserRoleDTO);
+    AppUserResponseDTO setRoleToUser(Long id, SetRoleUserRequest setRoleUserRequest);
 
     void deleteUser(Long id);
 
@@ -29,5 +29,5 @@ public interface AppUserService extends UserDetailsService {
 
     AppUserEntity getUserByUsername(String username, boolean withPermissions);
 
-    AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id);
+    AppUserResponseDTO updatePassword(UpdatePasswordRequest passwordDTO, Long id);
 }
