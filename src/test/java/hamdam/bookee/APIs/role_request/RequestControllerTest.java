@@ -92,14 +92,15 @@ class RequestControllerTest {
         AppUserEntity phil = userRepository.save(new AppUserEntity("phil", "philly", "pass", userRole));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
         AppUserEntity sam = userRepository.save(new AppUserEntity("sam", "sammy", "pass", userRole));
-        roleRequestRepository.save(new RequestEntity(phil, role, ACCEPTED));
-        roleRequestRepository.save(new RequestEntity(bill, role, IN_PROGRESS));
-        roleRequestRepository.save(new RequestEntity(sam, role, DECLINED));
+        List<RequestEntity> requestEntities = List.of(
+                new RequestEntity(phil, role, ACCEPTED),
+                new RequestEntity(bill, role, IN_PROGRESS),
+                new RequestEntity(sam, role, DECLINED)
+        );
+        roleRequestRepository.saveAll(requestEntities);
 
         //when
         ResultActions perform = mockMvc.perform(get(API_ROLE_REQUEST)
-                // TODO: 11/20/22 why do you need this content type?
-                .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
@@ -107,8 +108,7 @@ class RequestControllerTest {
         List<RoleRequestResponse> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
-        // TODO: 11/20/22 it is not a good practice to use hardcoded values in assertions
-        assertThat(response.size()).isEqualTo(3);
+        assertThat(response.size()).isEqualTo(requestEntities.size());
         // TODO: 11/20/22 what about checking response content?
     }
 
@@ -123,14 +123,15 @@ class RequestControllerTest {
         AppUserEntity phil = userRepository.save(new AppUserEntity("phil", "philly", "pass", userRole));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
         AppUserEntity sam = userRepository.save(new AppUserEntity("sam", "sammy", "pass", userRole));
-        roleRequestRepository.save(new RequestEntity(phil, role, ACCEPTED));
-        roleRequestRepository.save(new RequestEntity(bill, role, ACCEPTED));
-        roleRequestRepository.save(new RequestEntity(sam, role, DECLINED));
+        List<RequestEntity> requestEntities = List.of(
+                new RequestEntity(phil, role, ACCEPTED),
+                new RequestEntity(bill, role, ACCEPTED),
+                new RequestEntity(sam, role, DECLINED)
+        );
+        roleRequestRepository.saveAll(requestEntities);
 
         //when
         ResultActions perform = mockMvc.perform(get(API_ROLE_REQUEST)
-                // TODO: 11/20/22 why do you need this content type?
-                .contentType(APPLICATION_JSON)
                 .param("status", ACCEPTED.name())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
@@ -140,7 +141,7 @@ class RequestControllerTest {
         });
         perform.andExpect(status().isOk());
         // TODO: 11/20/22 the same todos as in the previous test
-        assertThat(response.size()).isEqualTo(2);
+        assertThat(response.size()).isEqualTo(requestEntities.size());
     }
 
     @Test
@@ -166,8 +167,7 @@ class RequestControllerTest {
         RoleRequestResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), RoleRequestResponse.class);
         perform.andExpect(status().isOk());
         assertThat(response.getId()).isEqualTo(existingRequest.getId());
-        // TODO: 11/20/22 it is not a good practice to use hardcoded values in assertions
-        assertThat(response.getState()).isEqualTo(DECLINED);
+        assertThat(response.getState()).isEqualTo(request.getState());
     }
 
     @Test
@@ -182,8 +182,6 @@ class RequestControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_ROLE_REQUEST + "/" + existingRequest.getId())
-                // TODO: 11/20/22 why do you need this content type?
-                .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 

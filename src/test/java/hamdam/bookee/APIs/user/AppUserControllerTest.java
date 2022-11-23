@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -51,6 +52,9 @@ class AppUserControllerTest {
     private ImageRepository imageRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private TokenProvider tokenProvider;
 
     @Autowired
@@ -79,8 +83,6 @@ class AppUserControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(get(API_USER)
-                // TODO: 11/20/22 after copy pasting do not forget to remove the codes that are not needed
-                .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
@@ -89,7 +91,7 @@ class AppUserControllerTest {
         });
         perform.andExpect(status().isOk());
         // TODO: 11/20/22 these all assertions seem like 'simbirg`i'
-        assertThat(response.getTotalElements()).isEqualTo(4);
+        assertThat(response.getTotalElements()).isEqualTo(users.size() + 1);
         assertThat(response.getContent().get(0).getId()).isEqualTo(users.get(2).getId());
         assertThat(response.getContent().get(1).getId()).isEqualTo(users.get(1).getId());
         assertThat(response.getContent().get(2).getId()).isEqualTo(users.get(0).getId());
@@ -110,8 +112,6 @@ class AppUserControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(get(API_USER + "/" + users.get(0).getId())
-                // TODO: 11/20/22
-                .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
@@ -139,23 +139,23 @@ class AppUserControllerTest {
         );
 
         //then
-        AppUserResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), AppUserResponseDTO.class);
         perform.andExpect(status().isOk());
-        assertThat(response.getUsername()).isEqualTo(request.getUsername());
-        // TODO: 11/20/22 what about checking whether the user is updated in the database?
+        assertThat(userRepository.findById(bill.getId()).get().getUsername()).isEqualTo(request.getUsername());
     }
 
     @Test
     void updatePassword_shouldUpdatePassword() throws Exception {
         AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
-        AppUserEntity bill = userRepository.save(new AppUserEntity("bill",
+        String oldPassword = "12345";
+        AppUserEntity bill = userRepository.save(new AppUserEntity(
+                "bill",
                 "billy",
-                // TODO: 11/20/22 it is not good to write encoded password by hand, use password encoder
-                "$2a$10$k8Ga28fN0P3ErQQ1GLdKMuHFy/bNt3yORvhDNReFi151owCu4Wupa",
+                passwordEncoder.encode(oldPassword),
                 userRole)
         );
-
-        UpdatePasswordRequest request = new UpdatePasswordRequest("12345", "new-pass", "new-pass");
+        String newPassword = "new-pass";
+        String confirmNewPassword = "new-pass";
+        UpdatePasswordRequest request = new UpdatePasswordRequest(oldPassword, newPassword, confirmNewPassword);
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + "/change-password/" + bill.getId())
@@ -165,11 +165,8 @@ class AppUserControllerTest {
         );
 
         //then
-        /*TODO how can I check if the user's password is changed to the new requested password
-            problem: cannot check for decoded password in db with my new String requested password
-         */
-        // TODO: 11/20/22 you can use password encoder (spoiler: PasswordEncoder.matches(...))
         perform.andExpect(status().isOk());
+        assertThat(passwordEncoder.matches(newPassword, userRepository.findById(bill.getId()).get().getPassword())).isTrue();
     }
 
     @Test

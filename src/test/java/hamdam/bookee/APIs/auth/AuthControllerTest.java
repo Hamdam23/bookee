@@ -56,7 +56,8 @@ class AuthControllerTest {
     @Test
     void register_shouldRegisterUser() throws Exception {
         //given
-        RegistrationRequest request = new RegistrationRequest("blood-seeker", "blood", "pass");
+        String username = "blood";
+        RegistrationRequest request = new RegistrationRequest("blood-seeker", username, "pass");
         roleRepository.save(new AppRoleEntity("role-name", true, LocalDateTime.now()));
 
         //when
@@ -68,15 +69,15 @@ class AuthControllerTest {
         //then
         TokensResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), TokensResponse.class);
         perform.andExpect(status().isOk());
-        // TODO: 11/20/22 checking only access token, refresh token is not checked
         assertThat(response.getAccessToken()).isNotBlank();
         assertThat(response.getAccessTokenExpiry()).isNotBlank();
-        // TODO: 11/20/22 i suggest to check if the user is saved in the database
+        assertThat(response.getRefreshToken()).isNotBlank();
+        assertThat(response.getRefreshTokenExpiry()).isNotBlank();
+        assertThat(userRepository.existsByUsername(username)).isTrue();
     }
 
     @Test
-        // TODO: 11/20/22 needs renaming
-    void refreshToken_shouldGetRefreshToken() throws Exception {
+    void refreshToken_shouldRefreshToken() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));

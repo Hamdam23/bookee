@@ -40,4 +40,10 @@ public class BookRequestDTO {
         this.name = name;
         this.authors = authors;
     }
+
+    public BookRequestDTO(String name, Double rating, List<Long> genres) {
+        this.name = name;
+        this.rating = rating;
+        this.genres = genres;
+    }
 }

@@ -73,7 +73,7 @@ class AppRoleControllerTest {
         perform.andExpect(status().isOk());
         assertThat(response.getRoleName()).isEqualTo(request.getRoleName());
         assertThat(response.getPermissions()).isEqualTo(request.getPermissions());
-        // TODO: 11/20/22 check if role is saved in db
+        assertThat(roleRepository.existsByRoleName(request.getRoleName())).isTrue();
     }
 
     @Test
@@ -90,11 +90,8 @@ class AppRoleControllerTest {
         roleRepository.saveAll(roleList);
 
         //when
-        // TODO: 11/20/22 why do you need this content?
-        String content = Objects.requireNonNull(objectMapper.writeValueAsString(roleList));
         ResultActions perform = mockMvc.perform(get(API_ROLE)
                 .contentType(APPLICATION_JSON)
-                .content(content)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
@@ -120,14 +117,12 @@ class AppRoleControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_ROLE + "/" + existingRole.getId())
-                // TODO: 11/20/22 why do you need this content type?
-                .contentType(APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
         //then
         perform.andExpect(status().isOk()).andDo(print());
-        // TODO: 11/20/22 check if role is deleted from db
+        assertThat(roleRepository.existsById(existingRole.getId())).isFalse();
     }
 
 }
