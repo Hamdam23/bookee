@@ -1,6 +1,7 @@
 package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.APIs.book.helpers.BookDTO;
+import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
+import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,22 +25,22 @@ public class BookController {
     private final BookServiceImpl bookService;
 
     @PostMapping
-    public BookDTO addBook(@Valid @RequestBody BookDTO book) {
+    public BookResponseDTO addBook(@Valid @RequestBody BookRequestDTO book) {
         return bookService.addBook(book);
     }
 
     @GetMapping
-    public PagedResponse<BookDTO> getAllBooks(Pageable pageable) {
+    public PagedResponse<BookResponseDTO> getAllBooks(Pageable pageable) {
         return new PagedResponse<>(bookService.getAllBooks(pageable));
     }
 
     @GetMapping("/{id}")
-    public BookDTO getBookByID(@PathVariable Long id) {
+    public BookResponseDTO getBookByID(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
 
     @PatchMapping("/{id}")
-    public BookDTO updateBook(@PathVariable Long id, @Valid @RequestBody BookDTO newBook) {
+    public BookResponseDTO updateBook(@PathVariable Long id, @Valid @RequestBody BookRequestDTO newBook) {
         return bookService.updateBook(newBook, id);
     }
 

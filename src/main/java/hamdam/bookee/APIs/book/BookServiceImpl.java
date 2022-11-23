@@ -1,6 +1,7 @@
 package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.APIs.book.helpers.BookDTO;
+import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
+import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
@@ -32,7 +33,7 @@ public class BookServiceImpl implements BookService {
      * @return BookDTO
      */
     @Override
-    public BookDTO addBook(BookDTO book) {
+    public BookResponseDTO addBook(BookRequestDTO book) {
         BookEntity bookEntity = new BookEntity(book);
         List<AppUserEntity> authors = new ArrayList<>();
         // Getting the authors from the database and adding them to the bookEntity
@@ -46,32 +47,31 @@ public class BookServiceImpl implements BookService {
         List<GenreEntity> genres = getGenreEntities(book.getGenres());
         bookEntity.setGenres(genres);
 
-        bookRepository.save(bookEntity);
-        return book;
+        return new BookResponseDTO(bookRepository.save(bookEntity));
     }
 
     @Override
-    public Page<BookDTO> getAllBooks(Pageable pageable) {
-        return bookRepository.findAll(pageable).map(BookDTO::new);
+    public Page<BookResponseDTO> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable).map(BookResponseDTO::new);
     }
 
     @Override
-    public BookDTO getBookById(Long id) {
-        return new BookDTO(bookRepository.findById(id).orElseThrow(()
+    public BookResponseDTO getBookById(Long id) {
+        return new BookResponseDTO(bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id)));
     }
 
     @Override
-    public BookDTO updateBook(BookDTO bookDTO, Long id) {
+    public BookResponseDTO updateBook(BookRequestDTO bookRequestDTO, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
-        BeanUtils.copyProperties(bookDTO, oldBook, "id");
+        BeanUtils.copyProperties(bookRequestDTO, oldBook, "id");
 
-        List<GenreEntity> genres = getGenreEntities(bookDTO.getGenres());
+        List<GenreEntity> genres = getGenreEntities(bookRequestDTO.getGenres());
         oldBook.setGenres(genres);
         bookRepository.save(oldBook);
 
-        return bookDTO;
+        return new BookResponseDTO(bookRequestDTO);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    private List<GenreEntity> getGenreEntities(List<Long> genreIds) {
+    List<GenreEntity> getGenreEntities(List<Long> genreIds) {
         List<GenreEntity> genreEntities = new ArrayList<>();
         genreIds.forEach(aLong -> {
             GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
