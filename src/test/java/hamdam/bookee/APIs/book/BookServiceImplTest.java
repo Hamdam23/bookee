@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,19 +74,28 @@ class BookServiceImplTest {
     @Test
     void addBook_shouldAddBookWhenRequestIsValid() {
         //given
-        Long authorId = 1L;
-        Long genreId = 2L;
+        AppUserEntity author = new AppUserEntity("name", "username", "pass");
+        author.setId(1L);
+        List<AppUserEntity> authors = List.of(author);
+
+        GenreEntity genre = new GenreEntity();
+        genre.setId(2L);
+        List<GenreEntity> genres = List.of(genre);
+
         BookRequestDTO request = new BookRequestDTO(
                 "hobbit",
                 "tagline",
                 "desc",
-                List.of(authorId),
+                List.of(author.getId()),
                 10.0,
-                List.of(genreId)
+                List.of(genre.getId())
         );
-        when(userRepository.findById(authorId)).thenReturn(Optional.of(new AppUserEntity()));
-        when(genreRepository.findById(genreId)).thenReturn(Optional.of(new GenreEntity()));
-        when(bookRepository.save(any())).thenReturn(new BookEntity(request));
+        BookEntity book = new BookEntity(request);
+        book.setAuthors(authors);
+        book.setGenres(genres);
+        when(userRepository.findById(author.getId())).thenReturn(Optional.of(new AppUserEntity()));
+        when(genreRepository.findById(genre.getId())).thenReturn(Optional.of(new GenreEntity()));
+        when(bookRepository.save(any())).thenReturn(book);
 
         //when
         BookResponseDTO actual = underTest.addBook(request);
