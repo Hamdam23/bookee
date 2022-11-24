@@ -56,4 +56,14 @@ public class BookEntity {
     public BookEntity(BookRequestDTO bookRequestDTO) {
         BeanUtils.copyProperties(bookRequestDTO, this, "id");
     }
+
+    public BookEntity(String name, String tagline, String description,
+                      List<AppUserEntity> authors, Double rating, List<GenreEntity> genres) {
+        this.name = name;
+        this.tagline = tagline;
+        this.description = description;
+        this.authors = authors;
+        this.rating = rating;
+        this.genres = genres;
+    }
 }
