@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.*;
 import static hamdam.bookee.tools.constants.Endpoints.API_BOOK;
@@ -119,11 +120,16 @@ class BookControllerTest {
         PagedResponse<BookResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
+        assertThat(response.getContent())
+                .extracting(BookResponseDTO::getId)
+                .containsExactlyInAnyOrderElementsOf(
+                        books.stream().map(BookEntity::getId).collect(Collectors.toList())
+                );
         assertThat(response.getTotalElements()).isEqualTo(books.size());
     }
 
     @Test
-    void getAllBooks_shouldBookById() throws Exception {
+    void getBookById_shouldBookById() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role", Set.of(GET_BOOK)));
         AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));

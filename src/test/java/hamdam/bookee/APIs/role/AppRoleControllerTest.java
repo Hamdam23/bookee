@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.*;
 import static hamdam.bookee.tools.constants.Endpoints.API_ROLE;
@@ -79,14 +80,15 @@ class AppRoleControllerTest {
     @Test
     void getAllRoles_shouldGetAllRoles() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-
         List<AppRoleEntity> roleList = List.of(
+                new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)),
                 new AppRoleEntity("dirk", Set.of(GET_USER)),
                 new AppRoleEntity("niko", Set.of(GET_USER)),
                 new AppRoleEntity("dev1ce", Set.of(GET_USER))
         );
+        roleRepository.saveAll(roleList);
+        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", roleList.get(0)));
+
         roleRepository.saveAll(roleList);
 
         //when
@@ -99,13 +101,13 @@ class AppRoleControllerTest {
         perform.andExpect(status().isOk());
         PagedResponse<AppRoleResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
-        // TODO: 11/20/22 oh... do you really think this is a good assertion?
-        //      it is like 'simbirg`i' assertion
-        assertThat(response.getContent().get(0).getId()).isEqualTo(roleList.get(2).getId());
-        assertThat(response.getContent().get(1).getId()).isEqualTo(roleList.get(1).getId());
-        assertThat(response.getContent().get(2).getId()).isEqualTo(roleList.get(0).getId());
-        // TODO: 11/20/22 'roleList.size() + 1' seems very strange, do something with it
-        assertThat(response.getTotalElements()).isEqualTo(roleList.size() + 1);
+        assertThat(response.getContent())
+                .extracting(AppRoleResponseDTO::getId)
+                .containsExactlyInAnyOrderElementsOf(
+                        roleList.stream().map(AppRoleEntity::getId).collect(Collectors.toList())
+                );
+        assertThat(response.getTotalElements()).isEqualTo(roleList.size());
+
     }
 
     @Test

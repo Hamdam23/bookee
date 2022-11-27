@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.GET_USER;
 import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
@@ -71,10 +72,10 @@ class AppUserControllerTest {
     void getAllUsers_shouldGetAllUsers() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_USER)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-
         AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+
         List<AppUserEntity> users = List.of(
+                new AppUserEntity("nikola", "niko", "pass", role),
                 new AppUserEntity("phil", "philly", "pass", userRole),
                 new AppUserEntity("blood", "bloody", "pass", userRole),
                 new AppUserEntity("shaker", "shaky", "pass", userRole)
@@ -83,18 +84,19 @@ class AppUserControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(get(API_USER)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(users.get(0).getUsername(), users.get(0).getRole(), true))
         );
 
         //then
         PagedResponse<AppUserResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
-        // TODO: 11/20/22 these all assertions seem like 'simbirg`i'
-        assertThat(response.getTotalElements()).isEqualTo(users.size() + 1);
-        assertThat(response.getContent().get(0).getId()).isEqualTo(users.get(2).getId());
-        assertThat(response.getContent().get(1).getId()).isEqualTo(users.get(1).getId());
-        assertThat(response.getContent().get(2).getId()).isEqualTo(users.get(0).getId());
+        assertThat(response.getContent())
+                .extracting(AppUserResponseDTO::getId)
+                .containsExactlyInAnyOrderElementsOf(
+                        users.stream().map(AppUserEntity::getId).collect(Collectors.toList())
+                );
+        assertThat(response.getTotalElements()).isEqualTo(users.size());
     }
 
     @Test

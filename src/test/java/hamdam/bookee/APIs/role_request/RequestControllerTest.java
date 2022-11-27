@@ -10,7 +10,6 @@ import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hamdam.bookee.APIs.role.Permissions.*;
 import static hamdam.bookee.APIs.role_request.State.*;
@@ -108,12 +108,15 @@ class RequestControllerTest {
         List<RoleRequestResponse> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
+        assertThat(response)
+                .extracting(RoleRequestResponse::getId)
+                .containsExactlyInAnyOrderElementsOf(
+                        requestEntities.stream().map(RequestEntity::getId).collect(Collectors.toList())
+                );
         assertThat(response.size()).isEqualTo(requestEntities.size());
-        // TODO: 11/20/22 what about checking response content?
     }
 
     @Test
-    @Disabled
     void getAllRoleRequests_shouldGetAllAcceptedRoleRequests() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
@@ -132,7 +135,7 @@ class RequestControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(get(API_ROLE_REQUEST)
-                .param("status", ACCEPTED.name())
+                .param("state", ACCEPTED.name())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenProvider.createToken(user.getUsername(), user.getRole(), true))
         );
 
@@ -140,8 +143,14 @@ class RequestControllerTest {
         List<RoleRequestResponse> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
-        // TODO: 11/20/22 the same todos as in the previous test
-        assertThat(response.size()).isEqualTo(requestEntities.size());
+        assertThat(response)
+                .extracting(RoleRequestResponse::getId)
+                .containsExactlyInAnyOrderElementsOf(
+                        requestEntities.stream()
+                                .filter(state -> (state.getState() == ACCEPTED))
+                                .map(RequestEntity::getId).collect(Collectors.toList())
+                );
+        assertThat(response.size()).isEqualTo(requestEntities.stream().filter(state -> (state.getState() == ACCEPTED)).count());
     }
 
     @Test

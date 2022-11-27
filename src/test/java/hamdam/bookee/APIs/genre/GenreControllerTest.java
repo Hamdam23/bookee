@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,10 +109,11 @@ class GenreControllerTest {
         perform.andExpect(status().isOk());
         PagedResponse<GenreResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
-        // TODO: 11/20/22 there is better way to do this, if i am not mistaken, you can use assertj to compare two lists
-        assertThat(response.getContent().get(0).getId()).isEqualTo(genreList.get(0).getId());
-        assertThat(response.getContent().get(1).getId()).isEqualTo(genreList.get(1).getId());
-        assertThat(response.getContent().get(2).getId()).isEqualTo(genreList.get(2).getId());
+        assertThat(response.getContent())
+                .extracting(GenreResponseDTO::getId)
+                .containsExactlyInAnyOrderElementsOf(
+                        genreList.stream().map(GenreEntity::getId).collect(Collectors.toList())
+                );
         assertThat(response.getTotalElements()).isEqualTo(genreList.size());
     }
 
