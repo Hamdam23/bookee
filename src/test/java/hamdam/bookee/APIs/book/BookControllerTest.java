@@ -92,7 +92,8 @@ class BookControllerTest {
         perform.andExpect(status().isOk());
         BookResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), BookResponseDTO.class);
         assertThat(response.getName()).isEqualTo(response.getName());
-        assertThat(response.getAuthors().get(0)).isEqualTo(user.getId());
+        assertThat(response.getAuthors()).contains(user.getId());
+        assertThat(bookRepository.existsById(response.getId())).isTrue();
     }
 
     @Test
@@ -203,5 +204,6 @@ class BookControllerTest {
 
         //then
         perform.andExpect(status().isOk());
+        assertThat(bookRepository.existsById(book.getId())).isFalse();
     }
 }
