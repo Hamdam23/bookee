@@ -2,6 +2,8 @@ package hamdam.bookee.APIs.role;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
@@ -13,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
@@ -204,7 +205,12 @@ class AppRoleRepositoryTest {
         assertThat(pagedRoles.getContent().get(0).getId()).isEqualTo(updated.getId());
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({
+            "USER,true",
+            "TEST, false",
+            "null, false"
+    })
     void existsByRoleName_returnTrueWhenRoleNameExists() {
         // given
         String roleName = "USER";
@@ -217,26 +223,26 @@ class AppRoleRepositoryTest {
         assertTrue(expected);
     }
 
-    @Test
-    void existsByRoleName_returnFalseWhenRoleNameDoesNotExists() {
-        // given
-        String roleName = "USER";
-        underTest.save(new AppRoleEntity(roleName));
-
-        //when
-        boolean expected = underTest.existsByRoleName("TEST");
-
-        //then
-        assertFalse(expected);
-    }
-
-    @Test
-    void existsByRoleName_returnFalseWhenRoleNameIsNull() {
-        //given
-        //when
-        boolean actual = underTest.existsByRoleName(null);
-
-        //then
-        assertThat(actual).isFalse();
-    }
+//    @Test
+//    void existsByRoleName_returnFalseWhenRoleNameDoesNotExists() {
+//        // given
+//        String roleName = "USER";
+//        underTest.save(new AppRoleEntity(roleName));
+//
+//        //when
+//        boolean expected = underTest.existsByRoleName("TEST");
+//
+//        //then
+//        assertFalse(expected);
+//    }
+//
+//    @Test
+//    void existsByRoleName_returnFalseWhenRoleNameIsNull() {
+//        //given
+//        //when
+//        boolean actual = underTest.existsByRoleName(null);
+//
+//        //then
+//        assertThat(actual).isFalse();
+//    }
 }

@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.user.helpers;
+package hamdam.bookee.APIs.image.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,9 +8,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class SetUserRoleDTO {
-    @JsonProperty("role_id")
-    private Long roleId;
+@AllArgsConstructor
+public class UserImageDTO {
+    @JsonProperty("image_id")
+    private Long imageId;
 }

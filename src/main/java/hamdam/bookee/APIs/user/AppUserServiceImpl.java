@@ -3,14 +3,13 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.image.UserImageDTO;
+import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
-import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -19,7 +18,6 @@ import hamdam.bookee.tools.exceptions.user.PasswordMismatchException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +25,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -132,7 +129,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserResponseDTO setRoleToUser(Long id, SetUserRoleDTO roleDTO) {
+    public AppUserResponseDTO setRoleToUser(Long id, SetRoleUserRequest roleDTO) {
         AppUserEntity user = getAppUserById(id);
         AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId()));
@@ -141,7 +138,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public ApiResponse deleteUser(Long id) {
+    public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User", "id", id);
         }
@@ -149,21 +146,14 @@ public class AppUserServiceImpl implements AppUserService {
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 
         if (requestingUser.getId().equals(id) || requestingUser.getRole().getPermissions().contains(MONITOR_USER)) {
-
             userRepository.deleteById(id);
-
-            return new ApiResponse(
-                    HttpStatus.NO_CONTENT,
-                    LocalDateTime.now(),
-                    "User with id: " + id + " successfully deleted!"
-            );
         } else {
             throw new LimitedPermissionException();
         }
     }
 
     @Override
-    public AppUserResponseDTO updatePassword(SetUserPasswordDTO passwordDTO, Long id) {
+    public AppUserResponseDTO updatePassword(UpdatePasswordRequest passwordDTO, Long id) {
         AppUserEntity user = getAppUserById(id);
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 

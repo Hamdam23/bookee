@@ -4,7 +4,6 @@ import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
 import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -134,10 +132,9 @@ class AppRoleServiceImplTest {
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         //when
-        ApiResponse actual = underTest.deleteRoleById(id);
+        underTest.deleteRoleById(id);
 
         //then
         verify(appRoleRepository).deleteById(id);
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }

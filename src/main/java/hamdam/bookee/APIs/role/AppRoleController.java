@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
+import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.API_ROLE;
 
 @RestController
@@ -32,6 +35,13 @@ public class AppRoleController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> deleteRoleById(@PathVariable Long id) {
-        return new ResponseEntity<>(appRoleService.deleteRoleById(id), HttpStatus.NO_CONTENT);
+        appRoleService.deleteRoleById(id);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        HttpStatus.OK,
+                        LocalDateTime.now(),
+                        getDeletionMessage("Role", id)
+                ), HttpStatus.OK
+        );
     }
 }

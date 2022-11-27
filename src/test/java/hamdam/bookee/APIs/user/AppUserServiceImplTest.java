@@ -3,15 +3,14 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.image.UserImageDTO;
+import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserPasswordDTO;
-import hamdam.bookee.APIs.user.helpers.SetUserRoleDTO;
-import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -26,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -508,7 +506,7 @@ class AppUserServiceImplTest {
     void setRoleToUser_throwsExceptionWhenRoleIdIsInvalid() {
         //given
         Long userId = 1L;
-        SetUserRoleDTO roleDTO = new SetUserRoleDTO(2L);
+        SetRoleUserRequest roleDTO = new SetRoleUserRequest(2L);
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(new AppUserEntity()));
         when(appRoleRepository.findById(roleDTO.getRoleId())).thenReturn(Optional.empty());
 
@@ -527,7 +525,7 @@ class AppUserServiceImplTest {
     void setRoleToUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
-        SetUserRoleDTO roleDTO = new SetUserRoleDTO(2L);
+        SetRoleUserRequest roleDTO = new SetRoleUserRequest(2L);
         AppRoleEntity role = new AppRoleEntity("test", Collections.emptySet());
         role.setId(2L);
         AppUserEntity user = new AppUserEntity("Nicola", "niko", "very_secret_password");
@@ -605,13 +603,12 @@ class AppUserServiceImplTest {
         when(appUserRepository.existsById(userId)).thenReturn(true);
 
         //when
-        ApiResponse actual = underTest.deleteUser(userId);
+        underTest.deleteUser(userId);
 
         //then
         verify(appUserRepository).findAppUserByUsername(user.getUsername());
         verify(appUserRepository).existsById(userId);
         verify(appUserRepository).deleteById(userId);
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test
@@ -619,7 +616,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
-        SetUserPasswordDTO request = new SetUserPasswordDTO(
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
                 "old_password", "new_password", "new_Password"
         );
 
@@ -646,7 +643,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenNewPasswordNotConfirmed() {
         //given
         Long userId = 1L;
-        SetUserPasswordDTO request = new SetUserPasswordDTO(
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
                 "old_password", "new_password", "new_Password"
         );
 
@@ -677,7 +674,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenOldAndNewPasswordAreEqual() {
         //given
         Long userId = 1L;
-        SetUserPasswordDTO request = new SetUserPasswordDTO(
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
                 "old_password", "old_password", "old_password"
         );
 
@@ -709,7 +706,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenOldPasswordIsWrong() {
         //given
         Long userId = 1L;
-        SetUserPasswordDTO request = new SetUserPasswordDTO(
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
                 "old_password", "new_password", "new_password"
         );
 
@@ -740,7 +737,7 @@ class AppUserServiceImplTest {
     void updatePassword_returnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
-        SetUserPasswordDTO request = new SetUserPasswordDTO(
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
                 "old_password", "new_password", "new_password"
         );
 

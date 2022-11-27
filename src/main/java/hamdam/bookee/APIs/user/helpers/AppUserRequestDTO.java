@@ -33,4 +33,9 @@ public class AppUserRequestDTO {
         this.roleId = roleId;
         this.imageId = imageId;
     }
+
+    public AppUserRequestDTO(String name, String username) {
+        this.name = name;
+        this.username = username;
+    }
 }

@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.APIs.book.helpers.BookDTO;
+import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.Getter;
@@ -53,7 +53,17 @@ public class BookEntity {
     )
     private List<GenreEntity> genres = new ArrayList<>();
 
-    public BookEntity(BookDTO bookDTO) {
-        BeanUtils.copyProperties(bookDTO, this, "id");
+    public BookEntity(BookRequestDTO bookRequestDTO) {
+        BeanUtils.copyProperties(bookRequestDTO, this, "id");
+    }
+
+    public BookEntity(String name, String tagline, String description,
+                      List<AppUserEntity> authors, Double rating, List<GenreEntity> genres) {
+        this.name = name;
+        this.tagline = tagline;
+        this.description = description;
+        this.authors = authors;
+        this.rating = rating;
+        this.genres = genres;
     }
 }

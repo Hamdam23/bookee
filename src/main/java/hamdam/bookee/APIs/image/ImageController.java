@@ -1,18 +1,18 @@
 package hamdam.bookee.APIs.image;
 
+import hamdam.bookee.APIs.image.helpers.ImageDTO;
 import hamdam.bookee.tools.annotations.ValidFile;
 import hamdam.bookee.tools.exceptions.ApiResponse;
-import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+
+import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 
 @RestController
@@ -27,23 +27,20 @@ public class ImageController {
         return imageService.uploadImage(file);
     }
 
-    @GetMapping(value = "/download/{name}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public Resource downloadImage(@PathVariable String name) {
-        return imageService.downloadImage(name);
-    }
-
     @GetMapping("{id}")
     public ImageDTO getImageByID(@PathVariable Long id) {
         return imageService.getImageByID(id);
     }
 
-    @GetMapping
-    public PagedResponse<ImageDTO> getAllImages(Pageable pageable) {
-        return new PagedResponse<>(imageService.getAllImages(pageable));
-    }
-
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long id) {
-        return new ResponseEntity<>(imageService.deleteImageById(id), HttpStatus.OK);
+        imageService.deleteImageById(id);
+        return new ResponseEntity<>(
+                new ApiResponse(
+                        HttpStatus.OK,
+                        LocalDateTime.now(),
+                        getDeletionMessage("Image", id)
+                ), HttpStatus.OK
+        );
     }
 }
