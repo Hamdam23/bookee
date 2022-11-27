@@ -56,6 +56,9 @@ class BookControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private BookMappers bookMappers;
+
+    @Autowired
     private TokenProvider tokenProvider;
 
     @AfterEach
@@ -105,11 +108,11 @@ class BookControllerTest {
 
         List<BookEntity> books = List.of(
                 bookRepository.save(
-                        new BookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre))),
+                        bookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre))),
                 bookRepository.save(
-                        new BookEntity("accountant", "a-tag", "a-desc", List.of(user), 9.0, List.of(genre))),
+                        bookMappers.mapToBookEntity("accountant", "a-tag", "a-desc", List.of(user), 9.0, List.of(genre))),
                 bookRepository.save(
-                        new BookEntity("harry potter", "hp-tag", "hp-desc", List.of(user), 8.0, List.of(genre)))
+                        bookMappers.mapToBookEntity("harry potter", "hp-tag", "hp-desc", List.of(user), 8.0, List.of(genre)))
         );
 
         //when
@@ -136,7 +139,7 @@ class BookControllerTest {
         AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(new GenreEntity("name", "desc"));
 
-        BookEntity book = bookRepository.save(new BookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
+        BookEntity book = bookRepository.save(bookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
 
         //when
         ResultActions perform = mockMvc.perform(get(API_BOOK + "/" + book.getId())
@@ -160,7 +163,7 @@ class BookControllerTest {
         AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(new GenreEntity("name", "desc"));
 
-        BookEntity book = bookRepository.save(new BookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
+        BookEntity book = bookRepository.save(bookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
 
         AppUserEntity author = userRepository.save(new AppUserEntity("jack", "black", "good-pass", role));
         BookRequestDTO request = new BookRequestDTO(
@@ -195,7 +198,7 @@ class BookControllerTest {
         AppRoleEntity role = roleRepository.save(new AppRoleEntity("role", Set.of(DELETE_BOOK)));
         AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(new GenreEntity("name", "desc"));
-        BookEntity book = bookRepository.save(new BookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
+        BookEntity book = bookRepository.save(bookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_BOOK + "/" + book.getId())

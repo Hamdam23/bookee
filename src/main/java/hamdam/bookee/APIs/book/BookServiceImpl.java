@@ -23,6 +23,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
     private final AppUserRepository userRepository;
+    private final BookMappers bookMappers;
 
     /**
      * It takes a bookDTO, creates a bookEntity from it,
@@ -34,7 +35,7 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public BookResponseDTO addBook(BookRequestDTO book) {
-        BookEntity bookEntity = new BookEntity(book);
+        BookEntity bookEntity = bookMappers.mapToBookEntity(book);
         List<AppUserEntity> authors = new ArrayList<>();
         // Getting the authors from the database and adding them to the bookEntity
         book.getAuthors().forEach(aLong -> {
@@ -47,7 +48,7 @@ public class BookServiceImpl implements BookService {
         List<GenreEntity> genres = getGenreEntities(book.getGenres());
         bookEntity.setGenres(genres);
 
-        return new BookResponseDTO(bookRepository.save(bookEntity));
+        return bookMappers.mapToBookResponse(bookRepository.save(bookEntity));
     }
 
     @Override
@@ -57,7 +58,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookResponseDTO getBookById(Long id) {
-        return new BookResponseDTO(bookRepository.findById(id).orElseThrow(()
+        return bookMappers.mapToBookResponse(bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id)));
     }
 
@@ -71,7 +72,7 @@ public class BookServiceImpl implements BookService {
         oldBook.setGenres(genres);
         bookRepository.save(oldBook);
 
-        return new BookResponseDTO(bookRequestDTO);
+        return bookMappers.mapToBookResponse(bookRequestDTO);
     }
 
     @Override

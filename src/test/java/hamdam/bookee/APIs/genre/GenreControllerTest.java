@@ -81,7 +81,7 @@ class GenreControllerTest {
         perform.andExpect(status().isOk());
         assertThat(response.getName()).isEqualTo(request.getName());
         assertThat(response.getDescription()).isEqualTo(request.getDescription());
-        // TODO: 11/18/22 i think this assertion is not enough, you should also check if genre is saved in database
+        assertThat(genreRepository.existsById(response.getId())).isTrue();
     }
 
     @Test

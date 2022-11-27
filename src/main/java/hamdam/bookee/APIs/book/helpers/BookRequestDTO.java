@@ -36,14 +36,4 @@ public class BookRequestDTO {
     @NotEmpty(message = "genres can not be empty!")
     private List<Long> genres = new ArrayList<>();
 
-    public BookRequestDTO(String name, List<Long> authors) {
-        this.name = name;
-        this.authors = authors;
-    }
-
-    public BookRequestDTO(String name, Double rating, List<Long> genres) {
-        this.name = name;
-        this.rating = rating;
-        this.genres = genres;
-    }
 }

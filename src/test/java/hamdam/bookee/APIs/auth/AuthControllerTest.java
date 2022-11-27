@@ -69,11 +69,11 @@ class AuthControllerTest {
         //then
         TokensResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), TokensResponse.class);
         perform.andExpect(status().isOk());
+        assertThat(userRepository.existsByUsername(username)).isTrue();
         assertThat(response.getAccessToken()).isNotBlank();
         assertThat(response.getAccessTokenExpiry()).isNotBlank();
         assertThat(response.getRefreshToken()).isNotBlank();
         assertThat(response.getRefreshTokenExpiry()).isNotBlank();
-        assertThat(userRepository.existsByUsername(username)).isTrue();
     }
 
     @Test

@@ -79,6 +79,7 @@ class RequestControllerTest {
         //then
         RoleRequestResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), RoleRequestResponse.class);
         perform.andExpect(status().isOk());
+        assertThat(roleRequestRepository.existsById(response.getId())).isTrue();
         assertThat(response.getState()).isEqualTo(IN_PROGRESS);
     }
 

@@ -1,12 +1,10 @@
 package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -53,17 +51,4 @@ public class BookEntity {
     )
     private List<GenreEntity> genres = new ArrayList<>();
 
-    public BookEntity(BookRequestDTO bookRequestDTO) {
-        BeanUtils.copyProperties(bookRequestDTO, this, "id");
-    }
-
-    public BookEntity(String name, String tagline, String description,
-                      List<AppUserEntity> authors, Double rating, List<GenreEntity> genres) {
-        this.name = name;
-        this.tagline = tagline;
-        this.description = description;
-        this.authors = authors;
-        this.rating = rating;
-        this.genres = genres;
-    }
 }

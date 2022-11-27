@@ -75,6 +75,7 @@ class AppRoleControllerTest {
         assertThat(response.getRoleName()).isEqualTo(request.getRoleName());
         assertThat(response.getPermissions()).isEqualTo(request.getPermissions());
         assertThat(roleRepository.existsByRoleName(request.getRoleName())).isTrue();
+        assertThat(roleRepository.existsById(response.getId())).isTrue();
     }
 
     @Test

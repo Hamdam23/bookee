@@ -36,8 +36,4 @@ public class BookResponseDTO {
         this.authors = entity.getAuthors().stream().map(AppUserEntity::getId).collect(Collectors.toList());
         this.genres = entity.getGenres().stream().map(GenreEntity::getId).collect(Collectors.toList());
     }
-
-    public BookResponseDTO(BookRequestDTO request) {
-        BeanUtils.copyProperties(request, this);
-    }
 }
