@@ -20,10 +20,13 @@ public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
     private final BookRepository bookRepository;
+    private final GenreMappers genreMappers;
 
     @Override
     public GenreResponseDTO addGenre(GenreRequestDTO dto) {
-        return new GenreResponseDTO(genreRepository.save(new GenreEntity(dto)));
+        return genreMappers.mapToGenreResponseDTO(
+                genreRepository.save(genreMappers.mapToGenreEntity(dto))
+        );
     }
 
     @Override
@@ -35,7 +38,7 @@ public class GenreServiceImpl implements GenreService {
     public GenreResponseDTO getGenreById(Long id) {
         GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Genre", "id", id));
-        return new GenreResponseDTO(genreEntity);
+        return genreMappers.mapToGenreResponseDTO(genreEntity);
     }
 
     @Override
@@ -52,7 +55,7 @@ public class GenreServiceImpl implements GenreService {
         });
         oldGenre.setBooks(books);
 
-        return new GenreResponseDTO(genreRepository.save(oldGenre));
+        return genreMappers.mapToGenreResponseDTO(genreRepository.save(oldGenre));
     }
 
     @Override

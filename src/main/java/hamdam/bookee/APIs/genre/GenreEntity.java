@@ -2,11 +2,9 @@ package hamdam.bookee.APIs.genre;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hamdam.bookee.APIs.book.BookEntity;
-import hamdam.bookee.APIs.genre.helpers.GenreRequestDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -35,10 +33,6 @@ public class GenreEntity {
     //TODO when genre deleted corresponding book's genre should be set to "null"
     @ManyToMany(mappedBy = "genres")
     private List<BookEntity> books = new ArrayList<>();
-
-    public GenreEntity(GenreRequestDTO genreRequestDTO) {
-        BeanUtils.copyProperties(genreRequestDTO, this);
-    }
 
     public GenreEntity(String name, String description) {
         this.name = name;

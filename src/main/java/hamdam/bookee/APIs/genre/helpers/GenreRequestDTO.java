@@ -22,8 +22,4 @@ public class GenreRequestDTO {
 
     private List<Long> books;
 
-    public GenreRequestDTO(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
 }

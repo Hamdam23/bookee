@@ -35,11 +35,14 @@ class GenreServiceImplTest {
     @Mock
     private GenreRepository genreRepository;
 
+    @Mock
+    private GenreMappers genreMappers;
+
     @Test
     void addGenre_shouldCreateRoleWhenRequestIsValid() {
         //given
-        GenreRequestDTO dto = new GenreRequestDTO("name", "description");
-        when(genreRepository.save(any())).thenReturn(new GenreEntity(dto));
+        GenreRequestDTO dto = genreMappers.mapToGenreRequestDTO("name", "description");
+        when(genreRepository.save(any())).thenReturn(genreMappers.mapToGenreEntity(dto));
 
         //when
         GenreResponseDTO actual = underTest.addGenre(dto);
@@ -97,7 +100,7 @@ class GenreServiceImplTest {
     void updateGenre_shouldThrowExceptionWhenIdIsInvalid() {
         //given
         Long id = 1L;
-        GenreRequestDTO genreResponseDTO = new GenreRequestDTO("adventure", "adventure description");
+        GenreRequestDTO genreResponseDTO = genreMappers.mapToGenreRequestDTO("adventure", "adventure description");
         when(genreRepository.findById(id)).thenReturn(Optional.empty());
 
         //when
@@ -137,8 +140,8 @@ class GenreServiceImplTest {
         GenreRequestDTO genreRequestDTO = new GenreRequestDTO("horror",
                 "horror description",
                 Arrays.asList(hobbit.getId(), naruto.getId()));
-        GenreEntity genreEntity = new GenreEntity("adventure",
-                "adventure description");
+        GenreEntity genreEntity = genreMappers.mapToGenreEntity("adventure", "adventure description");
+
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(genreEntity));
         when(bookRepository.findById(hobbit.getId())).thenReturn(Optional.of(hobbit));
         when(bookRepository.findById(naruto.getId())).thenReturn(Optional.of(naruto));
