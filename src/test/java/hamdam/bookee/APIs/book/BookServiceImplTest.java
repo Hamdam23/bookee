@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.book.helpers.BookMappers;
 import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
 import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
@@ -37,9 +38,6 @@ class BookServiceImplTest {
     @Mock
     private AppUserRepository userRepository;
 
-    @Mock
-    private BookMappers bookMappers;
-
     @InjectMocks
     private BookServiceImpl underTest;
 
@@ -62,7 +60,7 @@ class BookServiceImplTest {
     void addBook_shouldThrowExceptionWhenAuthorIdIsInvalid() {
         //given
         Long authorId = 1L;
-        BookRequestDTO request = bookMappers.mapToBookRequest("hobbit", List.of(authorId));
+        BookRequestDTO request = BookMappers.mapToBookRequest("hobbit", List.of(authorId));
         when(userRepository.findById(authorId)).thenReturn(Optional.empty());
 
         //when
@@ -92,7 +90,7 @@ class BookServiceImplTest {
                 10.0,
                 List.of(genre.getId())
         );
-        BookEntity book = bookMappers.mapToBookEntity(request);
+        BookEntity book = BookMappers.mapToBookEntity(request);
         book.setAuthors(authors);
         book.setGenres(genres);
         when(userRepository.findById(author.getId())).thenReturn(Optional.of(new AppUserEntity()));
@@ -173,7 +171,7 @@ class BookServiceImplTest {
         //given
         Long bookId = 1L;
         Long genreId = 2L;
-        BookRequestDTO request = bookMappers.mapToBookRequest("hobbit", 10.0, List.of(genreId));
+        BookRequestDTO request = BookMappers.mapToBookRequest("hobbit", 10.0, List.of(genreId));
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(new BookEntity()));
         when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
 
@@ -190,7 +188,7 @@ class BookServiceImplTest {
         //given
         Long bookId = 1L;
         Long genreId = 2L;
-        BookRequestDTO request = bookMappers.mapToBookRequest("hobbit", 10.0, List.of(genreId));
+        BookRequestDTO request = BookMappers.mapToBookRequest("hobbit", 10.0, List.of(genreId));
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(new BookEntity()));
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(new GenreEntity()));
 

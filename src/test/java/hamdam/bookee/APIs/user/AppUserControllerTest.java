@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
+import hamdam.bookee.APIs.image.helpers.ImageMappers;
 import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
@@ -71,8 +73,8 @@ class AppUserControllerTest {
     @Test
     void getAllUsers_shouldGetAllUsers() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_USER)));
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
 
         List<AppUserEntity> users = List.of(
                 new AppUserEntity("nikola", "niko", "pass", role),
@@ -101,10 +103,10 @@ class AppUserControllerTest {
 
     @Test
     void getUser_shouldGetUserById() throws Exception {
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_USER)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         List<AppUserEntity> users = List.of(
                 new AppUserEntity("phil", "philly", "pass", userRole),
                 new AppUserEntity("blood", "bloody", "pass", userRole),
@@ -125,10 +127,10 @@ class AppUserControllerTest {
 
     @Test
     void updateUser_shouldUpdateUser() throws Exception {
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_USER)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
 
         AppUserRequestDTO request = new AppUserRequestDTO("jon", "jonny");
@@ -147,7 +149,7 @@ class AppUserControllerTest {
 
     @Test
     void updatePassword_shouldUpdatePassword() throws Exception {
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         String oldPassword = "12345";
         AppUserEntity bill = userRepository.save(new AppUserEntity(
                 "bill",
@@ -173,10 +175,10 @@ class AppUserControllerTest {
 
     @Test
     void setRoleToUser_shouldSetRoleToUser() throws Exception {
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_USER)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
 
         SetRoleUserRequest request = new SetRoleUserRequest(role.getId());
@@ -197,10 +199,10 @@ class AppUserControllerTest {
     @Test
     void setImageToUser_shouldSetImageToUser() throws Exception {
         //given
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
 
-        ImageEntity image = imageRepository.save(new ImageEntity("godzilla", "very-secret-package"));
+        ImageEntity image = imageRepository.save(ImageMappers.mapToImageEntity("godzilla", "very-secret-package"));
         UserImageDTO request = new UserImageDTO(image.getId());
 
         //when
@@ -219,10 +221,10 @@ class AppUserControllerTest {
     @Test
     void deleteUser_shouldDeleteUser() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_USER)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_USER)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
 
         //when

@@ -2,6 +2,7 @@ package hamdam.bookee.APIs.genre;
 
 import hamdam.bookee.APIs.book.BookEntity;
 import hamdam.bookee.APIs.book.BookRepository;
+import hamdam.bookee.APIs.genre.helpers.GenreMappers;
 import hamdam.bookee.APIs.genre.helpers.GenreRequestDTO;
 import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
@@ -20,12 +21,11 @@ public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
     private final BookRepository bookRepository;
-    private final GenreMappers genreMappers;
 
     @Override
     public GenreResponseDTO addGenre(GenreRequestDTO dto) {
-        return genreMappers.mapToGenreResponseDTO(
-                genreRepository.save(genreMappers.mapToGenreEntity(dto))
+        return GenreMappers.mapToGenreResponseDTO(
+                genreRepository.save(GenreMappers.mapToGenreEntity(dto))
         );
     }
 
@@ -38,7 +38,7 @@ public class GenreServiceImpl implements GenreService {
     public GenreResponseDTO getGenreById(Long id) {
         GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Genre", "id", id));
-        return genreMappers.mapToGenreResponseDTO(genreEntity);
+        return GenreMappers.mapToGenreResponseDTO(genreEntity);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class GenreServiceImpl implements GenreService {
         });
         oldGenre.setBooks(books);
 
-        return genreMappers.mapToGenreResponseDTO(genreRepository.save(oldGenre));
+        return GenreMappers.mapToGenreResponseDTO(genreRepository.save(oldGenre));
     }
 
     @Override

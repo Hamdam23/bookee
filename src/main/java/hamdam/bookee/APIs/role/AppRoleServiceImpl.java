@@ -2,6 +2,7 @@ package hamdam.bookee.APIs.role;
 
 import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
 import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
@@ -35,7 +36,7 @@ public class AppRoleServiceImpl implements AppRoleService {
             throw new DuplicateResourceException("role name");
         }
 
-        return new AppRoleResponseDTO(roleRepository.save(new AppRoleEntity(appRole)));
+        return RoleMappers.mapToAppRoleResponseDTO(roleRepository.save(RoleMappers.mapToAppRoleEntity(appRole)));
     }
 
     @Override

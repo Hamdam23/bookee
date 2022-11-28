@@ -23,8 +23,4 @@ public class ImageEntity {
     @Column(nullable = false)
     private String location;
 
-    public ImageEntity(String imageName, String location) {
-        this.imageName = imageName;
-        this.location = location;
-    }
 }

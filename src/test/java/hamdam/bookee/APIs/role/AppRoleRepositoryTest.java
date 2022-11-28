@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.role;
 
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,7 +41,7 @@ class AppRoleRepositoryTest {
     @Test
     void findFirstByIsDefaultIsTrue_returnsEmptyDataIfSingleNonDefaultRoleExists() {
         //given
-        underTest.save(new AppRoleEntity(
+        underTest.save(RoleMappers.mapToAppRoleEntity(
                 "ADMIN",
                 false,
                 LocalDateTime.now()
@@ -56,7 +57,7 @@ class AppRoleRepositoryTest {
     @Test
     void findFirstByIsDefaultIsTrue_returnsValidDataIfSingleDefaultRoleExists() {
         //given
-        AppRoleEntity expected = underTest.save(new AppRoleEntity(
+        AppRoleEntity expected = underTest.save(RoleMappers.mapToAppRoleEntity(
                 "USER",
                 true,
                 LocalDateTime.now()
@@ -73,17 +74,17 @@ class AppRoleRepositoryTest {
     @Test
     void findFirstByIsDefaultIsTrue_returnsValidDataIfContainsMultipleNonDefaultRolesAndSingleDefaultRole() {
         //given
-        AppRoleEntity expected = underTest.save(new AppRoleEntity(
+        AppRoleEntity expected = underTest.save(RoleMappers.mapToAppRoleEntity(
                 "USER",
                 true,
                 LocalDateTime.now()
         ));
-        underTest.save(new AppRoleEntity(
+        underTest.save(RoleMappers.mapToAppRoleEntity(
                 "ADMIN",
                 false,
                 LocalDateTime.now()
         ));
-        underTest.save(new AppRoleEntity(
+        underTest.save(RoleMappers.mapToAppRoleEntity(
                 "AUTHOR",
                 false,
                 LocalDateTime.now()
@@ -100,22 +101,22 @@ class AppRoleRepositoryTest {
     @Test
     void findFirstByIsDefaultIsTrue_returnsValidDataWhenMultipleNonDefaultRolesAndMultipleDefaultRolesAvailable() {
         //given
-        AppRoleEntity expected = underTest.save(new AppRoleEntity(
+        AppRoleEntity expected = underTest.save(RoleMappers.mapToAppRoleEntity(
                 "USER1",
                 true,
                 LocalDateTime.now()
         ));
-        underTest.save(new AppRoleEntity(
+        underTest.save(RoleMappers.mapToAppRoleEntity(
                 "USER2",
                 true,
                 LocalDateTime.now()
         ));
-        underTest.save(new AppRoleEntity(
+        underTest.save(RoleMappers.mapToAppRoleEntity(
                 "ADMIN",
                 false,
                 LocalDateTime.now()
         ));
-        underTest.save(new AppRoleEntity(
+        underTest.save(RoleMappers.mapToAppRoleEntity(
                 "AUTHOR",
                 false,
                 LocalDateTime.now()
@@ -143,17 +144,17 @@ class AppRoleRepositoryTest {
     void findAllByOrderByTimeStampDesc_returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailable() {
         //given
         List<AppRoleEntity> actual = new ArrayList<>();
-        actual.add(underTest.save(new AppRoleEntity(
+        actual.add(underTest.save(RoleMappers.mapToAppRoleEntity(
                 "AUTHOR1",
                 false,
                 LocalDateTime.now()
         )));
-        actual.add(underTest.save(new AppRoleEntity(
+        actual.add(underTest.save(RoleMappers.mapToAppRoleEntity(
                 "AUTHOR2",
                 false,
                 LocalDateTime.now()
         )));
-        actual.add(underTest.save(new AppRoleEntity(
+        actual.add(underTest.save(RoleMappers.mapToAppRoleEntity(
                 "USER1",
                 true,
                 LocalDateTime.now()
@@ -174,17 +175,17 @@ class AppRoleRepositoryTest {
     void findAllByOrderByTimeStampDesc_returnOrderedRolesByTimeStampDescWhenMultipleRolesAvailableAndRoleUpdated() {
         //given
         List<AppRoleEntity> actual = new ArrayList<>();
-        actual.add(underTest.save(new AppRoleEntity(
+        actual.add(underTest.save(RoleMappers.mapToAppRoleEntity(
                 "AUTHOR1",
                 false,
                 LocalDateTime.now()
         )));
-        actual.add(underTest.save(new AppRoleEntity(
+        actual.add(underTest.save(RoleMappers.mapToAppRoleEntity(
                 "AUTHOR2",
                 false,
                 LocalDateTime.now()
         )));
-        actual.add(underTest.save(new AppRoleEntity(
+        actual.add(underTest.save(RoleMappers.mapToAppRoleEntity(
                 "USER1",
                 true,
                 LocalDateTime.now()
@@ -214,7 +215,7 @@ class AppRoleRepositoryTest {
     void existsByRoleName_returnTrueWhenRoleNameExists() {
         // given
         String roleName = "USER";
-        underTest.save(new AppRoleEntity(roleName));
+        underTest.save(RoleMappers.mapToAppRoleEntity(roleName));
 
         //when
         boolean expected = underTest.existsByRoleName(roleName);

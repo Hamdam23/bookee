@@ -2,11 +2,13 @@ package hamdam.bookee.APIs.genre;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hamdam.bookee.APIs.genre.helpers.GenreMappers;
 import hamdam.bookee.APIs.genre.helpers.GenreRequestDTO;
 import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.paging.PagedResponse;
@@ -55,9 +57,6 @@ class GenreControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private GenreMappers genreMappers;
-
     @AfterEach
     void setup() {
         genreRepository.deleteAll();
@@ -68,9 +67,9 @@ class GenreControllerTest {
     @Test
     void addGenre_shouldPostGenre() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(Permissions.CREATE_GENRE)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.CREATE_GENRE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-        GenreRequestDTO request = genreMappers.mapToGenreRequestDTO("action", "very good desc");
+        GenreRequestDTO request = GenreMappers.mapToGenreRequestDTO("action", "very good desc");
 
         //when
         ResultActions perform = mockMvc.perform(post(API_GENRE)
@@ -90,13 +89,13 @@ class GenreControllerTest {
     @Test
     void getAllGenres_shouldGetAllGenres() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(Permissions.GET_GENRE)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.GET_GENRE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
         List<GenreEntity> genreList = List.of(
-                genreMappers.mapToGenreEntity("dirk", "desc"),
-                genreMappers.mapToGenreEntity("niko", "good desc"),
-                genreMappers.mapToGenreEntity("dev1ce", "very good desc")
+                GenreMappers.mapToGenreEntity("dirk", "desc"),
+                GenreMappers.mapToGenreEntity("niko", "good desc"),
+                GenreMappers.mapToGenreEntity("dev1ce", "very good desc")
         );
         genreRepository.saveAll(genreList);
 
@@ -123,9 +122,9 @@ class GenreControllerTest {
     @Test
     void getGenreByID_shouldGetGenreById() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(Permissions.GET_GENRE)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.GET_GENRE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-        GenreEntity genre = genreRepository.save(genreMappers.mapToGenreEntity("dirk", "desc"));
+        GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("dirk", "desc"));
 
         //when
         String content = Objects.requireNonNull(objectMapper.writeValueAsString(genre));
@@ -145,9 +144,9 @@ class GenreControllerTest {
     @Test
     void updateGenre_shouldUpdateGenre() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(Permissions.UPDATE_GENRE)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.UPDATE_GENRE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-        GenreEntity existingGenre = genreRepository.save(genreMappers.mapToGenreEntity("blood-seeker", "desc"));
+        GenreEntity existingGenre = genreRepository.save(GenreMappers.mapToGenreEntity("blood-seeker", "desc"));
 
         GenreRequestDTO genreRequest = new GenreRequestDTO(
                 "dirk",
@@ -174,9 +173,9 @@ class GenreControllerTest {
     @Test
     void deleteGenre_shouldDeleteGenre() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(Permissions.DELETE_GENRE)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.DELETE_GENRE)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-        GenreEntity existingGenre = genreRepository.save(genreMappers.mapToGenreEntity("dirk", "desc"));
+        GenreEntity existingGenre = genreRepository.save(GenreMappers.mapToGenreEntity("dirk", "desc"));
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_GENRE + "/" + existingGenre.getId())

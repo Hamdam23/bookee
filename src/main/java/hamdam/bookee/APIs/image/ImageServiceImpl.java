@@ -3,18 +3,14 @@ package hamdam.bookee.APIs.image;
 import hamdam.bookee.APIs.image.aws_s3.S3Repository;
 import hamdam.bookee.APIs.image.helpers.FileUtils;
 import hamdam.bookee.APIs.image.helpers.ImageDTO;
-import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.APIs.image.helpers.ImageMappers;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +27,12 @@ public class ImageServiceImpl implements ImageService {
         String fileName = FileUtils.getUniqueFileName(file);
         String location = s3Repository.writeFileToS3(file, bucketName, fileName);
 
-        return imageRepository.save(new ImageEntity(fileName, location));
+        return imageRepository.save(ImageMappers.mapToImageEntity(fileName, location));
     }
 
     @Override
     public ImageDTO getImageByID(Long id) {
-        return new ImageDTO(imageRepository.findById(id)
+        return ImageMappers.mapToImageDTO(imageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id)));
     }
 

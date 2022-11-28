@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.book.helpers.BookMappers;
 import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
 import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
@@ -23,7 +24,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
     private final AppUserRepository userRepository;
-    private final BookMappers bookMappers;
 
     /**
      * It takes a bookDTO, creates a bookEntity from it,
@@ -35,7 +35,7 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public BookResponseDTO addBook(BookRequestDTO book) {
-        BookEntity bookEntity = bookMappers.mapToBookEntity(book);
+        BookEntity bookEntity = BookMappers.mapToBookEntity(book);
         List<AppUserEntity> authors = new ArrayList<>();
         // Getting the authors from the database and adding them to the bookEntity
         book.getAuthors().forEach(aLong -> {
@@ -48,7 +48,7 @@ public class BookServiceImpl implements BookService {
         List<GenreEntity> genres = getGenreEntities(book.getGenres());
         bookEntity.setGenres(genres);
 
-        return bookMappers.mapToBookResponse(bookRepository.save(bookEntity));
+        return BookMappers.mapToBookResponse(bookRepository.save(bookEntity));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookResponseDTO getBookById(Long id) {
-        return bookMappers.mapToBookResponse(bookRepository.findById(id).orElseThrow(()
+        return BookMappers.mapToBookResponse(bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id)));
     }
 
@@ -72,7 +72,7 @@ public class BookServiceImpl implements BookService {
         oldBook.setGenres(genres);
         bookRepository.save(oldBook);
 
-        return bookMappers.mapToBookResponse(bookRequestDTO);
+        return BookMappers.mapToBookResponse(bookRequestDTO);
     }
 
     @Override

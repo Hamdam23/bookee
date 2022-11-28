@@ -2,13 +2,11 @@ package hamdam.bookee.APIs.role;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
 import hamdam.bookee.APIs.role_request.RequestEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.repository.EntityGraph;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -49,24 +47,4 @@ public class AppRoleEntity {
     @OneToMany(mappedBy = "requestedRole")
     private List<RequestEntity> roleRequests;
 
-    public AppRoleEntity(AppRoleRequestDTO dto) {
-        this.roleName = dto.getRoleName();
-        this.permissions = dto.getPermissions();
-        this.isDefault = dto.isDefault();
-    }
-
-    public AppRoleEntity(String roleName, boolean isDefault, LocalDateTime timeStamp) {
-        this.roleName = roleName;
-        this.isDefault = isDefault;
-        this.timeStamp = timeStamp;
-    }
-
-    public AppRoleEntity(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public AppRoleEntity(String roleName, Set<Permissions> permissions) {
-        this.roleName = roleName;
-        this.permissions = permissions;
-    }
 }

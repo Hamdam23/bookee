@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
@@ -63,10 +64,10 @@ class RequestControllerTest {
     @Test
     void sendRoleRequest_shouldSendRoleRequest() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(CREATE_ROLE_REQUEST)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(CREATE_ROLE_REQUEST)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity existingRole = roleRepository.save(new AppRoleEntity("powerful", Set.of(MONITOR_ROLE)));
+        AppRoleEntity existingRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("powerful", Set.of(MONITOR_ROLE)));
         RoleRequestDTO request = new RoleRequestDTO(existingRole.getId());
 
         //when
@@ -86,10 +87,10 @@ class RequestControllerTest {
     @Test
     void getAllRoleRequests_shouldGetAllRoleRequests() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
         AppUserEntity phil = userRepository.save(new AppUserEntity("phil", "philly", "pass", userRole));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
         AppUserEntity sam = userRepository.save(new AppUserEntity("sam", "sammy", "pass", userRole));
@@ -120,10 +121,10 @@ class RequestControllerTest {
     @Test
     void getAllRoleRequests_shouldGetAllAcceptedRoleRequests() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
         AppUserEntity phil = userRepository.save(new AppUserEntity("phil", "philly", "pass", userRole));
         AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
         AppUserEntity sam = userRepository.save(new AppUserEntity("sam", "sammy", "pass", userRole));
@@ -157,10 +158,10 @@ class RequestControllerTest {
     @Test
     void reviewRequest_shouldReviewRoleRequest() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
         AppUserEntity phil = userRepository.save(new AppUserEntity("phil", "philly", "pass", userRole));
         RequestEntity existingRequest = roleRequestRepository.save(new RequestEntity(phil, role, IN_PROGRESS));
 
@@ -183,10 +184,10 @@ class RequestControllerTest {
     @Test
     void reviewRequest_shouldDeleteRoleRequest() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
         AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
 
-        AppRoleEntity userRole = roleRepository.save(new AppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
+        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
         AppUserEntity phil = userRepository.save(new AppUserEntity("phil", "philly", "pass", userRole));
         RequestEntity existingRequest = roleRequestRepository.save(new RequestEntity(phil, role, IN_PROGRESS));
 

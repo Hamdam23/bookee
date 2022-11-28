@@ -2,14 +2,13 @@ package hamdam.bookee.APIs.image;
 
 import hamdam.bookee.APIs.image.aws_s3.S3Repository;
 import hamdam.bookee.APIs.image.helpers.ImageDTO;
-import hamdam.bookee.tools.exceptions.ApiResponse;
+import hamdam.bookee.APIs.image.helpers.ImageMappers;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +19,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +43,7 @@ class ImageServiceImplTest {
         MultipartFile file = new MockMultipartFile("godzilla", "godzilla.png", "image/png", "godzilla".getBytes());
         String url = BUCKET_NAME + file.getOriginalFilename();
         when(s3Repository.writeFileToS3(any(), any(), any())).thenReturn(url);
-        when(imageRepository.save(any())).thenReturn(new ImageEntity(file.getOriginalFilename(), url));
+        when(imageRepository.save(any())).thenReturn(ImageMappers.mapToImageEntity(file.getOriginalFilename(), url));
 
         //when
         ImageEntity actual = underTest.uploadImage(file);
@@ -71,7 +69,7 @@ class ImageServiceImplTest {
         Long id = 1L;
         String name = "godzilla";
         String location = "movies/Narnia";
-        ImageEntity image = new ImageEntity(name, location);
+        ImageEntity image = ImageMappers.mapToImageEntity(name, location);
         image.setId(id);
         when(imageRepository.findById(id)).thenReturn(Optional.of(image));
 
@@ -101,7 +99,7 @@ class ImageServiceImplTest {
     void deleteImageById_returnValidResponseWhenIdIsValid() {
         //given
         Long id = 1L;
-        ImageEntity image = new ImageEntity("name", "location");
+        ImageEntity image = ImageMappers.mapToImageEntity("name", "location");
         when(imageRepository.findById(id)).thenReturn(Optional.of(image));
 
         //when
