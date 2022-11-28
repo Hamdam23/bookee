@@ -2,10 +2,9 @@ package hamdam.bookee.APIs.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.role.AppRoleEntity;
-import hamdam.bookee.APIs.role_request.RequestEntity;
+import hamdam.bookee.APIs.role_request.RoleRequestEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,45 +44,9 @@ public class AppUserEntity {
     private ImageEntity userImage;
 
     @OneToMany(mappedBy = "user")
-    private List<RequestEntity> roleRequests;
+    private List<RoleRequestEntity> roleRequests;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @UpdateTimestamp
     private LocalDateTime timeStamp;
-
-    public AppUserEntity(RegistrationRequest dto) {
-        this.setName(dto.getName());
-        this.setUsername(dto.getUsername());
-    }
-
-    public AppUserEntity(String username, AppRoleEntity role) {
-        this.username = username;
-        this.role = role;
-    }
-
-    public AppUserEntity(String name, String username, String password) {
-        this.name = name;
-        this.username = username;
-        this.password = password;
-    }
-
-    public AppUserEntity(String name, String username, String password, LocalDateTime timeStamp) {
-        this.name = name;
-        this.username = username;
-        this.password = password;
-        this.timeStamp = timeStamp;
-    }
-
-    public AppUserEntity(String name, String username, AppRoleEntity role) {
-        this.name = name;
-        this.username = username;
-        this.role = role;
-    }
-
-    public AppUserEntity(String name, String username, String password, AppRoleEntity role) {
-        this.name = name;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
 }

@@ -13,6 +13,7 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -73,7 +74,7 @@ class BookControllerTest {
     void addBook_shouldAddBook() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(CREATE_BOOK)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
         BookRequestDTO request = new BookRequestDTO(
                 "name",
@@ -103,7 +104,7 @@ class BookControllerTest {
     void getAllBooks_shouldGetAllBooks() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(GET_BOOK)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
 
         List<BookEntity> books = List.of(
@@ -136,7 +137,7 @@ class BookControllerTest {
     void getBookById_shouldBookById() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(GET_BOOK)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
 
         BookEntity book = bookRepository.save(BookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
@@ -160,12 +161,12 @@ class BookControllerTest {
     void updateBook_shouldUpdateBook() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(UPDATE_BOOK)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
 
         BookEntity book = bookRepository.save(BookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
 
-        AppUserEntity author = userRepository.save(new AppUserEntity("jack", "black", "good-pass", role));
+        AppUserEntity author = userRepository.save(UserMappers.mapToAppUserEntity("jack", "black", "good-pass", role));
         BookRequestDTO request = new BookRequestDTO(
                 "name",
                 "tagline",
@@ -196,7 +197,7 @@ class BookControllerTest {
     void deleteBook_shouldDeleteBook() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(DELETE_BOOK)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("name", "username", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
         BookEntity book = bookRepository.save(BookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
 

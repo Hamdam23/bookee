@@ -20,8 +20,8 @@ public class AppUserResponseDTO {
     public AppUserResponseDTO(AppUserEntity entity) {
         BeanUtils.copyProperties(entity, this);
         if (entity.getRole() != null)
-            this.role = new AppUserRoleDTO(entity.getRole());
+            this.role = UserMappers.mapToAppUserRoleDTO(entity.getRole());
         if (entity.getUserImage() != null)
-            this.image = new SetUserImageDTO(entity.getUserImage());
+            this.image = UserMappers.mapToSetUserImageDTO(entity.getUserImage());
     }
 }

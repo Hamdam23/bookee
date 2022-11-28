@@ -8,6 +8,7 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
+import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
@@ -31,16 +32,16 @@ import static hamdam.bookee.tools.utils.SecurityUtils.getUserByRequest;
 
 @Service
 @RequiredArgsConstructor
-public class RequestServiceImpl implements RequestService {
+public class RoleRequestServiceImpl implements RoleRequestService {
 
-    private final RequestRepository requestRepository;
+    private final RoleRequestRepository roleRequestRepository;
     private final AppRoleRepository roleRepository;
     private final AppUserRepository userRepository;
 
     @Override
     public RoleRequestResponse postRoleRequest(RoleRequestDTO roleRequestDTO) {
         AppUserEntity requestingUser = getUserByRequest(userRepository);
-        if (requestRepository.existsByUserAndState(requestingUser, IN_PROGRESS)) {
+        if (roleRequestRepository.existsByUserAndState(requestingUser, IN_PROGRESS)) {
             throw new AlreadyHasInProgressRequestException();
         }
         AppRoleEntity role = roleRepository.findById(roleRequestDTO.getRoleId()).orElseThrow(
@@ -52,25 +53,25 @@ public class RequestServiceImpl implements RequestService {
         } else if (role.getPermissions().contains(MONITOR_ROLE_REQUEST)) {
             throw new NotAllowedRoleOnRequestException();
         }
-        RequestEntity requestEntity =
-                requestRepository.save(new RequestEntity(requestingUser, role, State.IN_PROGRESS));
+        RoleRequestEntity roleRequestEntity =
+                roleRequestRepository.save(RoleRequestMappers.mapToRoleRequestEntity(requestingUser, role, State.IN_PROGRESS));
 
-        return new RoleRequestResponse(requestEntity, role.getRoleName());
+        return new RoleRequestResponse(roleRequestEntity, role.getRoleName());
     }
 
     @Override
     public List<RoleRequestResponse> getAllRoleRequests(State state) {
-        List<RequestEntity> responseList;
+        List<RoleRequestEntity> responseList;
         if (state == null) {
-            responseList = requestRepository.findAll();
+            responseList = roleRequestRepository.findAll();
         } else {
-            responseList = requestRepository.findAllByState(state);
+            responseList = roleRequestRepository.findAllByState(state);
         }
 
         AppUserEntity requestingUser = getUserByRequest(userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
-            responseList = requestRepository.findAllByUser(requestingUser);
+            responseList = roleRequestRepository.findAllByUser(requestingUser);
         }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
         responseList.forEach(response -> {
@@ -89,7 +90,7 @@ public class RequestServiceImpl implements RequestService {
      */
     @Override
     public RoleRequestResponse reviewRequest(Long id, ReviewRequestDTO review) {
-        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow(()
+        RoleRequestEntity roleRequestEntity = roleRequestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );
         AppUserEntity requestingUser = getUserByRequest(userRepository);
@@ -104,44 +105,44 @@ public class RequestServiceImpl implements RequestService {
         }
 
         if (review.getDescription() != null) {
-            requestEntity.setDescription(review.getDescription());
+            roleRequestEntity.setDescription(review.getDescription());
         }
 
-        AppUserEntity user = requestEntity.getUser();
+        AppUserEntity user = roleRequestEntity.getUser();
         if (review.getState().equals(ACCEPTED)) {
-            user.setRole(requestEntity.getRequestedRole());
+            user.setRole(roleRequestEntity.getRequestedRole());
             userRepository.save(user);
         }
 
-        requestEntity.setState(review.getState());
-        requestRepository.save(requestEntity);
+        roleRequestEntity.setState(review.getState());
+        roleRequestRepository.save(roleRequestEntity);
 
-        return new RoleRequestResponse(requestEntity, requestEntity.getRequestedRole().getRoleName());
+        return new RoleRequestResponse(roleRequestEntity, roleRequestEntity.getRequestedRole().getRoleName());
     }
 
     @Override
     public void deleteRequest(Long id) {
-        RequestEntity requestEntity = requestRepository.findById(id)
+        RoleRequestEntity roleRequestEntity = roleRequestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role request", "id", id)
                 );
 
         AppUserEntity requestingUser = getUserByRequest(userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
         if (permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
-            requestRepository.deleteById(id);
+            roleRequestRepository.deleteById(id);
         } else {
-            if (roleRequestBelongsUser(requestingUser, requestEntity)) {
-                requestRepository.deleteById(id);
+            if (roleRequestBelongsUser(requestingUser, roleRequestEntity)) {
+                roleRequestRepository.deleteById(id);
             } else {
                 throw new NotAccessibleRequestException();
             }
         }
 
-        requestRepository.save(requestEntity);
+        roleRequestRepository.save(roleRequestEntity);
     }
 
-    boolean roleRequestBelongsUser(AppUserEntity user, RequestEntity requestEntity) {
-        return Objects.equals(requestEntity.getUser().getId(), user.getId());
+    boolean roleRequestBelongsUser(AppUserEntity user, RoleRequestEntity roleRequestEntity) {
+        return Objects.equals(roleRequestEntity.getUser().getId(), user.getId());
     }
 
     /**

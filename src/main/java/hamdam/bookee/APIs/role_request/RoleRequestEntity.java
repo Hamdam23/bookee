@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RequestEntity {
+public class RoleRequestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,15 +39,4 @@ public class RequestEntity {
 
     @Size(max = 200, message = "Description size is too long!")
     private String description;
-
-    public RequestEntity(AppUserEntity user, AppRoleEntity requestedRole, State state) {
-        this.user = user;
-        this.requestedRole = requestedRole;
-        this.state = state;
-    }
-
-    public RequestEntity(AppUserEntity user, AppRoleEntity requestedRole) {
-        this.user = user;
-        this.requestedRole = requestedRole;
-    }
 }

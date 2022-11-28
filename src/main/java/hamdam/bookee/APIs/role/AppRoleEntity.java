@@ -2,7 +2,7 @@ package hamdam.bookee.APIs.role;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hamdam.bookee.APIs.role_request.RequestEntity;
+import hamdam.bookee.APIs.role_request.RoleRequestEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,6 +45,6 @@ public class AppRoleEntity {
     private Set<Permissions> permissions = Collections.emptySet();
 
     @OneToMany(mappedBy = "requestedRole")
-    private List<RequestEntity> roleRequests;
+    private List<RoleRequestEntity> roleRequests;
 
 }

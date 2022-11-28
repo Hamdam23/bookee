@@ -6,6 +6,7 @@ import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -81,7 +82,7 @@ class AuthControllerTest {
     void refreshToken_shouldRefreshToken() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         //when
         ResultActions perform = mockMvc.perform(get(API_TOKEN_REFRESH)

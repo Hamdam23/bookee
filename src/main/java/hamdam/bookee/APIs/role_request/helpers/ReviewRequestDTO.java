@@ -17,8 +17,4 @@ public class ReviewRequestDTO {
     @NotNull
     private State state;
     private String description;
-
-    public ReviewRequestDTO(State state) {
-        this.state = state;
-    }
 }

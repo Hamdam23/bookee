@@ -9,10 +9,7 @@ import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.helpers.RoleMappers;
-import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
-import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.*;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -77,10 +74,10 @@ class AppUserControllerTest {
         AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
 
         List<AppUserEntity> users = List.of(
-                new AppUserEntity("nikola", "niko", "pass", role),
-                new AppUserEntity("phil", "philly", "pass", userRole),
-                new AppUserEntity("blood", "bloody", "pass", userRole),
-                new AppUserEntity("shaker", "shaky", "pass", userRole)
+                UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role),
+                UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole),
+                UserMappers.mapToAppUserEntity("blood", "bloody", "pass", userRole),
+                UserMappers.mapToAppUserEntity("shaker", "shaky", "pass", userRole)
         );
         userRepository.saveAll(users);
 
@@ -104,13 +101,13 @@ class AppUserControllerTest {
     @Test
     void getUser_shouldGetUserById() throws Exception {
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         List<AppUserEntity> users = List.of(
-                new AppUserEntity("phil", "philly", "pass", userRole),
-                new AppUserEntity("blood", "bloody", "pass", userRole),
-                new AppUserEntity("shaker", "shaky", "pass", userRole)
+                UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole),
+                UserMappers.mapToAppUserEntity("blood", "bloody", "pass", userRole),
+                UserMappers.mapToAppUserEntity("shaker", "shaky", "pass", userRole)
         );
         userRepository.saveAll(users);
 
@@ -128,12 +125,12 @@ class AppUserControllerTest {
     @Test
     void updateUser_shouldUpdateUser() throws Exception {
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
-        AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
 
-        AppUserRequestDTO request = new AppUserRequestDTO("jon", "jonny");
+        AppUserRequestDTO request = UserMappers.mapToAppUserRequestDTO("jon", "jonny");
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + "/" + bill.getId())
@@ -151,7 +148,7 @@ class AppUserControllerTest {
     void updatePassword_shouldUpdatePassword() throws Exception {
         AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
         String oldPassword = "12345";
-        AppUserEntity bill = userRepository.save(new AppUserEntity(
+        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity(
                 "bill",
                 "billy",
                 passwordEncoder.encode(oldPassword),
@@ -176,10 +173,10 @@ class AppUserControllerTest {
     @Test
     void setRoleToUser_shouldSetRoleToUser() throws Exception {
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
-        AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
 
         SetRoleUserRequest request = new SetRoleUserRequest(role.getId());
 
@@ -200,7 +197,7 @@ class AppUserControllerTest {
     void setImageToUser_shouldSetImageToUser() throws Exception {
         //given
         AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
-        AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
 
         ImageEntity image = imageRepository.save(ImageMappers.mapToImageEntity("godzilla", "very-secret-package"));
         UserImageDTO request = new UserImageDTO(image.getId());
@@ -222,10 +219,10 @@ class AppUserControllerTest {
     void deleteUser_shouldDeleteUser() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_USER)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_USER)));
-        AppUserEntity bill = userRepository.save(new AppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_USER + "/" + bill.getId())

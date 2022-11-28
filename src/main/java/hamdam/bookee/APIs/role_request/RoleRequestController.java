@@ -18,29 +18,29 @@ import static hamdam.bookee.tools.constants.Endpoints.API_ROLE_REQUEST;
 @RestController
 @RequestMapping(API_ROLE_REQUEST)
 @RequiredArgsConstructor
-public class RequestController {
+public class RoleRequestController {
 
-    private final RequestService requestService;
+    private final RoleRequestService roleRequestService;
 
     @PostMapping
     public RoleRequestResponse sendRoleRequest(@Valid @RequestBody RoleRequestDTO roleRequestDTO) {
-        return requestService.postRoleRequest(roleRequestDTO);
+        return roleRequestService.postRoleRequest(roleRequestDTO);
     }
 
     @GetMapping
     public List<RoleRequestResponse> getAllRoleRequests(@RequestParam(required = false) State state) {
-        return requestService.getAllRoleRequests(state);
+        return roleRequestService.getAllRoleRequests(state);
     }
 
     @PutMapping("{id}")
     public RoleRequestResponse reviewRequest(@PathVariable Long id,
                                              @Valid @RequestBody ReviewRequestDTO review) {
-        return requestService.reviewRequest(id, review);
+        return roleRequestService.reviewRequest(id, review);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> deleteRequest(@PathVariable Long id) {
-        requestService.deleteRequest(id);
+        roleRequestService.deleteRequest(id);
         return new ResponseEntity<>(
                 new ApiResponse(
                         HttpStatus.OK,

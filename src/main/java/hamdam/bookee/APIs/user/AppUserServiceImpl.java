@@ -6,10 +6,7 @@ import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
-import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
+import hamdam.bookee.APIs.user.helpers.*;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -60,7 +57,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new DuplicateResourceException("User", "username", request.getUsername());
         }
 
-        AppUserEntity appUserEntity = new AppUserEntity(request);
+        AppUserEntity appUserEntity = UserMappers.mapToAppUserEntity(request);
 
         if (request.getImageId() != null) {
             appUserEntity.setUserImage(imageRepository.findById(request.getImageId())
@@ -80,7 +77,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUserResponseDTO getUserById(Long id) {
-        return new AppUserResponseDTO(userRepository.findById(id)
+        return UserMappers.mapToAppUserResponseDTO(userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id))
         );
     }
@@ -105,7 +102,7 @@ public class AppUserServiceImpl implements AppUserService {
             existingUser.setUsername(request.getUsername());
             existingUser.setName(request.getName());
 
-            return new AppUserResponseDTO(userRepository.save(existingUser));
+            return UserMappers.mapToAppUserResponseDTO(userRepository.save(existingUser));
         } else {
             throw new LimitedPermissionException();
         }
@@ -122,7 +119,7 @@ public class AppUserServiceImpl implements AppUserService {
             );
             AppUserEntity user = getAppUserById(id);
             user.setUserImage(imageEntity);
-            return new AppUserResponseDTO(userRepository.save(user));
+            return UserMappers.mapToAppUserResponseDTO(userRepository.save(user));
         } else {
             throw new LimitedPermissionException();
         }
@@ -134,7 +131,7 @@ public class AppUserServiceImpl implements AppUserService {
         AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId()));
         user.setRole(appRoleEntity);
-        return new AppUserResponseDTO(userRepository.save(user));
+        return UserMappers.mapToAppUserResponseDTO(userRepository.save(user));
     }
 
     @Override
@@ -174,7 +171,7 @@ public class AppUserServiceImpl implements AppUserService {
 
             user.setPassword(passwordEncoder.encode(newPassword));
 
-            return new AppUserResponseDTO(userRepository.save(user));
+            return UserMappers.mapToAppUserResponseDTO(userRepository.save(user));
         } else {
             throw new LimitedPermissionException();
         }

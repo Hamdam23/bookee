@@ -17,7 +17,7 @@ public class RoleRequestResponse {
     private State state;
     private String description;
 
-    public RoleRequestResponse(RequestEntity entity, String requestedRole) {
+    public RoleRequestResponse(RoleRequestEntity entity, String requestedRole) {
         this.user = new UserOnRoleRequestDTO(
                 entity.getUser().getName(),
                 entity.getUser().getUsername(),

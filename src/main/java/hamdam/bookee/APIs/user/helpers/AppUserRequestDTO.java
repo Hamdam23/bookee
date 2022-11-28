@@ -26,16 +26,4 @@ public class AppUserRequestDTO {
     @JsonProperty("image")
     @NotNull()
     private Long imageId;
-
-    public AppUserRequestDTO(String name, String username, Long roleId, Long imageId) {
-        this.name = name;
-        this.username = username;
-        this.roleId = roleId;
-        this.imageId = imageId;
-    }
-
-    public AppUserRequestDTO(String name, String username) {
-        this.name = name;
-        this.username = username;
-    }
 }
