@@ -22,12 +22,19 @@ public class ImageServiceImpl implements ImageService {
     @Value("${aws.s3.bucket}")
     private String bucketName;
 
+    /**
+     * It takes a file, generates a unique file name, writes the file to S3,
+     * and saves the file name and location to the database
+     *
+     * @param file The file that is being uploaded.
+     * @return The image entity is being returned.
+     */
     @Override
     public ImageEntity uploadImage(MultipartFile file) throws IOException {
         String fileName = FileUtils.getUniqueFileName(file);
-        String location = s3Repository.writeFileToS3(file, bucketName, fileName);
+        String url = s3Repository.writeFileToS3(file, bucketName, fileName);
 
-        return imageRepository.save(ImageMappers.mapToImageEntity(fileName, location));
+        return imageRepository.save(ImageMappers.mapToImageEntity(fileName, url));
     }
 
     @Override

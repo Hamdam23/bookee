@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+/**
+ * It's a JPA entity that represents an Image
+ */
 @Entity
 @Table(name = "images")
 @Getter
@@ -21,6 +24,5 @@ public class ImageEntity {
     private String imageName;
 
     @Column(nullable = false)
-    private String location;
-
+    private String url;
 }

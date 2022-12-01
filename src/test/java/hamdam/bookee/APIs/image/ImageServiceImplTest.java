@@ -49,7 +49,7 @@ class ImageServiceImplTest {
         ImageEntity actual = underTest.uploadImage(file);
 
         //then
-        assertThat(actual.getLocation()).contains("godzilla");
+        assertThat(actual.getUrl()).contains("godzilla");
     }
 
     @Test
