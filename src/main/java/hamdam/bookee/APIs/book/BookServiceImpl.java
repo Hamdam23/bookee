@@ -51,17 +51,36 @@ public class BookServiceImpl implements BookService {
         return BookMappers.mapToBookResponse(bookRepository.save(bookEntity));
     }
 
+    /**
+     * It returns a page of BookResponseDTO objects.
+     *
+     * @param pageable This is the pageable object that contains the page number, page size, and sort order.
+     * @return A Page of BookResponseDTOs
+     */
     @Override
     public Page<BookResponseDTO> getAllBooks(Pageable pageable) {
         return bookRepository.findAll(pageable).map(BookResponseDTO::new);
     }
 
+    /**
+     * It returns a book by id.
+     *
+     * @param id The id of the book to be retrieved.
+     * @return BookResponseDTO
+     */
     @Override
     public BookResponseDTO getBookById(Long id) {
         return BookMappers.mapToBookResponse(bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id)));
     }
 
+    /**
+     * We are updating the book with the id passed in the request body
+     *
+     * @param bookRequestDTO The request body that contains the new book details.
+     * @param id The id of the book to be updated.
+     * @return BookResponseDTO
+     */
     @Override
     public BookResponseDTO updateBook(BookRequestDTO bookRequestDTO, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
@@ -75,6 +94,12 @@ public class BookServiceImpl implements BookService {
         return BookMappers.mapToBookResponse(bookRequestDTO);
     }
 
+    /**
+     * If the book with the given id doesn't exist, throw a ResourceNotFoundException. Otherwise, delete the book with the
+     * given id
+     *
+     * @param id The id of the book to delete.
+     */
     @Override
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
@@ -83,6 +108,12 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
+    /**
+     * It takes a list of genre ids, finds the corresponding genre entities, and returns them
+     *
+     * @param genreIds The list of genre ids that we want to get the genre entities for.
+     * @return A list of GenreEntities
+     */
     List<GenreEntity> getGenreEntities(List<Long> genreIds) {
         List<GenreEntity> genreEntities = new ArrayList<>();
         genreIds.forEach(aLong -> {

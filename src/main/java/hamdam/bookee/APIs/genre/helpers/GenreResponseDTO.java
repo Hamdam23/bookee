@@ -12,6 +12,9 @@ import org.springframework.beans.BeanUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * It's a DTO that represents response on Genre API
+ */
 @Getter
 @Setter
 @AllArgsConstructor

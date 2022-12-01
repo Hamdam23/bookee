@@ -14,7 +14,7 @@ public class ImageMappers {
     public static ImageEntity mapToImageEntity(String imageName, String location) {
         ImageEntity imageEntity = new ImageEntity();
         imageEntity.setImageName(imageName);
-        imageEntity.setLocation(location);
+        imageEntity.setUrl(location);
         return imageEntity;
     }
 }

@@ -20,6 +20,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokensResponse registerUser(RegistrationRequest request) {
+        // Saving the user and returning the token response.
         userService.saveUser(request);
         return tokenProvider.getTokenResponse(userService.getUserByUsername(request.getUsername(), true));
     }
@@ -27,8 +28,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokensResponse refreshToken(String header) {
         try {
+            // It checks if the header is valid.
             tokenProvider.checkHeader(header, false);
+            // Getting the user from the database using the username from the token.
             AppUserEntity user = userService.getUserByUsername(tokenProvider.getUsernameFromToken(header, false), false);
+            // Creating a new access token for the user.
             return tokenProvider.getAccessTokenResponse(user);
         } catch (MissingTokenException exception) {
             throw exception;

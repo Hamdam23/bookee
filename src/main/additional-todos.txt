@@ -1,6 +1,5 @@
 #In Progress
 2. Tests
-21. use Mapper classes for each package!
 27. use constants class for every package - table names?
 3. Code comments, README, API documentation, Downloadable Postman collection.
 38. db tables naming
@@ -24,6 +23,7 @@
 -*18. getAllGenres - response: without books | getGenreById - response: with books
 -19. user 'id' property everywhere instead of name or username or something-name
 -20. problem: can not insert data  on the table 'book_author' table
+-21. use Mapper classes for each package!
 -22. review auth package
 -23. wtf - I don't have set permission-to-role request?
 -24. editing/deleting only user-self should be done

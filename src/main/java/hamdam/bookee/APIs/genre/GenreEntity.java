@@ -12,6 +12,10 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * GenreEntity is a class that represents a genre of a book.
+ * It has a name and a description. It also has a list of books that belong to this genre.
+ */
 @Entity
 @Getter
 @Setter

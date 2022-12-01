@@ -11,6 +11,9 @@ import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * It's a book entity with a name, tagline, description, authors, rating, and genres
+ */
 @Entity
 @Getter
 @Setter
@@ -50,5 +53,4 @@ public class BookEntity {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<GenreEntity> genres = new ArrayList<>();
-
 }

@@ -6,6 +6,9 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.stream.Collectors;
 
+/**
+ * It contains methods that map between the different objects that represent a genre
+ */
 public class GenreMappers {
 
     public static GenreRequestDTO mapToGenreRequestDTO(String name, String description) {

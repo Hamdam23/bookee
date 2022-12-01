@@ -10,6 +10,10 @@ import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * It's a DTO class that contains all the fields that are required to create a book
+ */
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -35,5 +39,4 @@ public class BookRequestDTO {
 
     @NotEmpty(message = "genres can not be empty!")
     private List<Long> genres = new ArrayList<>();
-
 }
