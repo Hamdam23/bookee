@@ -23,8 +23,9 @@ public class ImageServiceImpl implements ImageService {
     private String bucketName;
 
     /**
-     * It takes a file, generates a unique file name, writes the file to S3,
-     * and saves the file name and location to the database
+     * It takes a file, generates a unique file name,
+     * writes the file to S3,
+     * and saves the file name and url to the database
      *
      * @param file The file that is being uploaded.
      * @return The image entity is being returned.

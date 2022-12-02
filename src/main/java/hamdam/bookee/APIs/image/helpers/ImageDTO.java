@@ -14,7 +14,7 @@ public class ImageDTO {
     @JsonProperty("image_name")
     private String imageName;
 
-    @JsonProperty("location")
-    private String location;
+    @JsonProperty("url")
+    private String url;
 
 }
