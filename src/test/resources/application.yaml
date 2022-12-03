@@ -35,7 +35,7 @@ cloud:
     stack:
       auto: false
     region:
-      static: eu-central-1
+      static: us-east-1
 
 aws:
   s3:
