@@ -1,12 +1,11 @@
 #In Progress
-2. Tests
 27. use constants class for every package - table names?
 3. Code comments, README, API documentation, Downloadable Postman collection.
-38. db tables naming
 26. change list of extensions to dynamic list on @ValidFile
 
 #Done
 -1. Database migration
+-2. Tests
 -4. if required, create separate DTOs for request and response
 -6. Project packaging
 -7. filter package vs security package
@@ -40,3 +39,4 @@
 -35. use env variable for encoded password
 -36. implementation of Genres and Books is changed, test of them needs to be changed
 -37. get secret from environment variable
+-38. db tables naming

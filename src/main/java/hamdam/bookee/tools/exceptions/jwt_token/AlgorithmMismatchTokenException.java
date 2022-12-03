@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class AlgorithmMismatchTokenException extends ApiException {
 
     public AlgorithmMismatchTokenException() {
-        super("Algorithm of exception not supported!", HttpStatus.BAD_REQUEST,
+        super("Algorithm of token not supported!", HttpStatus.BAD_REQUEST,
                 "AlgorithmMismatchTokenException", new Object[]{});
     }
 }

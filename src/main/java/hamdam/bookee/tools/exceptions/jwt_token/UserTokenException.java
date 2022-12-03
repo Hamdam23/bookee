@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class UserTokenException extends ApiException {
     public UserTokenException() {
-        super("User of the token is invalid! Consider getting new token", HttpStatus.BAD_REQUEST,
+        super("The user of the token is invalid! Consider getting a new token!", HttpStatus.BAD_REQUEST,
                 "UserTokenException", new Object[]{});
     }
 }

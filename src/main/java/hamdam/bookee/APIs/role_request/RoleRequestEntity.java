@@ -12,8 +12,10 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE_REQUEST;
+
 @Entity
-@Table(name = "role_requests")
+@Table(name = TABLE_NAME_ROLE_REQUEST)
 @Getter
 @Setter
 @NoArgsConstructor
