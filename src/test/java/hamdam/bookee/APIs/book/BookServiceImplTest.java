@@ -50,7 +50,7 @@ class BookServiceImplTest {
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.getGenreEntities(genreIds))
+        assertThatThrownBy(() -> underTest.getGenres(genreIds))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining(genreIds.toString()
                 );

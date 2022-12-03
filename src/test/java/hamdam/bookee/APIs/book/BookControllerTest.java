@@ -8,11 +8,13 @@ import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.genre.helpers.GenreMappers;
+import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
@@ -96,7 +98,7 @@ class BookControllerTest {
         perform.andExpect(status().isOk());
         BookResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), BookResponseDTO.class);
         assertThat(response.getName()).isEqualTo(response.getName());
-        assertThat(response.getAuthors()).contains(user.getId());
+        assertThat(response.getAuthors().stream().map(AppUserResponseDTO::getId).collect(Collectors.toList())).contains(user.getId());
         assertThat(bookRepository.existsById(response.getId())).isTrue();
     }
 
@@ -153,8 +155,8 @@ class BookControllerTest {
         assertThat(response.getName()).isEqualTo(book.getName());
         assertThat(response.getRating()).isEqualTo(book.getRating());
         assertThat(response.getTagline()).isEqualTo(book.getTagline());
-        assertThat(response.getAuthors().get(0)).isEqualTo(book.getAuthors().get(0).getId());
-        assertThat(response.getGenres().get(0)).isEqualTo(book.getGenres().get(0).getId());
+        assertThat(response.getAuthors().get(0).getId()).isEqualTo(book.getAuthors().get(0).getId());
+        assertThat(response.getGenres().get(0).getId()).isEqualTo(book.getGenres().get(0).getId());
     }
 
     @Test
@@ -189,8 +191,8 @@ class BookControllerTest {
         assertThat(response.getName()).isEqualTo(request.getName());
         assertThat(response.getRating()).isEqualTo(request.getRating());
         assertThat(response.getTagline()).isEqualTo(request.getTagline());
-        assertThat(response.getAuthors().get(0)).isEqualTo(request.getAuthors().get(0));
-        assertThat(response.getGenres().get(0)).isEqualTo(request.getGenres().get(0));
+        assertThat(response.getAuthors().stream().map(AppUserResponseDTO::getId).collect(Collectors.toList())).contains(request.getAuthors().get(0));
+        assertThat(response.getGenres().stream().map(GenreResponseDTO::getId).collect(Collectors.toList())).contains(request.getGenres().get(0));
     }
 
     @Test

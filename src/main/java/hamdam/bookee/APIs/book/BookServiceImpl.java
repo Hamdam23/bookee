@@ -36,16 +36,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponseDTO addBook(BookRequestDTO book) {
         BookEntity bookEntity = BookMappers.mapToBookEntity(book);
-        List<AppUserEntity> authors = new ArrayList<>();
-        // Getting the authors from the database and adding them to the bookEntity
-        book.getAuthors().forEach(aLong -> {
-            AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
-                    -> new ResourceNotFoundException("Author", "id", aLong));
-            authors.add(author);
-        });
+        List<AppUserEntity> authors = getAuthors(book.getAuthors());
         bookEntity.setAuthors(authors);
 
-        List<GenreEntity> genres = getGenreEntities(book.getGenres());
+        List<GenreEntity> genres = getGenres(book.getGenres());
         bookEntity.setGenres(genres);
 
         return BookMappers.mapToBookResponse(bookRepository.save(bookEntity));
@@ -77,21 +71,24 @@ public class BookServiceImpl implements BookService {
     /**
      * We are updating the book with the id passed in the request body
      *
-     * @param bookRequestDTO The request body that contains the new book details.
+     * @param bookRequest The request body that contains the new book details.
      * @param id The id of the book to be updated.
      * @return BookResponseDTO
      */
     @Override
-    public BookResponseDTO updateBook(BookRequestDTO bookRequestDTO, Long id) {
+    public BookResponseDTO updateBook(BookRequestDTO bookRequest, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
-        BeanUtils.copyProperties(bookRequestDTO, oldBook, "id");
+        BeanUtils.copyProperties(bookRequest, oldBook, "id");
 
-        List<GenreEntity> genres = getGenreEntities(bookRequestDTO.getGenres());
+        List<AppUserEntity> authors = getAuthors(bookRequest.getAuthors());
+        oldBook.setAuthors(authors);
+
+        List<GenreEntity> genres = getGenres(bookRequest.getGenres());
         oldBook.setGenres(genres);
         bookRepository.save(oldBook);
 
-        return BookMappers.mapToBookResponse(bookRequestDTO);
+        return BookMappers.mapToBookResponse(oldBook);
     }
 
     /**
@@ -108,13 +105,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    /**
-     * It takes a list of genre ids, finds the corresponding genre entities, and returns them
-     *
-     * @param genreIds The list of genre ids that we want to get the genre entities for.
-     * @return A list of GenreEntities
-     */
-    List<GenreEntity> getGenreEntities(List<Long> genreIds) {
+    List<GenreEntity> getGenres(List<Long> genreIds) {
         List<GenreEntity> genreEntities = new ArrayList<>();
         genreIds.forEach(aLong -> {
             GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
@@ -123,5 +114,16 @@ public class BookServiceImpl implements BookService {
         });
 
         return genreEntities;
+    }
+
+    List<AppUserEntity> getAuthors(List<Long> authorIds) {
+        List<AppUserEntity> authors = new ArrayList<>();
+        authorIds.forEach(aLong -> {
+            AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Author", "id", aLong));
+            authors.add(author);
+        });
+
+        return authors;
     }
 }

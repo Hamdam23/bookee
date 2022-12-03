@@ -29,7 +29,7 @@ public class BookRequestDTO {
     @Size(max = 200, message = "description size is too long!")
     private String description;
 
-    @JsonProperty("author_ids")
+    @JsonProperty("authors")
     @NotEmpty(message = "authors can not be empty!")
     private List<Long> authors = new ArrayList<>();
 

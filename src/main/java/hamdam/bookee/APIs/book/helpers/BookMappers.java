@@ -28,12 +28,6 @@ public class BookMappers {
         return bookResponseDTO;
     }
 
-    public static BookResponseDTO mapToBookResponse(BookRequestDTO bookRequestDTO) {
-        BookResponseDTO bookResponseDTO = new BookResponseDTO();
-        BeanUtils.copyProperties(bookRequestDTO, bookResponseDTO);
-        return bookResponseDTO;
-    }
-
     public static BookRequestDTO mapToBookRequest(String name, List<Long> authors) {
         BookRequestDTO request = new BookRequestDTO();
         request.setName(name);
