@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
 import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE_REQUEST;
 
 @Entity
@@ -32,13 +33,13 @@ public class RoleRequestEntity {
     @ManyToOne(optional = false)
     private AppRoleEntity requestedRole;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @UpdateTimestamp
-    private LocalDateTime timeStamp;
-
     @Enumerated(EnumType.STRING)
     private State state;
 
     @Size(max = 200, message = "Description size is too long!")
     private String description;
+
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 }

@@ -15,8 +15,11 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_USER;
+
 @Entity
-@Table(name = "users")
+@Table(name = TABLE_NAME_USER)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,7 +49,7 @@ public class AppUserEntity {
     @OneToMany(mappedBy = "user")
     private List<RoleRequestEntity> roleRequests;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
     @UpdateTimestamp
     private LocalDateTime timeStamp;
 }

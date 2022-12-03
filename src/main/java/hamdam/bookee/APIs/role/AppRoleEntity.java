@@ -15,8 +15,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE_PERMISSIONS;
+
 @Entity
-@Table(name = "roles")
+@Table(name = TABLE_NAME_ROLE)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,15 +40,17 @@ public class AppRoleEntity {
     @Column(nullable = false)
     private boolean isDefault = false;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @UpdateTimestamp
-    private LocalDateTime timeStamp;
-
+    @CollectionTable(name = TABLE_NAME_ROLE_PERMISSIONS,
+            joinColumns = @JoinColumn(name = "role_id"))
     @ElementCollection
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
 
     @OneToMany(mappedBy = "requestedRole")
     private List<RoleRequestEntity> roleRequests;
+
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 
 }

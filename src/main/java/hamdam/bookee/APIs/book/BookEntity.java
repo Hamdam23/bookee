@@ -1,15 +1,21 @@
 package hamdam.bookee.APIs.book;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.*;
 
 /**
  * It's a book entity with a name, tagline, description, authors, rating, and genres
@@ -18,7 +24,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "books")
+@Table(name = TABLE_NAME_BOOK)
 public class BookEntity {
 
     @Id
@@ -36,7 +42,7 @@ public class BookEntity {
 
     @NotEmpty(message = "authors can not be empty!")
     @ManyToMany
-    @JoinTable(name = "book_author",
+    @JoinTable(name = TABLE_NAME_BOOK_AUTHOR,
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
@@ -48,9 +54,13 @@ public class BookEntity {
 
     @NotEmpty(message = "genres can not be empty!")
     @ManyToMany
-    @JoinTable(name = "book_genre",
+    @JoinTable(name = TABLE_NAME_BOOK_GENRE,
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<GenreEntity> genres = new ArrayList<>();
+
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 }

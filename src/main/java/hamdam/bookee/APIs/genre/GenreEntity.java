@@ -1,16 +1,22 @@
 package hamdam.bookee.APIs.genre;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hamdam.bookee.APIs.book.BookEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_GENRE;
 
 /**
  * GenreEntity is a class that represents a genre of a book.
@@ -20,7 +26,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "genres")
+@Table(name = TABLE_NAME_GENRE)
 @JsonIgnoreProperties(value = {"books"})
 public class GenreEntity {
 
@@ -37,6 +43,10 @@ public class GenreEntity {
     //TODO when genre deleted corresponding book's genre should be set to "null"
     @ManyToMany(mappedBy = "genres")
     private List<BookEntity> books = new ArrayList<>();
+
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 
     public GenreEntity(String name, String description) {
         this.name = name;
