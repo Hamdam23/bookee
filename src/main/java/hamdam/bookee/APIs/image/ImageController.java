@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
+import static hamdam.bookee.tools.annotations.ValidFile.ExtensionGroup.IMAGES;
 import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 
@@ -29,7 +30,9 @@ public class ImageController {
      * @return ImageEntity
      */
     @PostMapping
-    public ImageEntity uploadImage(@ValidFile @RequestParam MultipartFile file) throws Exception {
+    public ImageEntity uploadImage(@ValidFile(
+            extensionGroups = IMAGES
+    ) @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
     }
 
