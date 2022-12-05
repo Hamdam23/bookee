@@ -1,12 +1,10 @@
 package hamdam.bookee.APIs.role.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.Permissions;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,8 +25,4 @@ public class AppRoleResponseDTO {
 
     @JsonProperty("permissions")
     private Set<Permissions> permissions = Collections.emptySet();
-
-    public AppRoleResponseDTO(AppRoleEntity entity) {
-        BeanUtils.copyProperties(entity, this);
-    }
 }

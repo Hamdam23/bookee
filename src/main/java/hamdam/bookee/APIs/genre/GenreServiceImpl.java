@@ -48,7 +48,7 @@ public class GenreServiceImpl implements GenreService {
      */
     @Override
     public Page<GenreResponseDTO> getAllGenres(Pageable pageable) {
-        return genreRepository.findAll(pageable).map(GenreResponseDTO::new);
+        return genreRepository.findAll(pageable).map(GenreMappers::mapToGenreResponseDTO);
     }
 
     /**

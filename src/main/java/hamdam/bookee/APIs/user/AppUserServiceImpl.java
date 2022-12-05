@@ -72,7 +72,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public Page<AppUserResponseDTO> getAllUsers(Pageable pageable) {
-        return userRepository.findAllByOrderByTimeStampDesc(pageable).map(AppUserResponseDTO::new);
+        return userRepository.findAllByOrderByTimeStampDesc(pageable).map(UserMappers::mapToAppUserResponseDTO);
     }
 
     @Override

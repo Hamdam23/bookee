@@ -42,7 +42,7 @@ public class AppRoleServiceImpl implements AppRoleService {
     @Override
     public Page<AppRoleResponseDTO> getAllRoles(Pageable pageable) {
         return roleRepository.findAllByOrderByTimeStampDesc(pageable)
-                .map(AppRoleResponseDTO::new);
+                .map(RoleMappers::mapToAppRoleResponseDTO);
     }
 
     @Override

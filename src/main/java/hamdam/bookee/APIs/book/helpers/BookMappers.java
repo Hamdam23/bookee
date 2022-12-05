@@ -2,9 +2,9 @@ package hamdam.bookee.APIs.book.helpers;
 
 import hamdam.bookee.APIs.book.BookEntity;
 import hamdam.bookee.APIs.genre.GenreEntity;
-import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
+import hamdam.bookee.APIs.genre.helpers.GenreMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.UserMappers;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -20,10 +20,10 @@ public class BookMappers {
         BookResponseDTO bookResponseDTO = new BookResponseDTO();
         BeanUtils.copyProperties(entity, bookResponseDTO);
         bookResponseDTO.setAuthors(entity.getAuthors().stream()
-                .map(AppUserResponseDTO::new)
+                .map(UserMappers::mapToAppUserResponseDTO)
                 .collect(Collectors.toList()));
         bookResponseDTO.setGenres(entity.getGenres().stream()
-                .map(GenreResponseDTO::new)
+                .map(GenreMappers::mapToGenreResponseDTO)
                 .collect(Collectors.toList()));
         return bookResponseDTO;
     }
