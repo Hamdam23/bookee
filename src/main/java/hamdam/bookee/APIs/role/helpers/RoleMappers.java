@@ -7,6 +7,9 @@ import org.springframework.beans.BeanUtils;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * It contains static methods that map between the AppRoleEntity and AppRoleResponseDTO classes
+ */
 public class RoleMappers {
 
     public static AppRoleResponseDTO mapToAppRoleResponseDTO(AppRoleEntity entity) {

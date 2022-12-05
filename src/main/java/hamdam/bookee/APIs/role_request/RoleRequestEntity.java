@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
 import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE_REQUEST;
 
+/**
+ * It's a class that represents a request for a role
+ */
 @Entity
 @Table(name = TABLE_NAME_ROLE_REQUEST)
 @Getter

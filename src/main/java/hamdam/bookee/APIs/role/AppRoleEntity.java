@@ -19,11 +19,15 @@ import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
 import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE;
 import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE_PERMISSIONS;
 
+/**
+ * It's a JPA entity class that represents a role in the application
+ */
 @Entity
 @Table(name = TABLE_NAME_ROLE)
 @Getter
 @Setter
 @NoArgsConstructor
+// It's a JPA annotation that allows us to fetch the permissions of a role in a single query.
 @NamedEntityGraph(name = "with_permissions", attributeNodes = @NamedAttributeNode(value = "permissions"))
 public class AppRoleEntity {
 

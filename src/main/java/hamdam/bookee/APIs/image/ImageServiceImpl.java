@@ -38,12 +38,23 @@ public class ImageServiceImpl implements ImageService {
         return imageRepository.save(ImageMappers.mapToImageEntity(fileName, url));
     }
 
+    /**
+     * It returns an image by its id.
+     *
+     * @param id The id of the image you want to retrieve.
+     * @return ImageDTO
+     */
     @Override
     public ImageDTO getImageByID(Long id) {
         return ImageMappers.mapToImageDTO(imageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id)));
     }
 
+    /**
+     * It deletes an image from the database and from the S3 bucket
+     *
+     * @param id The id of the image to be deleted.
+     */
     @Override
     public void deleteImageById(Long id) {
         ImageEntity image = imageRepository.findById(id)

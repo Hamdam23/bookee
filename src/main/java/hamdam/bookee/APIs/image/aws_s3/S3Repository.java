@@ -26,6 +26,8 @@ public class S3Repository {
      * @return The URL of the file on S3.
      */
     public String writeFileToS3(MultipartFile file, String bucketName, String fileName) throws IOException {
+        // Creating a new ObjectMetadata object, setting the content length of the file,
+        // and then uploading the file to S3.
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
         amazonS3.putObject(

@@ -9,6 +9,9 @@ import lombok.Setter;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * It's a DTO that represents the response of the API endpoint that returns a single role
+ */
 @Getter
 @Setter
 @NoArgsConstructor

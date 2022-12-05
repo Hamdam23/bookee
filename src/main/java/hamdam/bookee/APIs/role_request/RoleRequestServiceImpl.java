@@ -56,7 +56,7 @@ public class RoleRequestServiceImpl implements RoleRequestService {
         RoleRequestEntity roleRequestEntity =
                 roleRequestRepository.save(RoleRequestMappers.mapToRoleRequestEntity(requestingUser, role, State.IN_PROGRESS));
 
-        return new RoleRequestResponse(roleRequestEntity, role.getRoleName());
+        return RoleRequestMappers.mapToRoleRequestResponse(roleRequestEntity, role.getRoleName());
     }
 
     @Override
@@ -75,7 +75,7 @@ public class RoleRequestServiceImpl implements RoleRequestService {
         }
         List<RoleRequestResponse> requestResponses = new ArrayList<>();
         responseList.forEach(response -> {
-            RoleRequestResponse requestResponse = new RoleRequestResponse(response, response.getRequestedRole().getRoleName());
+            RoleRequestResponse requestResponse = RoleRequestMappers.mapToRoleRequestResponse(response, response.getRequestedRole().getRoleName());
             requestResponses.add(requestResponse);
         });
         return requestResponses;
@@ -117,7 +117,7 @@ public class RoleRequestServiceImpl implements RoleRequestService {
         roleRequestEntity.setState(review.getState());
         roleRequestRepository.save(roleRequestEntity);
 
-        return new RoleRequestResponse(roleRequestEntity, roleRequestEntity.getRequestedRole().getRoleName());
+        return RoleRequestMappers.mapToRoleRequestResponse(roleRequestEntity, roleRequestEntity.getRequestedRole().getRoleName());
     }
 
     @Override
