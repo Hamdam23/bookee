@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * It's a DTO class that maps to the app_user_role table
+ */
 @Getter
 @Setter
 @AllArgsConstructor

@@ -8,6 +8,10 @@ import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 
+/**
+ * It's a class that contains a bunch of methods that map a User object to a UserDTO object and vice
+ * versa
+ */
 public class UserMappers {
 
     public static AppUserRequestDTO mapToAppUserRequestDTO(String name, String username) {

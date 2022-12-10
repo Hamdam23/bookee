@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * It's a DTO that represents the data that is sent to the server
+ * when a user wants to set their profile image
+ */
 @Getter
 @Setter
 @NoArgsConstructor

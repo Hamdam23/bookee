@@ -18,6 +18,9 @@ import java.util.List;
 import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
 import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_USER;
 
+/**
+ * It's a JPA entity class that represents a user in the database
+ */
 @Entity
 @Table(name = TABLE_NAME_USER)
 @Getter

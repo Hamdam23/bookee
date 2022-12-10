@@ -120,6 +120,12 @@ public class RoleRequestServiceImpl implements RoleRequestService {
         return RoleRequestMappers.mapToRoleRequestResponse(roleRequestEntity, roleRequestEntity.getRequestedRole().getRoleName());
     }
 
+    /**
+     * If the user has the permission to monitor role requests, or if the user is the one who made the
+     * request, then delete the request
+     *
+     * @param id The id of the request to be deleted
+     */
     @Override
     public void deleteRequest(Long id) {
         RoleRequestEntity roleRequestEntity = roleRequestRepository.findById(id)
@@ -128,6 +134,8 @@ public class RoleRequestServiceImpl implements RoleRequestService {
 
         AppUserEntity requestingUser = getUserByRequest(userRepository);
         Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
+        // This is checking if the user has the permission to monitor role requests.
+        // If they do not, then they are not allowed to delete a request.
         if (permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             roleRequestRepository.deleteById(id);
         } else {
@@ -141,6 +149,13 @@ public class RoleRequestServiceImpl implements RoleRequestService {
         roleRequestRepository.save(roleRequestEntity);
     }
 
+    /**
+     * Returns true if the role request belongs to the user
+     *
+     * @param user The user who is trying to access the resource.
+     * @param roleRequestEntity The role request entity that is being checked.
+     * @return A boolean value.
+     */
     boolean roleRequestBelongsUser(AppUserEntity user, RoleRequestEntity roleRequestEntity) {
         return Objects.equals(roleRequestEntity.getUser().getId(), user.getId());
     }

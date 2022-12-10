@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * It's a DTO that contains the id, name, username, role, and image of an AppUser
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * It's a request object that contains a roleId
+ */
 @Getter
 @Setter
 @AllArgsConstructor

@@ -8,6 +8,9 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+/**
+ * It's a DTO that represents the request body of a POST request to the /users endpoint
+ */
 @Getter
 @Setter
 @NoArgsConstructor
