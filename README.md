@@ -13,16 +13,17 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 <!-- TABLE OF CONTENTS -->
-## Table of Contents
+## <span style="font-weight:bold">Table of Contents</span>
 
 * [Built-With](#built-with)
 * [Requirements](#requirements)
+* [Database-Relationships](#database-relationships)
+* [API docs](#api-docs)
 * [Running](#running)
 * [Contact](#contact)
 * [License](#license)
@@ -37,6 +38,14 @@ For building and running the application you need:
 
 - [JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 - [Maven 3](https://maven.apache.org)
+
+## Database-Relationships
+
+![bookee-db-relationships](https://user-images.githubusercontent.com/90045606/206858249-636c7d27-5925-49f3-a1a3-1257416c4a89.png)
+
+## API docs
+
+<p>Check out <a href="https://documenter.getpostman.com/view/23459056/2s8YzTT2Vd">You can get Postman collection</a>.</p>
 
 ## Running
 
