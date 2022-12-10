@@ -1,9 +1,9 @@
 #In Progress
-3. Code comments, README, API documentation, Downloadable Postman collection.
 
 #Done
 -1. Database migration
 -2. Tests
+-3. Code comments, README, API documentation, Downloadable Postman collection.
 -4. if required, create separate DTOs for request and response
 -6. Project packaging
 -7. filter package vs security package
