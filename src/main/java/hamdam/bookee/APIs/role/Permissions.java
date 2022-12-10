@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.role;
 
+// A list of permissions that a user can have.
 public enum Permissions {
 
     GET_BOOK,
@@ -13,10 +14,6 @@ public enum Permissions {
     UPDATE_GENRE,
     DELETE_GENRE,
 
-//    GET_ROLE,
-//    CREATE_ROLE,
-//    UPDATE_ROLE,
-//    DELETE_ROLE,
     MONITOR_ROLE,
 
     GET_USER, //himself/herself
@@ -29,5 +26,4 @@ public enum Permissions {
     UPDATE_ROLE_REQUEST,
     DELETE_ROLE_REQUEST,
     MONITOR_ROLE_REQUEST,
-    //MONITOR_ROLE_STATE
 }

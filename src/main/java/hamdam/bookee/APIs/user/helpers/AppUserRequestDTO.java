@@ -8,6 +8,9 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+/**
+ * It's a DTO that represents the request body of a POST request to the /users endpoint
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,11 +29,4 @@ public class AppUserRequestDTO {
     @JsonProperty("image")
     @NotNull()
     private Long imageId;
-
-    public AppUserRequestDTO(String name, String username, Long roleId, Long imageId) {
-        this.name = name;
-        this.username = username;
-        this.roleId = roleId;
-        this.imageId = imageId;
-    }
 }

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class AlreadyHasInProgressRequestException extends ApiException {
 
     public AlreadyHasInProgressRequestException() {
-        super("You have existing IN_PROGRESS role request!", HttpStatus.FORBIDDEN,
+        super("You have an existing IN_PROGRESS role request!", HttpStatus.FORBIDDEN,
                 "AlreadyHasInProgressRequestException", new Object[]{});
     }
 }

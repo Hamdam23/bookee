@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * It's a class that represents a request to register a new user
+ */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

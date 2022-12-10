@@ -26,6 +26,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final HandlerExceptionResolver resolver;
     private final TokenProvider tokenProvider;
 
+    //It takes the username and password from the request
+    // and creates a new UsernamePasswordAuthenticationToken object
     // TODO you can use default implementation of attemptAuthentication method in UsernamePasswordAuthenticationFilter
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -36,6 +38,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(authenticationToken);
     }
 
+    // If the user exists with username, the password is wrong.
+    // Else username is wrong
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         UsernamePasswordWrongException.Type type;
@@ -47,6 +51,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         resolver.resolveException(request, response, null, new UsernamePasswordWrongException(type));
     }
 
+    // If the authentication was successful, send the tokens in the response body.
     @Override
     protected void successfulAuthentication(
             HttpServletRequest request,

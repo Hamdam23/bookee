@@ -5,7 +5,7 @@ import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
 
 import java.util.List;
 
-public interface RequestService {
+public interface RoleRequestService {
 
     RoleRequestResponse postRoleRequest(RoleRequestDTO roleRequestDTO);
 

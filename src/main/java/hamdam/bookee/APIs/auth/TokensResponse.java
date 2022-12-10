@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
+/**
+ * It's a POJO that represents the response for tokens endpoint
+ */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -16,15 +16,4 @@ public class RoleRequestResponse {
     private LocalDateTime timeStamp;
     private State state;
     private String description;
-
-    public RoleRequestResponse(RequestEntity entity, String requestedRole) {
-        this.user = new UserOnRoleRequestDTO(
-                entity.getUser().getName(),
-                entity.getUser().getUsername(),
-                entity.getUser().getRole().getRoleName(),
-                entity.getUser().getUserImage()
-        );
-        this.requestedRole = requestedRole;
-        BeanUtils.copyProperties(entity, this);
-    }
 }

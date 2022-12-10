@@ -32,11 +32,21 @@ server:
   error:
     include-stacktrace: never
 
-#todo imho, file path must be read from ENV variable
-#todo also, test this on deployment (heroku)
-file_upload_path: "/home/hamdam/Pictures/bookee/"
-
 jwt:
   secret: secret
   access-token-validity: 3600000
   refresh-token-validity: 1728000000
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    stack:
+      auto: false
+    region:
+      static: eu-central-1
+
+aws:
+  s3:
+    bucket: bookee-app

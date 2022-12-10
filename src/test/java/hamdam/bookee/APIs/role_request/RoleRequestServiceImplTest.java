@@ -3,10 +3,13 @@ package hamdam.bookee.APIs.role_request;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
+import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import hamdam.bookee.tools.exceptions.roleRequest.AlreadyHasInProgressRequestException;
@@ -36,10 +39,10 @@ import static org.mockito.Mockito.when;
 @SecurityTestExecutionListeners
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-class RequestServiceImplTest {
+class RoleRequestServiceImplTest {
 
     @Mock
-    private RequestRepository requestRepository;
+    private RoleRequestRepository roleRequestRepository;
 
     @Mock
     private AppRoleRepository roleRepository;
@@ -48,17 +51,17 @@ class RequestServiceImplTest {
     private AppUserRepository userRepository;
 
     @InjectMocks
-    private RequestServiceImpl underTest;
+    private RoleRequestServiceImpl underTest;
 
     @Test
     void roleRequestBelongsUser_shouldReturnFalseWhenRequestIsNotByUser() {
         //given
-        AppUserEntity userLi = new AppUserEntity("Li", "li", "pass");
+        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", "pass");
         userLi.setId(1L);
-        AppUserEntity userKun = new AppUserEntity("Kun", "kun", "pass");
+        AppUserEntity userKun = UserMappers.mapToAppUserEntity("Kun", "kun", "pass");
         userKun.setId(2L);
-        AppRoleEntity requestedRole = new AppRoleEntity("author");
-        RequestEntity request = new RequestEntity(userKun, requestedRole);
+        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author");
+        RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userKun, requestedRole);
 
         //when
         boolean actual = underTest.roleRequestBelongsUser(userLi, request);
@@ -70,10 +73,10 @@ class RequestServiceImplTest {
     @Test
     void roleRequestBelongsUser_shouldReturnTrueWhenRequestIsByUser() {
         //given
-        AppUserEntity userLi = new AppUserEntity("Li", "li", "pass");
+        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", "pass");
         userLi.setId(1L);
-        AppRoleEntity requestedRole = new AppRoleEntity("author");
-        RequestEntity request = new RequestEntity(userLi, requestedRole);
+        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author");
+        RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole);
 
         //when
         boolean actual = underTest.roleRequestBelongsUser(userLi, request);
@@ -85,8 +88,8 @@ class RequestServiceImplTest {
     @Test
     void getUserPermissions_shouldReturnEmptySetWhenUserDoesNotHavePermissions() {
         //given
-        AppRoleEntity role = new AppRoleEntity("author", Collections.emptySet());
-        AppUserEntity userLi = new AppUserEntity("Li", "li", role);
+        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", role);
 
         //when
         Set<Permissions> actual = underTest.getUserPermissions(userLi);
@@ -98,8 +101,8 @@ class RequestServiceImplTest {
     @Test
     void getUserPermissions_shouldReturnPermissionsWhenRequestIsValid() {
         //given
-        AppRoleEntity role = new AppRoleEntity("author", Set.of(MONITOR_USER, GET_USER));
-        AppUserEntity userLi = new AppUserEntity("Li", "li", role);
+        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("author", Set.of(MONITOR_USER, GET_USER));
+        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", role);
 
         //when
         Set<Permissions> actual = underTest.getUserPermissions(userLi);
@@ -112,9 +115,9 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenUserNotAllowedToRequestRole() {
         //given
-        AppUserEntity currUser = new AppUserEntity("Li", "li", "pass");
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", "pass");
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(true);
+        when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(true);
 
         //when
         //then
@@ -127,14 +130,14 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenRequestedRoleIdIsInvalid() {
         //given
-        AppRoleEntity role = new AppRoleEntity("author");
+        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("author");
         role.setId(1L);
 
         RoleRequestDTO request = new RoleRequestDTO(role.getId());
 
-        AppUserEntity currUser = new AppUserEntity("Li", "li", "pass");
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", "pass");
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
+        when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(role.getId())).thenReturn(Optional.empty());
 
         //when
@@ -150,17 +153,17 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenUserDoesNotHavePermissionToRequest() {
         //given
-        AppRoleEntity requestedRole = new AppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
         requestedRole.setId(1L);
 
-        AppRoleEntity userRole = new AppRoleEntity("user", Collections.emptySet());
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
         userRole.setId(2L);
 
         RoleRequestDTO request = new RoleRequestDTO(requestedRole.getId());
 
-        AppUserEntity currUser = new AppUserEntity("Li", "li", userRole);
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
+        when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
 
         //when
@@ -174,17 +177,17 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenUserHasAlreadyAcceptedRoleRequest() {
         //given
-        AppRoleEntity requestedRole = new AppRoleEntity("author", Set.of(MONITOR_ROLE_REQUEST));
+        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Set.of(MONITOR_ROLE_REQUEST));
         requestedRole.setId(1L);
 
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(CREATE_ROLE_REQUEST));
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(CREATE_ROLE_REQUEST));
         userRole.setId(2L);
 
         RoleRequestDTO request = new RoleRequestDTO(requestedRole.getId());
 
-        AppUserEntity currUser = new AppUserEntity("Li", "li", userRole);
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
+        when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
 
         //when
@@ -198,32 +201,32 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_returnValidDataWhenRequestIsValid() {
         //given
-        AppRoleEntity requestedRole = new AppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
         requestedRole.setId(1L);
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(CREATE_ROLE_REQUEST));
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(CREATE_ROLE_REQUEST));
         userRole.setId(2L);
 
-        AppUserEntity currUser = new AppUserEntity("Li", "li", userRole);
-        RequestEntity requestEntity = new RequestEntity(currUser, requestedRole, State.IN_PROGRESS);
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
+        RoleRequestEntity roleRequestEntity = RoleRequestMappers.mapToRoleRequestEntity(currUser, requestedRole, State.IN_PROGRESS);
         RoleRequestDTO requestDTO = new RoleRequestDTO(requestedRole.getId());
 
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
+        when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
-        when(requestRepository.save(any())).thenReturn(requestEntity);
+        when(roleRequestRepository.save(any())).thenReturn(roleRequestEntity);
 
         //when
         RoleRequestResponse actual = underTest.postRoleRequest(requestDTO);
 
         //then
         verify(userRepository).findAppUserByUsername(currUser.getUsername());
-        verify(requestRepository).existsByUserAndState(currUser, IN_PROGRESS);
+        verify(roleRequestRepository).existsByUserAndState(currUser, IN_PROGRESS);
         verify(roleRepository).findById(requestedRole.getId());
 
-        ArgumentCaptor<RequestEntity> requestArgCaptor = ArgumentCaptor.forClass(RequestEntity.class);
-        verify(requestRepository).save(requestArgCaptor.capture());
-        RequestEntity actualRequest = requestArgCaptor.getValue();
-        verify(requestRepository).save(any());
+        ArgumentCaptor<RoleRequestEntity> requestArgCaptor = ArgumentCaptor.forClass(RoleRequestEntity.class);
+        verify(roleRequestRepository).save(requestArgCaptor.capture());
+        RoleRequestEntity actualRequest = requestArgCaptor.getValue();
+        verify(roleRequestRepository).save(any());
 
         assertThat(actual.getUser().getUsername()).isEqualTo(actualRequest.getUser().getUsername());
         assertThat(actual.getRequestedRole()).isEqualTo(actualRequest.getRequestedRole().getRoleName());
@@ -234,27 +237,27 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithoutStateAndWithoutPermission() {
         //given
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(GET_USER));
-        AppUserEntity currUser = new AppUserEntity("Li", "li", userRole);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
 
-        AppRoleEntity authorRole = new AppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = new AppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
 
-        List<RequestEntity> requestEntities = new ArrayList<>();
-        requestEntities.add(new RequestEntity(currUser, authorRole, State.IN_PROGRESS));
-        requestEntities.add(new RequestEntity(currUser, policeRole, DECLINED));
+        List<RoleRequestEntity> requestEntities = new ArrayList<>();
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, State.IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, policeRole, DECLINED));
 
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.findAll()).thenReturn(requestEntities);
-        when(requestRepository.findAllByUser(currUser)).thenReturn(requestEntities);
+        when(roleRequestRepository.findAll()).thenReturn(requestEntities);
+        when(roleRequestRepository.findAllByUser(currUser)).thenReturn(requestEntities);
 
         //when
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(null);
 
         //then
         verify(userRepository).findAppUserByUsername(currUser.getUsername());
-        verify(requestRepository).findAll();
-        verify(requestRepository).findAllByUser(currUser);
+        verify(roleRequestRepository).findAll();
+        verify(roleRequestRepository).findAllByUser(currUser);
         assertThat(actual.size()).isEqualTo(requestEntities.size());
     }
 
@@ -262,32 +265,32 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithStateAndWithoutPermission() {
         //given
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(GET_USER));
-        AppUserEntity currUser = new AppUserEntity("Li", "li", userRole);
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
-        AppUserEntity userJack = new AppUserEntity("Jack", "jackie", userRole);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
 
-        AppRoleEntity authorRole = new AppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = new AppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
 
-        List<RequestEntity> requestEntities = new ArrayList<>();
-        requestEntities.add(new RequestEntity(currUser, authorRole, IN_PROGRESS));
-        requestEntities.add(new RequestEntity(userAnn, authorRole, IN_PROGRESS));
-        requestEntities.add(new RequestEntity(userJack, authorRole, IN_PROGRESS));
-        requestEntities.add(new RequestEntity(currUser, policeRole, DECLINED));
+        List<RoleRequestEntity> requestEntities = new ArrayList<>();
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userAnn, authorRole, IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userJack, authorRole, IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, policeRole, DECLINED));
 
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.findAllByState(IN_PROGRESS)).thenReturn(List.of(requestEntities.get(0),
+        when(roleRequestRepository.findAllByState(IN_PROGRESS)).thenReturn(List.of(requestEntities.get(0),
                 requestEntities.get(1), requestEntities.get(2)));
-        when(requestRepository.findAllByUser(currUser)).thenReturn(List.of(requestEntities.get(0)));
+        when(roleRequestRepository.findAllByUser(currUser)).thenReturn(List.of(requestEntities.get(0)));
 
         //when
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(IN_PROGRESS);
 
         //then
         verify(userRepository).findAppUserByUsername(currUser.getUsername());
-        verify(requestRepository).findAllByState(IN_PROGRESS);
-        verify(requestRepository).findAllByUser(currUser);
+        verify(roleRequestRepository).findAllByState(IN_PROGRESS);
+        verify(roleRequestRepository).findAllByUser(currUser);
         assertThat(actual.size()).isEqualTo(1);
     }
 
@@ -295,30 +298,30 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithoutStateAndWithPermission() {
         //given
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(GET_USER));
-        AppRoleEntity authorRole = new AppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = new AppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
+        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
 
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
-        AppUserEntity userJack = new AppUserEntity("Jack", "jackie", userRole);
-        AppUserEntity currUser = new AppUserEntity(
-                "Li", "li", new AppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST)));
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity(
+                "Li", "li", RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST)));
 
-        List<RequestEntity> requestEntities = new ArrayList<>();
-        requestEntities.add(new RequestEntity(currUser, authorRole, ACCEPTED));
-        requestEntities.add(new RequestEntity(userAnn, authorRole, IN_PROGRESS));
-        requestEntities.add(new RequestEntity(userJack, authorRole, IN_PROGRESS));
-        requestEntities.add(new RequestEntity(userAnn, policeRole, DECLINED));
+        List<RoleRequestEntity> requestEntities = new ArrayList<>();
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, ACCEPTED));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userAnn, authorRole, IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userJack, authorRole, IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userAnn, policeRole, DECLINED));
 
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.findAll()).thenReturn(requestEntities);
+        when(roleRequestRepository.findAll()).thenReturn(requestEntities);
 
         //when
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(null);
 
         //then
         verify(userRepository).findAppUserByUsername(currUser.getUsername());
-        verify(requestRepository).findAll();
+        verify(roleRequestRepository).findAll();
         assertThat(actual.size()).isEqualTo(requestEntities.size());
     }
 
@@ -326,30 +329,30 @@ class RequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithStateAndWithPermission() {
         //given
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(GET_USER));
-        AppRoleEntity authorRole = new AppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = new AppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
+        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
 
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
-        AppUserEntity userJack = new AppUserEntity("Jack", "jackie", userRole);
-        AppUserEntity currUser = new AppUserEntity(
-                "Li", "li", new AppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST)));
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
+        AppUserEntity currUser = UserMappers.mapToAppUserEntity(
+                "Li", "li", RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST)));
 
-        List<RequestEntity> requestEntities = new ArrayList<>();
-        requestEntities.add(new RequestEntity(currUser, authorRole, ACCEPTED));
-        requestEntities.add(new RequestEntity(userAnn, authorRole, IN_PROGRESS));
-        requestEntities.add(new RequestEntity(userJack, authorRole, IN_PROGRESS));
-        requestEntities.add(new RequestEntity(userAnn, policeRole, DECLINED));
+        List<RoleRequestEntity> requestEntities = new ArrayList<>();
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, ACCEPTED));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userAnn, authorRole, IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userJack, authorRole, IN_PROGRESS));
+        requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(userAnn, policeRole, DECLINED));
 
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
-        when(requestRepository.findAllByState(IN_PROGRESS)).thenReturn(List.of(requestEntities.get(1), requestEntities.get(2)));
+        when(roleRequestRepository.findAllByState(IN_PROGRESS)).thenReturn(List.of(requestEntities.get(1), requestEntities.get(2)));
 
         //when
         List<RoleRequestResponse> actual = underTest.getAllRoleRequests(IN_PROGRESS);
 
         //then
         verify(userRepository).findAppUserByUsername(currUser.getUsername());
-        verify(requestRepository).findAllByState(IN_PROGRESS);
+        verify(roleRequestRepository).findAllByState(IN_PROGRESS);
         assertThat(actual.size()).isEqualTo(2);
     }
 
@@ -357,14 +360,14 @@ class RequestServiceImplTest {
     void reviewRequest_throwsExceptionWhenRequestIdIsInvalid() {
         //given
         Long id = 1L;
-        when(requestRepository.findById(id)).thenReturn(Optional.empty());
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.empty());
 
         //when
         //then
         assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequestDTO()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining(id.toString());
-        verify(requestRepository).findById(id);
+        verify(roleRequestRepository).findById(id);
     }
 
     @Test
@@ -372,17 +375,17 @@ class RequestServiceImplTest {
     void reviewRequest_throwsExceptionWhenUserHasLimitedPermission() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Collections.emptySet());
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
 
-        when(requestRepository.findById(id)).thenReturn(Optional.of(new RequestEntity()));
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.of(new RoleRequestEntity()));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         //then
         assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequestDTO()))
                 .isInstanceOf(LimitedPermissionException.class);
-        verify(requestRepository).findById(id);
+        verify(roleRequestRepository).findById(id);
         verify(userRepository).findAppUserByUsername(userAnn.getUsername());
     }
 
@@ -391,17 +394,17 @@ class RequestServiceImplTest {
     void reviewRequest_throwsExceptionWhenReviewStateIsInvalid() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
 
-        when(requestRepository.findById(id)).thenReturn(Optional.of(new RequestEntity()));
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.of(new RoleRequestEntity()));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequestDTO(IN_PROGRESS)))
+        assertThatThrownBy(() -> underTest.reviewRequest(id, RoleRequestMappers.mapToReviewRequestDTO(IN_PROGRESS)))
                 .isInstanceOf(IncorrectStateValueException.class);
-        verify(requestRepository).findById(id);
+        verify(roleRequestRepository).findById(id);
         verify(userRepository).findAppUserByUsername(userAnn.getUsername());
     }
 
@@ -410,21 +413,21 @@ class RequestServiceImplTest {
     void reviewRequest_returnValidDataWhenStateIsDeclinedWithoutDescription() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
-        AppRoleEntity requestedRole = new AppRoleEntity("author", Set.of(GET_USER));
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
-        RequestEntity request = new RequestEntity(userAnn, requestedRole, IN_PROGRESS);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
+        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Set.of(GET_USER));
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userAnn, requestedRole, IN_PROGRESS);
 
-        when(requestRepository.findById(id)).thenReturn(Optional.of(request));
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.of(request));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
-        RoleRequestResponse actual = underTest.reviewRequest(id, new ReviewRequestDTO(DECLINED));
+        RoleRequestResponse actual = underTest.reviewRequest(id, RoleRequestMappers.mapToReviewRequestDTO(DECLINED));
 
         //then
-        verify(requestRepository).findById(id);
+        verify(roleRequestRepository).findById(id);
         verify(userRepository).findAppUserByUsername(userAnn.getUsername());
-        verify(requestRepository).save(request);
+        verify(roleRequestRepository).save(request);
         assertThat(actual.getUser().getUsername()).isEqualTo(userAnn.getUsername());
         assertThat(actual.getRequestedRole()).isEqualTo(requestedRole.getRoleName());
         assertThat(actual.getState()).isEqualTo(DECLINED);
@@ -435,21 +438,21 @@ class RequestServiceImplTest {
     void reviewRequest_returnValidDataWhenStateIsAcceptedWithDescription() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
-        AppRoleEntity requestedRole = new AppRoleEntity("author", Set.of(GET_USER));
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
-        RequestEntity request = new RequestEntity(userAnn, requestedRole, IN_PROGRESS);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
+        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Set.of(GET_USER));
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userAnn, requestedRole, IN_PROGRESS);
 
-        when(requestRepository.findById(id)).thenReturn(Optional.of(request));
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.of(request));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         RoleRequestResponse actual = underTest.reviewRequest(id, new ReviewRequestDTO(ACCEPTED, "nice"));
 
         //then
-        verify(requestRepository).findById(id);
+        verify(roleRequestRepository).findById(id);
         verify(userRepository).findAppUserByUsername(userAnn.getUsername());
-        verify(requestRepository).save(request);
+        verify(roleRequestRepository).save(request);
         assertThat(actual.getUser().getUsername()).isEqualTo(userAnn.getUsername());
         assertThat(actual.getRequestedRole()).isEqualTo(requestedRole.getRoleName());
         assertThat(actual.getState()).isEqualTo(ACCEPTED);
@@ -459,74 +462,74 @@ class RequestServiceImplTest {
     @Test
     void deleteRequest_throwsExceptionWhenRequestIdIsInvalid() {
         Long id = 1L;
-        when(requestRepository.findById(id)).thenReturn(Optional.empty());
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.empty());
 
         //when
         //then
         assertThatThrownBy(() -> underTest.deleteRequest(id))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining(id.toString());
-        verify(requestRepository).findById(id);
+        verify(roleRequestRepository).findById(id);
     }
 
     @Test
     @WithMockUser("ann")
     void deleteRequest_throwsExceptionWhenUserDoesNotHaveAccess() {
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Collections.emptySet());
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         userAnn.setId(2L);
-        AppUserEntity userJon = new AppUserEntity("Jon", "snow", userRole);
+        AppUserEntity userJon = UserMappers.mapToAppUserEntity("Jon", "snow", userRole);
         userJon.setId(3L);
-        RequestEntity requestEntity = new RequestEntity(userJon, userRole, IN_PROGRESS);
+        RoleRequestEntity roleRequestEntity = RoleRequestMappers.mapToRoleRequestEntity(userJon, userRole, IN_PROGRESS);
 
-        when(requestRepository.findById(id)).thenReturn(Optional.of(requestEntity));
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.of(roleRequestEntity));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         //then
         assertThatThrownBy(() -> underTest.deleteRequest(id))
                 .isInstanceOf(NotAccessibleRequestException.class);
-        verify(requestRepository).findById(id);
+        verify(roleRequestRepository).findById(id);
     }
 
     @Test
     @WithMockUser("ann")
     void deleteRequest_deletesDataWhenUserOwnsRequest() {
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Collections.emptySet());
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         userAnn.setId(2L);
-        RequestEntity requestEntity = new RequestEntity(userAnn, userRole, IN_PROGRESS);
+        RoleRequestEntity roleRequestEntity = RoleRequestMappers.mapToRoleRequestEntity(userAnn, userRole, IN_PROGRESS);
 
-        when(requestRepository.findById(id)).thenReturn(Optional.of(requestEntity));
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.of(roleRequestEntity));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         underTest.deleteRequest(id);
 
         //then
-        verify(requestRepository).findById(id);
-        verify(requestRepository).deleteById(id);
+        verify(roleRequestRepository).findById(id);
+        verify(roleRequestRepository).deleteById(id);
     }
 
     @Test
     @WithMockUser("ann")
     void deleteRequest_deletesDataWhenUserHasMonitoringPermission() {
         Long id = 1L;
-        AppRoleEntity userRole = new AppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
-        AppUserEntity userAnn = new AppUserEntity("Ann", "ann", userRole);
+        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
+        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         userAnn.setId(2L);
-        RequestEntity requestEntity = new RequestEntity(userAnn, userRole, IN_PROGRESS);
+        RoleRequestEntity roleRequestEntity = RoleRequestMappers.mapToRoleRequestEntity(userAnn, userRole, IN_PROGRESS);
 
-        when(requestRepository.findById(id)).thenReturn(Optional.of(requestEntity));
+        when(roleRequestRepository.findById(id)).thenReturn(Optional.of(roleRequestEntity));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
         underTest.deleteRequest(id);
 
         //then
-        verify(requestRepository).findById(id);
-        verify(requestRepository).deleteById(id);
+        verify(roleRequestRepository).findById(id);
+        verify(roleRequestRepository).deleteById(id);
     }
 }

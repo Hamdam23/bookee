@@ -2,13 +2,11 @@ package hamdam.bookee.APIs.role;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
-import hamdam.bookee.APIs.role_request.RequestEntity;
+import hamdam.bookee.APIs.role_request.RoleRequestEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.repository.EntityGraph;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,11 +15,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE_PERMISSIONS;
+
+/**
+ * It's a JPA entity class that represents a role in the application
+ */
 @Entity
-@Table(name = "roles")
+@Table(name = TABLE_NAME_ROLE)
 @Getter
 @Setter
 @NoArgsConstructor
+// It's a JPA annotation that allows us to fetch the permissions of a role in a single query.
 @NamedEntityGraph(name = "with_permissions", attributeNodes = @NamedAttributeNode(value = "permissions"))
 public class AppRoleEntity {
 
@@ -38,35 +44,17 @@ public class AppRoleEntity {
     @Column(nullable = false)
     private boolean isDefault = false;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @UpdateTimestamp
-    private LocalDateTime timeStamp;
-
+    @CollectionTable(name = TABLE_NAME_ROLE_PERMISSIONS,
+            joinColumns = @JoinColumn(name = "role_id"))
     @ElementCollection
     @Enumerated(value = EnumType.STRING)
     private Set<Permissions> permissions = Collections.emptySet();
 
     @OneToMany(mappedBy = "requestedRole")
-    private List<RequestEntity> roleRequests;
+    private List<RoleRequestEntity> roleRequests;
 
-    public AppRoleEntity(AppRoleRequestDTO dto) {
-        this.roleName = dto.getRoleName();
-        this.permissions = dto.getPermissions();
-        this.isDefault = dto.isDefault();
-    }
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 
-    public AppRoleEntity(String roleName, boolean isDefault, LocalDateTime timeStamp) {
-        this.roleName = roleName;
-        this.isDefault = isDefault;
-        this.timeStamp = timeStamp;
-    }
-
-    public AppRoleEntity(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public AppRoleEntity(String roleName, Set<Permissions> permissions) {
-        this.roleName = roleName;
-        this.permissions = permissions;
-    }
 }

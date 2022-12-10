@@ -1,11 +1,12 @@
 package hamdam.bookee.APIs.user.helpers;
 
-import hamdam.bookee.APIs.user.AppUserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
+/**
+ * It's a DTO that contains the id, name, username, role, and image of an AppUser
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,12 +17,4 @@ public class AppUserResponseDTO {
     private String username;
     private AppUserRoleDTO role;
     private SetUserImageDTO image;
-
-    public AppUserResponseDTO(AppUserEntity entity) {
-        BeanUtils.copyProperties(entity, this);
-        if (entity.getRole() != null)
-            this.role = new AppUserRoleDTO(entity.getRole());
-        if (entity.getUserImage() != null)
-            this.image = new SetUserImageDTO(entity.getUserImage());
-    }
 }

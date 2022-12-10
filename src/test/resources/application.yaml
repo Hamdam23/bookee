@@ -7,6 +7,10 @@ spring:
     driver-class-name: org.h2.Driver
   flyway:
     enabled: false
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: true
 
   #hibernate config
   jpa:
@@ -23,9 +27,16 @@ spring:
     multipart:
       max-file-size: 20MB
 
-#todo imho, file path must be read from ENV variable
-#todo also, test this on deployment (heroku)
-file_upload_path: "/home/hamdam/Pictures/bookee/"
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      static: us-east-1
+
+aws:
+  s3:
+    bucket: bookee-app
 
 server:
   error:
