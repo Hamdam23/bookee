@@ -2,11 +2,15 @@ package hamdam.bookee.APIs.book.helpers;
 
 import hamdam.bookee.APIs.book.BookEntity;
 import hamdam.bookee.APIs.genre.GenreEntity;
+import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.genre.helpers.GenreMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
+import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
+import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +21,7 @@ import java.util.stream.Collectors;
 public class BookMappers {
 
     public static BookResponseDTO mapToBookResponse(BookEntity entity) {
+        if (entity == null) return null;
         BookResponseDTO bookResponseDTO = new BookResponseDTO();
         BeanUtils.copyProperties(entity, bookResponseDTO);
         bookResponseDTO.setAuthors(entity.getAuthors().stream()
@@ -28,36 +33,40 @@ public class BookMappers {
         return bookResponseDTO;
     }
 
-    public static BookRequestDTO mapToBookRequest(String name, List<Long> authors) {
-        BookRequestDTO request = new BookRequestDTO();
-        request.setName(name);
-        request.setAuthors(authors);
-        return request;
-    }
-
-    public static BookRequestDTO mapToBookRequest(String name, Double rating, List<Long> genres) {
-        BookRequestDTO request = new BookRequestDTO();
-        request.setName(name);
-        request.setRating(rating);
-        request.setGenres(genres);
-        return request;
-    }
-
-    public static BookEntity mapToBookEntity(BookRequestDTO bookRequestDTO) {
+    public static BookEntity mapToBookEntity(
+            BookRequestDTO bookRequestDTO,
+            AppUserRepository userRepository,
+            GenreRepository genreRepository
+    ) {
+        if (bookRequestDTO == null) return null;
         BookEntity bookEntity = new BookEntity();
         BeanUtils.copyProperties(bookRequestDTO, bookEntity, "id");
+
+        bookEntity.setAuthors(getAuthors(bookRequestDTO.getAuthors(), userRepository));
+        bookEntity.setGenres(getGenres(bookRequestDTO.getGenres(), genreRepository));
+
         return bookEntity;
     }
 
-    public static BookEntity mapToBookEntity(String name, String tagline, String description,
-                                             List<AppUserEntity> authors, Double rating, List<GenreEntity> genres) {
-        BookEntity bookEntity = new BookEntity();
-        bookEntity.setName(name);
-        bookEntity.setTagline(tagline);
-        bookEntity.setDescription(description);
-        bookEntity.setAuthors(authors);
-        bookEntity.setRating(rating);
-        bookEntity.setGenres(genres);
-        return bookEntity;
+    public static List<AppUserEntity> getAuthors(List<Long> authorIds, AppUserRepository userRepository) {
+        List<AppUserEntity> authors = new ArrayList<>();
+        authorIds.forEach(aLong -> {
+            AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Author", "id", aLong));
+            authors.add(author);
+        });
+
+        return authors;
+    }
+
+    public static List<GenreEntity> getGenres(List<Long> genreIds, GenreRepository genreRepository) {
+        List<GenreEntity> genreEntities = new ArrayList<>();
+        genreIds.forEach(aLong -> {
+            GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
+                    -> new ResourceNotFoundException("Genre", "id", aLong));
+            genreEntities.add(genre);
+        });
+
+        return genreEntities;
     }
 }

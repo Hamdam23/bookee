@@ -43,25 +43,10 @@ class BookServiceImplTest {
     private BookServiceImpl underTest;
 
     @Test
-    void getGenreEntities_shouldThrowExceptionWhenGenreIdIsInvalid() {
-        //given
-        List<Long> genreIds = List.of(1L);
-        when(genreRepository.findById(1L)).thenReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(() -> underTest.getGenres(genreIds))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining(genreIds.toString()
-                );
-
-    }
-
-    @Test
     void addBook_shouldThrowExceptionWhenAuthorIdIsInvalid() {
         //given
         Long authorId = 1L;
-        BookRequestDTO request = BookMappers.mapToBookRequest("hobbit", List.of(authorId));
+        BookRequestDTO request = BookRequestDTO.builder().name("hobbit").authors(List.of(authorId)).build();
         when(userRepository.findById(authorId)).thenReturn(Optional.empty());
 
         //when
@@ -91,11 +76,12 @@ class BookServiceImplTest {
                 10.0,
                 List.of(genre.getId())
         );
-        BookEntity book = BookMappers.mapToBookEntity(request);
-        book.setAuthors(authors);
-        book.setGenres(genres);
         when(userRepository.findById(author.getId())).thenReturn(Optional.of(new AppUserEntity()));
         when(genreRepository.findById(genre.getId())).thenReturn(Optional.of(new GenreEntity()));
+
+        BookEntity book = BookMappers.mapToBookEntity(request, userRepository, genreRepository);
+        book.setAuthors(authors);
+        book.setGenres(genres);
         when(bookRepository.save(any())).thenReturn(book);
 
         //when
@@ -172,7 +158,7 @@ class BookServiceImplTest {
         //given
         Long bookId = 1L;
         Long genreId = 2L;
-        BookRequestDTO request = BookMappers.mapToBookRequest("hobbit", 10.0, List.of(genreId));
+        BookRequestDTO request = BookRequestDTO.builder().name("hobbit").rating(10.0).genres(List.of(genreId)).build();
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(new BookEntity()));
         when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
 
@@ -189,7 +175,7 @@ class BookServiceImplTest {
         //given
         Long bookId = 1L;
         Long genreId = 2L;
-        BookRequestDTO request = BookMappers.mapToBookRequest("hobbit", 10.0, List.of(genreId));
+        BookRequestDTO request = BookRequestDTO.builder().name("hobbit").rating(10.0).genres(List.of(genreId)).build();
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(new BookEntity()));
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(new GenreEntity()));
 

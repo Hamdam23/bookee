@@ -3,9 +3,7 @@ package hamdam.bookee.APIs.book;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -24,6 +22,8 @@ import static hamdam.bookee.tools.constants.TableNames.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = TABLE_NAME_BOOK)
 public class BookEntity {
 

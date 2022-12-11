@@ -19,6 +19,7 @@ public class GenreMappers {
     }
 
     public static GenreResponseDTO mapToGenreResponseDTO(GenreEntity entity) {
+        if (entity == null) return null;
         GenreResponseDTO response = new GenreResponseDTO();
         BeanUtils.copyProperties(entity, response);
         response.setBooks(entity.getBooks().stream().map(BookEntity::getId).collect(Collectors.toList()));

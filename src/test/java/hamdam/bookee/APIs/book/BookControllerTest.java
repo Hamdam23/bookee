@@ -2,7 +2,6 @@ package hamdam.bookee.APIs.book;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hamdam.bookee.APIs.book.helpers.BookMappers;
 import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
 import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
@@ -97,8 +96,12 @@ class BookControllerTest {
         //then
         perform.andExpect(status().isOk());
         BookResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), BookResponseDTO.class);
-        assertThat(response.getName()).isEqualTo(response.getName());
+        assertThat(request)
+                .usingRecursiveComparison()
+                .ignoringFields("authors", "genres")
+                .isEqualTo(response);
         assertThat(response.getAuthors().stream().map(AppUserResponseDTO::getId).collect(Collectors.toList())).contains(user.getId());
+        assertThat(response.getGenres().stream().map(GenreResponseDTO::getId).collect(Collectors.toList())).contains(genre.getId());
         assertThat(bookRepository.existsById(response.getId())).isTrue();
     }
 
@@ -110,13 +113,24 @@ class BookControllerTest {
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
 
         List<BookEntity> books = List.of(
-                bookRepository.save(
-                        BookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre))),
-                bookRepository.save(
-                        BookMappers.mapToBookEntity("accountant", "a-tag", "a-desc", List.of(user), 9.0, List.of(genre))),
-                bookRepository.save(
-                        BookMappers.mapToBookEntity("harry potter", "hp-tag", "hp-desc", List.of(user), 8.0, List.of(genre)))
+                BookEntity.builder()
+                        .name("hobbit")
+                        .tagline("h-tag")
+                        .description("h-desc")
+                        .authors(List.of(user))
+                        .rating(10.0)
+                        .genres(List.of(genre))
+                        .build(),
+                BookEntity.builder()
+                        .name("ted")
+                        .tagline("t-tag")
+                        .description("t-desc")
+                        .authors(List.of(user))
+                        .rating(10.0)
+                        .genres(List.of(genre))
+                        .build()
         );
+        bookRepository.saveAll(books);
 
         //when
         ResultActions perform = mockMvc.perform(get(API_BOOK)
@@ -142,7 +156,14 @@ class BookControllerTest {
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
 
-        BookEntity book = bookRepository.save(BookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
+        BookEntity book = bookRepository.save(BookEntity.builder()
+                .name("hobbit")
+                .tagline("h-tag")
+                .description("h-desc")
+                .authors(List.of(user))
+                .rating(10.0)
+                .genres(List.of(genre))
+                .build());
 
         //when
         ResultActions perform = mockMvc.perform(get(API_BOOK + "/" + book.getId())
@@ -166,7 +187,14 @@ class BookControllerTest {
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
 
-        BookEntity book = bookRepository.save(BookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
+        BookEntity book = bookRepository.save(BookEntity.builder()
+                .name("hobbit")
+                .tagline("h-tag")
+                .description("h-desc")
+                .authors(List.of(user))
+                .rating(10.0)
+                .genres(List.of(genre))
+                .build());
 
         AppUserEntity author = userRepository.save(UserMappers.mapToAppUserEntity("jack", "black", "good-pass", role));
         BookRequestDTO request = new BookRequestDTO(
@@ -201,7 +229,14 @@ class BookControllerTest {
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(DELETE_BOOK)));
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
-        BookEntity book = bookRepository.save(BookMappers.mapToBookEntity("hobbit", "h-tag", "h-desc", List.of(user), 10.0, List.of(genre)));
+        BookEntity book = bookRepository.save(BookEntity.builder()
+                .name("hobbit")
+                .tagline("h-tag")
+                .description("h-desc")
+                .authors(List.of(user))
+                .rating(10.0)
+                .genres(List.of(genre))
+                .build());
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_BOOK + "/" + book.getId())

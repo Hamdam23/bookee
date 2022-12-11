@@ -43,6 +43,7 @@ public class UserMappers {
     }
 
     public static AppUserResponseDTO mapToAppUserResponseDTO(AppUserEntity entity) {
+        if (entity == null) return null;
         AppUserResponseDTO response = new AppUserResponseDTO();
         BeanUtils.copyProperties(entity, response);
         if (entity.getRole() != null)

@@ -14,8 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static hamdam.bookee.APIs.book.helpers.BookMappers.getAuthors;
+import static hamdam.bookee.APIs.book.helpers.BookMappers.getGenres;
 
 @Service
 @RequiredArgsConstructor
@@ -35,12 +37,7 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public BookResponseDTO addBook(BookRequestDTO book) {
-        BookEntity bookEntity = BookMappers.mapToBookEntity(book);
-        List<AppUserEntity> authors = getAuthors(book.getAuthors());
-        bookEntity.setAuthors(authors);
-
-        List<GenreEntity> genres = getGenres(book.getGenres());
-        bookEntity.setGenres(genres);
+        BookEntity bookEntity = BookMappers.mapToBookEntity(book, userRepository, genreRepository);
 
         return BookMappers.mapToBookResponse(bookRepository.save(bookEntity));
     }
@@ -72,7 +69,7 @@ public class BookServiceImpl implements BookService {
      * We are updating the book with the id passed in the request body
      *
      * @param bookRequest The request body that contains the new book details.
-     * @param id The id of the book to be updated.
+     * @param id          The id of the book to be updated.
      * @return BookResponseDTO
      */
     @Override
@@ -81,10 +78,10 @@ public class BookServiceImpl implements BookService {
                 -> new ResourceNotFoundException("Book", "id", id));
         BeanUtils.copyProperties(bookRequest, oldBook, "id");
 
-        List<AppUserEntity> authors = getAuthors(bookRequest.getAuthors());
+        List<AppUserEntity> authors = getAuthors(bookRequest.getAuthors(), userRepository);
         oldBook.setAuthors(authors);
 
-        List<GenreEntity> genres = getGenres(bookRequest.getGenres());
+        List<GenreEntity> genres = getGenres(bookRequest.getGenres(), genreRepository);
         oldBook.setGenres(genres);
         bookRepository.save(oldBook);
 
@@ -105,25 +102,4 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    List<GenreEntity> getGenres(List<Long> genreIds) {
-        List<GenreEntity> genreEntities = new ArrayList<>();
-        genreIds.forEach(aLong -> {
-            GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
-                    -> new ResourceNotFoundException("Genre", "id", aLong));
-            genreEntities.add(genre);
-        });
-
-        return genreEntities;
-    }
-
-    List<AppUserEntity> getAuthors(List<Long> authorIds) {
-        List<AppUserEntity> authors = new ArrayList<>();
-        authorIds.forEach(aLong -> {
-            AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
-                    -> new ResourceNotFoundException("Author", "id", aLong));
-            authors.add(author);
-        });
-
-        return authors;
-    }
 }
