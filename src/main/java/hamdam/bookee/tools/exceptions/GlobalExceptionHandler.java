@@ -1,7 +1,6 @@
 package hamdam.bookee.tools.exceptions;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
@@ -22,15 +21,13 @@ import java.util.Locale;
 public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private String maxFileSize;
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse> handleUnknownException(Exception exception) {
+    public ResponseEntity<ApiResponse> handleUnknownException(Exception exception, Locale locale) {
         ApiResponse apiResponse = new ApiResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now(),
-                "Unknown error",
+                messageSource.getMessage("Exception", null, locale),
                 exception.getMessage()
         );
         return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
@@ -45,7 +42,7 @@ public class GlobalExceptionHandler {
         String message;
         try {
             message = messageSource.getMessage(exception.getMessageId(), exception.getMessageArgs(), locale);
-        } catch (NoSuchMessageException e){
+        } catch (NoSuchMessageException e) {
             message = exception.getMessage();
         }
         ApiResponse apiResponse = new ApiResponse(
@@ -56,41 +53,41 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception, Locale locale) {
         FieldError error = exception.getFieldError();
         String errorMessage;
         if (error != null) {
-            errorMessage = "The field: {" + error.getField() + "} " + error.getDefaultMessage();
+            errorMessage = exception.getMessage();
         } else {
             errorMessage = exception.getAllErrors().get(0).toString();
         }
         ApiResponse apiResponse = new ApiResponse(
                 HttpStatus.BAD_REQUEST,
                 LocalDateTime.now(),
-                "Bad Request!",
+                messageSource.getMessage("MethodArgumentNotValidException", null, locale),
                 errorMessage
         );
         return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException exception) {
+    public ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException exception, Locale locale) {
         ApiResponse apiResponse = new ApiResponse(
                 HttpStatus.BAD_REQUEST,
                 LocalDateTime.now(),
-                "Bad Request!",
+                messageSource.getMessage("ConstraintViolationException", null, locale),
                 exception.getMessage()
         );
         return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ApiResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
+    public ResponseEntity<ApiResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException exception, Locale locale) {
         ApiResponse apiResponse = new ApiResponse(
                 HttpStatus.BAD_REQUEST,
                 LocalDateTime.now(),
-                "File size exceeded!",
-                "Maximum upload size exceeded; Configured maximum size is " + maxFileSize
+                messageSource.getMessage("MaxUploadSizeExceededException", null, locale),
+                exception.getMessage()
         );
         return new ResponseEntity<>(apiResponse, apiResponse.getStatus());
     }

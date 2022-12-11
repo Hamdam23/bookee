@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,7 +159,11 @@ class BookServiceImplTest {
         //given
         Long bookId = 1L;
         Long genreId = 2L;
-        BookRequestDTO request = BookRequestDTO.builder().name("hobbit").rating(10.0).genres(List.of(genreId)).build();
+        BookRequestDTO request = BookRequestDTO.builder()
+                .name("hobbit")
+                .rating(10.0)
+                .authors(new ArrayList<>())
+                .genres(List.of(genreId)).build();
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(new BookEntity()));
         when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
 
@@ -175,7 +180,11 @@ class BookServiceImplTest {
         //given
         Long bookId = 1L;
         Long genreId = 2L;
-        BookRequestDTO request = BookRequestDTO.builder().name("hobbit").rating(10.0).genres(List.of(genreId)).build();
+        BookRequestDTO request = BookRequestDTO.builder()
+                .name("hobbit")
+                .rating(10.0)
+                .authors(new ArrayList<>())
+                .genres(List.of(genreId)).build();
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(new BookEntity()));
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(new GenreEntity()));
 

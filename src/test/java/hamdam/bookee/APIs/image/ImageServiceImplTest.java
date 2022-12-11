@@ -34,7 +34,7 @@ class ImageServiceImplTest {
     @InjectMocks
     private ImageServiceImpl underTest;
 
-    private static final String BUCKET_NAME = "very good bucketName";
+    private static final String BUCKET_NAME = "very-good-bucketName";
 
     @Test
     void uploadImage_returnsValidDataWhenFileIsValid() throws IOException {
