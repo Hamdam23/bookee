@@ -51,7 +51,7 @@ This REST API is developed using Java programming language and Spring Boot start
 
 ## API docs
 
-<p>Check out. You can get <a href="https://documenter.getpostman.com/view/23459056/2s8YzTT2Vd">Postman documenter url.</a></p>
+<p>Check out. You can review Postman Documenter on this <a href="https://documenter.getpostman.com/view/23459056/2s8YzTT2Vd">url.</a></p>
 
 ## Usage
 
