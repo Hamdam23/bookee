@@ -20,33 +20,12 @@
 <!-- TABLE OF CONTENTS -->
 ## <span style="font-weight:bold">Table of Contents</span>
 
-* [Built-With](#built-with)
-* [Requirements](#requirements)
+* [Tech Stack](#tech-stack)
 * [Database-Relationships](#database-relationships)
 * [API docs](#api-docs)
-* [Tech Stack](#tech-stack)
 * [Usage](#usage)
 * [Running](#running)
 * [Contact](#contact)
-
-### Built-With
-* [Spring Boot](https://spring.io/projects/spring-boot)
-* [PostgreSQL](https://www.postgresql.org/)
-
-## Requirements
-
-For building and running the application you need:
-
-- [JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-- [Maven 3](https://maven.apache.org)
-
-## Database-Relationships
-
-![image](https://user-images.githubusercontent.com/90045606/206860056-0dfe4f92-1614-45ab-87ea-321a247194db.png)
-
-## API docs
-
-<p>Check out <a href="https://documenter.getpostman.com/view/23459056/2s8YzTT2Vd">You can get Postman collection</a>.</p>
 
 ## Tech stack
 
@@ -64,6 +43,15 @@ This REST API is developed using Java programming language and Spring Boot start
   - [FlywayDB](https://flywaydb.org/) for Database migrations
   - [Lombok](https://projectlombok.org/) for reducing boilerplate code
   - and etc.
+
+
+## Database-Relationships
+
+![image](https://user-images.githubusercontent.com/90045606/206860056-0dfe4f92-1614-45ab-87ea-321a247194db.png)
+
+## API docs
+
+<p>Check out <a href="https://documenter.getpostman.com/view/23459056/2s8YzTT2Vd">You can get Postman collection</a>.</p>
 
 ## Usage
 
