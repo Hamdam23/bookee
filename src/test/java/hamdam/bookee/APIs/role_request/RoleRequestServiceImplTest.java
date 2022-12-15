@@ -3,7 +3,6 @@ package hamdam.bookee.APIs.role_request;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
@@ -26,10 +25,19 @@ import org.springframework.security.test.context.annotation.SecurityTestExecutio
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import static hamdam.bookee.APIs.role.Permissions.*;
-import static hamdam.bookee.APIs.role_request.State.*;
+import static hamdam.bookee.APIs.role.Permissions.CREATE_ROLE_REQUEST;
+import static hamdam.bookee.APIs.role.Permissions.GET_USER;
+import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE_REQUEST;
+import static hamdam.bookee.APIs.role.Permissions.MONITOR_USER;
+import static hamdam.bookee.APIs.role_request.State.ACCEPTED;
+import static hamdam.bookee.APIs.role_request.State.DECLINED;
+import static hamdam.bookee.APIs.role_request.State.IN_PROGRESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +68,7 @@ class RoleRequestServiceImplTest {
         userLi.setId(1L);
         AppUserEntity userKun = UserMappers.mapToAppUserEntity("Kun", "kun", "pass");
         userKun.setId(2L);
-        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author");
+        AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("role").build();
         RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userKun, requestedRole);
 
         //when
@@ -75,7 +83,7 @@ class RoleRequestServiceImplTest {
         //given
         AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", "pass");
         userLi.setId(1L);
-        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author");
+        AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("author").build();
         RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole);
 
         //when
@@ -88,7 +96,7 @@ class RoleRequestServiceImplTest {
     @Test
     void getUserPermissions_shouldReturnEmptySetWhenUserDoesNotHavePermissions() {
         //given
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", role);
 
         //when
@@ -101,7 +109,7 @@ class RoleRequestServiceImplTest {
     @Test
     void getUserPermissions_shouldReturnPermissionsWhenRequestIsValid() {
         //given
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("author", Set.of(MONITOR_USER, GET_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_USER, GET_USER)).build();
         AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", role);
 
         //when
@@ -130,7 +138,7 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenRequestedRoleIdIsInvalid() {
         //given
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("author");
+        AppRoleEntity role = AppRoleEntity.builder().roleName("author").build();
         role.setId(1L);
 
         RoleRequestDTO request = new RoleRequestDTO(role.getId());
@@ -153,10 +161,10 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenUserDoesNotHavePermissionToRequest() {
         //given
-        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         requestedRole.setId(1L);
 
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("user").permissions(Collections.emptySet()).build();
         userRole.setId(2L);
 
         RoleRequestDTO request = new RoleRequestDTO(requestedRole.getId());
@@ -177,10 +185,10 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenUserHasAlreadyAcceptedRoleRequest() {
         //given
-        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Set.of(MONITOR_ROLE_REQUEST));
+        AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("author").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
         requestedRole.setId(1L);
 
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(CREATE_ROLE_REQUEST));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(CREATE_ROLE_REQUEST)).build();
         userRole.setId(2L);
 
         RoleRequestDTO request = new RoleRequestDTO(requestedRole.getId());
@@ -201,9 +209,9 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_returnValidDataWhenRequestIsValid() {
         //given
-        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         requestedRole.setId(1L);
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(CREATE_ROLE_REQUEST));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(CREATE_ROLE_REQUEST)).build();
         userRole.setId(2L);
 
         AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
@@ -237,11 +245,11 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithoutStateAndWithoutPermission() {
         //given
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
         AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
 
-        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
+        AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
 
         List<RoleRequestEntity> requestEntities = new ArrayList<>();
         requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, State.IN_PROGRESS));
@@ -265,13 +273,13 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithStateAndWithoutPermission() {
         //given
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
         AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
 
-        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
+        AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
 
         List<RoleRequestEntity> requestEntities = new ArrayList<>();
         requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, IN_PROGRESS));
@@ -298,14 +306,14 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithoutStateAndWithPermission() {
         //given
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
-        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
+        AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
+        AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
 
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
         AppUserEntity currUser = UserMappers.mapToAppUserEntity(
-                "Li", "li", RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST)));
+                "Li", "li", AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
 
         List<RoleRequestEntity> requestEntities = new ArrayList<>();
         requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, ACCEPTED));
@@ -329,14 +337,14 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void getAllRoleRequests_returnValidDataWhenUserWithStateAndWithPermission() {
         //given
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(GET_USER));
-        AppRoleEntity authorRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
-        AppRoleEntity policeRole = RoleMappers.mapToAppRoleEntity("author", Collections.emptySet());
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
+        AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
+        AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
 
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
         AppUserEntity currUser = UserMappers.mapToAppUserEntity(
-                "Li", "li", RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST)));
+                "Li", "li", AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
 
         List<RoleRequestEntity> requestEntities = new ArrayList<>();
         requestEntities.add(RoleRequestMappers.mapToRoleRequestEntity(currUser, authorRole, ACCEPTED));
@@ -375,7 +383,7 @@ class RoleRequestServiceImplTest {
     void reviewRequest_throwsExceptionWhenUserHasLimitedPermission() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
 
         when(roleRequestRepository.findById(id)).thenReturn(Optional.of(new RoleRequestEntity()));
@@ -394,7 +402,7 @@ class RoleRequestServiceImplTest {
     void reviewRequest_throwsExceptionWhenReviewStateIsInvalid() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
 
         when(roleRequestRepository.findById(id)).thenReturn(Optional.of(new RoleRequestEntity()));
@@ -413,8 +421,8 @@ class RoleRequestServiceImplTest {
     void reviewRequest_returnValidDataWhenStateIsDeclinedWithoutDescription() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
-        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Set.of(GET_USER));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
+        AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userAnn, requestedRole, IN_PROGRESS);
 
@@ -438,8 +446,8 @@ class RoleRequestServiceImplTest {
     void reviewRequest_returnValidDataWhenStateIsAcceptedWithDescription() {
         //given
         Long id = 1L;
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
-        AppRoleEntity requestedRole = RoleMappers.mapToAppRoleEntity("author", Set.of(GET_USER));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
+        AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         RoleRequestEntity request = RoleRequestMappers.mapToRoleRequestEntity(userAnn, requestedRole, IN_PROGRESS);
 
@@ -476,7 +484,7 @@ class RoleRequestServiceImplTest {
     @WithMockUser("ann")
     void deleteRequest_throwsExceptionWhenUserDoesNotHaveAccess() {
         Long id = 1L;
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         userAnn.setId(2L);
         AppUserEntity userJon = UserMappers.mapToAppUserEntity("Jon", "snow", userRole);
@@ -497,7 +505,7 @@ class RoleRequestServiceImplTest {
     @WithMockUser("ann")
     void deleteRequest_deletesDataWhenUserOwnsRequest() {
         Long id = 1L;
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Collections.emptySet());
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         userAnn.setId(2L);
         RoleRequestEntity roleRequestEntity = RoleRequestMappers.mapToRoleRequestEntity(userAnn, userRole, IN_PROGRESS);
@@ -517,7 +525,7 @@ class RoleRequestServiceImplTest {
     @WithMockUser("ann")
     void deleteRequest_deletesDataWhenUserHasMonitoringPermission() {
         Long id = 1L;
-        AppRoleEntity userRole = RoleMappers.mapToAppRoleEntity("user", Set.of(MONITOR_ROLE_REQUEST));
+        AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
         AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
         userAnn.setId(2L);
         RoleRequestEntity roleRequestEntity = RoleRequestMappers.mapToRoleRequestEntity(userAnn, userRole, IN_PROGRESS);

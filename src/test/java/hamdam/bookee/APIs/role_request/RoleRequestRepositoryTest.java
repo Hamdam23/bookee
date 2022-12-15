@@ -2,7 +2,6 @@ package hamdam.bookee.APIs.role_request;
 
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
@@ -84,7 +83,7 @@ class RoleRequestRepositoryTest {
     void existsByUserAndState_shouldReturnFalseWhenUserDoesNotHaveInProgressRoleRequest() {
         //given
         AppUserEntity userLi = userRepository.save(UserMappers.mapToAppUserEntity("Li", "li", "pass"));
-        AppRoleEntity requestedRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("author"));
+        AppRoleEntity requestedRole = roleRepository.save(AppRoleEntity.builder().roleName("role").build());
 
         underTest.save(RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole, DECLINED));
 
@@ -99,7 +98,7 @@ class RoleRequestRepositoryTest {
     void existsByUserAndState_shouldReturnTrueWhenUserHasInProgressRoleRequest() {
         //given
         AppUserEntity userLi = userRepository.save(UserMappers.mapToAppUserEntity("Li", "li", "pass"));
-        AppRoleEntity requestedRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("author"));
+        AppRoleEntity requestedRole = roleRepository.save(AppRoleEntity.builder().roleName("role").build());
 
         underTest.save(RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole, IN_PROGRESS));
 
@@ -134,7 +133,7 @@ class RoleRequestRepositoryTest {
     void findAllByState_shouldReturnValidDataWhenRequestIsValid() {
         //given
         State state = IN_PROGRESS;
-        AppRoleEntity requestedRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("author"));
+        AppRoleEntity requestedRole = roleRepository.save(AppRoleEntity.builder().roleName("role").build());
 
         AppUserEntity userLi = userRepository.save(UserMappers.mapToAppUserEntity("Li", "li", "pass"));
         AppUserEntity userKun = userRepository.save(UserMappers.mapToAppUserEntity("Kun", "kun", "pass"));
@@ -168,7 +167,7 @@ class RoleRequestRepositoryTest {
         //given
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("Jon", "jon", "pass"));
 
-        AppRoleEntity requestedRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("author"));
+        AppRoleEntity requestedRole = roleRepository.save(AppRoleEntity.builder().roleName("role").build());
 
         AppUserEntity userLi = userRepository.save(UserMappers.mapToAppUserEntity("Li", "li", "pass"));
         AppUserEntity userKun = userRepository.save(UserMappers.mapToAppUserEntity("Kun", "kun", "pass"));
@@ -192,7 +191,7 @@ class RoleRequestRepositoryTest {
         //given
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("Jon", "jon", "pass"));
 
-        AppRoleEntity requestedRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("author"));
+        AppRoleEntity requestedRole = roleRepository.save(AppRoleEntity.builder().roleName("role").build());
 
         AppUserEntity userLi = userRepository.save(UserMappers.mapToAppUserEntity("Li", "li", "pass"));
         AppUserEntity userKun = userRepository.save(UserMappers.mapToAppUserEntity("Kun", "kun", "pass"));

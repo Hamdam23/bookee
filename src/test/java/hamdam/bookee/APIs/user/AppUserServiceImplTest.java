@@ -3,13 +3,15 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.image.helpers.ImageMappers;
 import hamdam.bookee.APIs.image.helpers.UserImageDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
-import hamdam.bookee.APIs.user.helpers.*;
+import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
+import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
+import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -191,7 +193,7 @@ class AppUserServiceImplTest {
     void loadUserByUsername_shouldReturnValidDataWhenUsernameIsValid() {
         //given
         String username = "test";
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_ROLE, MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_ROLE, MONITOR_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("niko", role);
         user.setPassword("very_good_password");
         when(appUserRepository.findAppUserByUsernameWithPermission(username)).thenReturn(Optional.of(user));
@@ -263,7 +265,7 @@ class AppUserServiceImplTest {
                 2L,
                 3L
         );
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("henk", role);
         user.setId(1L);
 
@@ -292,7 +294,7 @@ class AppUserServiceImplTest {
                 2L,
                 3L
         );
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("henk", role);
         user.setId(4L);
 
@@ -316,7 +318,7 @@ class AppUserServiceImplTest {
                 2L,
                 3L
         );
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("henk", role);
         user.setId(userId);
 
@@ -342,7 +344,7 @@ class AppUserServiceImplTest {
                 2L,
                 3L
         );
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("henk", role);
         user.setId(4L);
 
@@ -372,7 +374,7 @@ class AppUserServiceImplTest {
                 2L,
                 3L
         );
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         role.setId(4L);
         AppUserEntity currentUser = UserMappers.mapToAppUserEntity("Henk", "henk", role);
         currentUser.setId(1L);
@@ -405,7 +407,7 @@ class AppUserServiceImplTest {
         //given
         Long userId = 1L;
         UserImageDTO imageDTO = new UserImageDTO();
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(2L);
 
@@ -424,7 +426,7 @@ class AppUserServiceImplTest {
         //given
         Long userId = 1L;
         UserImageDTO imageDTO = new UserImageDTO();
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(2L);
 
@@ -444,7 +446,7 @@ class AppUserServiceImplTest {
         Long userId = 1L;
         UserImageDTO imageDTO = new UserImageDTO();
         imageDTO.setImageId(2L);
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(3L);
 
@@ -469,11 +471,11 @@ class AppUserServiceImplTest {
         Long userId = 1L;
         UserImageDTO imageDTO = new UserImageDTO();
         imageDTO.setImageId(2L);
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         role.setId(3L);
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(userId);
-        ImageEntity image = ImageMappers.mapToImageEntity("alien", "solar-system/earth");
+        ImageEntity image = ImageEntity.builder().imageName("name").url("url").build();
         image.setId(4L);
 
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
@@ -519,7 +521,7 @@ class AppUserServiceImplTest {
         //given
         Long userId = 1L;
         SetRoleUserRequest roleDTO = new SetRoleUserRequest(2L);
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("test", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("test").permissions(Collections.emptySet()).build();
         role.setId(2L);
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", "pass");
         user.setId(userId);
@@ -545,7 +547,7 @@ class AppUserServiceImplTest {
     void deleteUser_throwsExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(2L);
         when(appUserRepository.existsById(userId)).thenReturn(false);
@@ -565,7 +567,7 @@ class AppUserServiceImplTest {
     void deleteUser_throwsExceptionWhenUserDoesNotHavePermission() {
         //given
         Long userId = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Collections.emptySet());
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(2L);
         when(appUserRepository.existsById(userId)).thenReturn(true);
@@ -583,7 +585,7 @@ class AppUserServiceImplTest {
     void deleteUser_returnValidDataWhenUserHaveRequiredPermission() {
         //given
         Long userId = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(2L);
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
@@ -781,7 +783,7 @@ class AppUserServiceImplTest {
     void getUserByUsername_shouldReturnUserWithPermissionsWhenUsernameIsValid() {
         //given
         String username = "test";
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity(username, role);
         when(appUserRepository.findAppUserByUsernameWithPermission(username)).thenReturn(Optional.of(user));
 

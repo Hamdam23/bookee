@@ -35,7 +35,7 @@ public class ImageServiceImpl implements ImageService {
         String fileName = FileUtils.getUniqueFileName(file);
         String url = s3Repository.writeFileToS3(file, bucketName, fileName);
 
-        return imageRepository.save(ImageMappers.mapToImageEntity(fileName, url));
+        return imageRepository.save(ImageEntity.builder().imageName(fileName).url(url).build());
     }
 
     /**

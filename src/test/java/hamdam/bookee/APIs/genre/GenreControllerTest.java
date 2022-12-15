@@ -6,8 +6,6 @@ import hamdam.bookee.APIs.genre.helpers.GenreRequestDTO;
 import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
@@ -28,6 +26,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static hamdam.bookee.APIs.role.Permissions.CREATE_GENRE;
+import static hamdam.bookee.APIs.role.Permissions.DELETE_GENRE;
+import static hamdam.bookee.APIs.role.Permissions.GET_GENRE;
+import static hamdam.bookee.APIs.role.Permissions.UPDATE_GENRE;
 import static hamdam.bookee.tools.constants.Endpoints.API_GENRE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -70,7 +72,7 @@ class GenreControllerTest {
     @Test
     void addGenre_shouldPostGenre() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.CREATE_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
         GenreRequestDTO request = new GenreRequestDTO("name", "desc", null);
 
@@ -92,7 +94,7 @@ class GenreControllerTest {
     @Test
     void getAllGenres_shouldGetAllGenres() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.GET_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(GET_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         List<GenreEntity> genreList = List.of(
@@ -125,7 +127,7 @@ class GenreControllerTest {
     @Test
     void getGenreByID_shouldGetGenreById() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.GET_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(GET_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
         GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
@@ -147,7 +149,7 @@ class GenreControllerTest {
     @Test
     void updateGenre_shouldUpdateGenre() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.UPDATE_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(UPDATE_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
         GenreEntity existingGenre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
@@ -176,7 +178,7 @@ class GenreControllerTest {
     @Test
     void deleteGenre_shouldDeleteGenre() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.DELETE_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(DELETE_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
         GenreEntity existingGenre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 

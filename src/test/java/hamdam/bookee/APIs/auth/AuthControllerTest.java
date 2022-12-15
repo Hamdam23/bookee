@@ -3,7 +3,6 @@ package hamdam.bookee.APIs.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
@@ -60,7 +59,7 @@ class AuthControllerTest {
         //given
         String username = "blood";
         RegistrationRequest request = new RegistrationRequest("blood-seeker", username, "pass");
-        roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", true, LocalDateTime.now()));
+        roleRepository.save(AppRoleEntity.builder().roleName("role").isDefault(true).timeStamp(LocalDateTime.now()).build());
 
         //when
         ResultActions perform = mockMvc.perform(post(API_REGISTER)
@@ -81,7 +80,7 @@ class AuthControllerTest {
     @Test
     void refreshToken_shouldRefreshToken() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(MONITOR_ROLE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         //when

@@ -9,7 +9,6 @@ import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
@@ -79,7 +78,7 @@ class BookControllerTest {
     @Test
     void addBook_shouldAddBook() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(CREATE_BOOK)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_BOOK)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
         BookRequestDTO request = new BookRequestDTO(
@@ -113,7 +112,7 @@ class BookControllerTest {
     @Test
     void getAllBooks_shouldGetAllBooks() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(GET_BOOK)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(GET_BOOK)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
@@ -156,7 +155,7 @@ class BookControllerTest {
     @Test
     void getBookById_shouldBookById() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(GET_BOOK)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(GET_BOOK)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
@@ -187,7 +186,7 @@ class BookControllerTest {
     @Test
     void updateBook_shouldUpdateBook() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(UPDATE_BOOK)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(UPDATE_BOOK)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
@@ -230,7 +229,7 @@ class BookControllerTest {
     @Test
     void deleteBook_shouldDeleteBook() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(DELETE_BOOK)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(DELETE_BOOK)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
         BookEntity book = bookRepository.save(BookEntity.builder()

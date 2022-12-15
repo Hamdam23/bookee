@@ -8,11 +8,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.image.helpers.ImageDTO;
-import hamdam.bookee.APIs.image.helpers.ImageMappers;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
@@ -37,9 +34,12 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.util.Set;
 
+import static hamdam.bookee.APIs.role.Permissions.CREATE_GENRE;
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Testcontainers(disabledWithoutDocker = true)
@@ -80,7 +80,7 @@ class ImageControllerTest {
     @Test
     void uploadImage_shouldUploadImage() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.CREATE_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         String name = "file";
@@ -104,10 +104,10 @@ class ImageControllerTest {
     @Test
     void getImageByID_shouldGetImageById() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.CREATE_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
-        ImageEntity image = imageRepository.save(ImageMappers.mapToImageEntity("godzilla", "secret-shop"));
+        ImageEntity image = imageRepository.save(ImageEntity.builder().imageName("name").url("url").build());
 
         //when
         ResultActions perform = mockMvc.perform(
@@ -125,10 +125,10 @@ class ImageControllerTest {
     @Test
     void deleteImage_shouldDeleteImageById() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(Permissions.CREATE_GENRE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
-        ImageEntity image = imageRepository.save(ImageMappers.mapToImageEntity("godzilla", "secret-shop"));
+        ImageEntity image = imageRepository.save(ImageEntity.builder().imageName("name").url("url").build());
 
         //when
         ResultActions perform = mockMvc.perform(

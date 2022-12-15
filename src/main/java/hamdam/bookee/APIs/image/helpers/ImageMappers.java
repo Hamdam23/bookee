@@ -9,15 +9,9 @@ import org.springframework.beans.BeanUtils;
 public class ImageMappers {
 
     public static ImageDTO mapToImageDTO(ImageEntity entity) {
+        if (entity == null) return null;
         ImageDTO imageDTO = new ImageDTO();
         BeanUtils.copyProperties(entity, imageDTO);
         return imageDTO;
-    }
-
-    public static ImageEntity mapToImageEntity(String imageName, String location) {
-        ImageEntity imageEntity = new ImageEntity();
-        imageEntity.setImageName(imageName);
-        imageEntity.setUrl(location);
-        return imageEntity;
     }
 }

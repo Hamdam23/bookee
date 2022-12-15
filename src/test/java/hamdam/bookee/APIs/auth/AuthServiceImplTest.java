@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.auth;
 
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserService;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
@@ -34,7 +34,7 @@ class AuthServiceImplTest {
     void registerUser_returnValidResponseWhenRequestIsValid() {
         //given
         String username = "niko";
-        AppUserEntity user = UserMappers.mapToAppUserEntity(username, RoleMappers.mapToAppRoleEntity("role"));
+        AppUserEntity user = UserMappers.mapToAppUserEntity(username, AppRoleEntity.builder().roleName("role").build());
         when(userService.getUserByUsername(username, true)).thenReturn(user);
         when(tokenProvider.getTokenResponse(user)).thenReturn(
                 new TokensResponse("a", "b", "c", "d", "e", Set.of(GET_USER)));

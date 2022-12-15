@@ -95,7 +95,7 @@ class AppRoleServiceImplTest {
     void deleteRoleById_shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
         //given
         Long id = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(GET_USER));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(GET_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Hamdam", role);
 
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
@@ -110,7 +110,7 @@ class AppRoleServiceImplTest {
     @WithMockUser(username = "Hamdam")
     void deleteRoleById_shouldThrowExceptionWhenRoleIdIsInvalid() {
         Long id = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_ROLE));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_ROLE)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Hamdam", role);
 
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
@@ -127,7 +127,7 @@ class AppRoleServiceImplTest {
     void deleteRoleById_shouldReturnValidResponseWhenRequestIsValid() {
         //given
         Long id = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_ROLE));
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_ROLE)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Hamdam", role);
 
         when(appRoleRepository.existsById(id)).thenReturn(true);

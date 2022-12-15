@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
 import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
@@ -24,11 +23,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static hamdam.bookee.APIs.role.Permissions.*;
+import static hamdam.bookee.APIs.role.Permissions.GET_GENRE;
+import static hamdam.bookee.APIs.role.Permissions.GET_USER;
+import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE;
 import static hamdam.bookee.tools.constants.Endpoints.API_ROLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,7 +63,7 @@ class AppRoleControllerTest {
     @Test
     void postRole_shouldPostRole() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(MONITOR_ROLE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
         AppRoleRequestDTO request = new AppRoleRequestDTO("sniper", false, Set.of(GET_USER, GET_GENRE));
 
@@ -84,10 +87,10 @@ class AppRoleControllerTest {
     void getAllRoles_shouldGetAllRoles() throws Exception {
         //given
         List<AppRoleEntity> roleList = List.of(
-                RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)),
-                RoleMappers.mapToAppRoleEntity("dirk", Set.of(GET_USER)),
-                RoleMappers.mapToAppRoleEntity("niko", Set.of(GET_USER)),
-                RoleMappers.mapToAppRoleEntity("dev1ce", Set.of(GET_USER))
+                AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE)).build(),
+                AppRoleEntity.builder().roleName("dirk").permissions(Set.of(GET_USER)).build(),
+                AppRoleEntity.builder().roleName("test").permissions(Set.of(GET_USER)).build(),
+                AppRoleEntity.builder().roleName("joke").permissions(Set.of(GET_USER)).build()
         );
         roleRepository.saveAll(roleList);
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", roleList.get(0)));
@@ -116,9 +119,9 @@ class AppRoleControllerTest {
     @Test
     void deleteRoleById_shouldDeleteRole() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE)).build());
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
-        AppRoleEntity existingRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("lurker", Set.of(MONITOR_ROLE)));
+        AppRoleEntity existingRole = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE)).build());
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_ROLE + "/" + existingRole.getId())
