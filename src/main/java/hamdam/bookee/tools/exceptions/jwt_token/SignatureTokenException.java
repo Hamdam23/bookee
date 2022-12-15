@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class SignatureTokenException extends ApiException {
 
     public SignatureTokenException() {
-        super("Check signature of given token!", HttpStatus.BAD_REQUEST,
+        super("Check the signature of the given token!", HttpStatus.BAD_REQUEST,
                 "SignatureTokenException", new Object[]{});
     }
 }

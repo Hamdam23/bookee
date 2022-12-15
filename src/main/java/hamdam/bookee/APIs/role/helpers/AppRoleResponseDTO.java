@@ -1,16 +1,17 @@
 package hamdam.bookee.APIs.role.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.Permissions;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * It's a DTO that represents the response of the API endpoint that returns a single role
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,8 +28,4 @@ public class AppRoleResponseDTO {
 
     @JsonProperty("permissions")
     private Set<Permissions> permissions = Collections.emptySet();
-
-    public AppRoleResponseDTO(AppRoleEntity entity) {
-        BeanUtils.copyProperties(entity, this);
-    }
 }

@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * It's a DTO that contains the ID of an image
+ */
 @Getter
 @Setter
 @NoArgsConstructor

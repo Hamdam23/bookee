@@ -9,6 +9,9 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
+/**
+ * It's a DTO class that contains the role name, whether it's a default role, and a set of permissions
+ */
 @Getter
 @Setter
 @AllArgsConstructor

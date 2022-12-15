@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RequestRepository extends JpaRepository<RequestEntity, Long>, JpaSpecificationExecutor<RequestEntity> {
+public interface RoleRequestRepository extends JpaRepository<RoleRequestEntity, Long>, JpaSpecificationExecutor<RoleRequestEntity> {
     boolean existsByUserAndState(AppUserEntity user, State state);
 
-    List<RequestEntity> findAllByState(State state);
+    List<RoleRequestEntity> findAllByState(State state);
 
-    List<RequestEntity> findAllByUser(AppUserEntity user);
+    List<RoleRequestEntity> findAllByUser(AppUserEntity user);
 }

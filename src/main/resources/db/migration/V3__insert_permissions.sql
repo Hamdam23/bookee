@@ -1,4 +1,4 @@
-INSERT INTO app_role_entity_permissions (app_role_entity_id, permissions)
+INSERT INTO role_permissions (role_id, permissions)
 VALUES
 (1, 'MONITOR_USER'),
 (1, 'MONITOR_ROLE'),
@@ -12,7 +12,7 @@ VALUES
 (1, 'UPDATE_GENRE'),
 (1, 'DELETE_GENRE');
 
-INSERT INTO app_role_entity_permissions (app_role_entity_id, permissions)
+INSERT INTO role_permissions (role_id, permissions)
 VALUES
 (2, 'GET_USER'),
 (2, 'UPDATE_USER'),
@@ -26,7 +26,7 @@ VALUES
 (2, 'UPDATE_GENRE'),
 (2, 'DELETE_GENRE');
 
-INSERT INTO app_role_entity_permissions (app_role_entity_id, permissions)
+INSERT INTO role_permissions (role_id, permissions)
 VALUES
 (3, 'GET_USER'),
 (3, 'UPDATE_USER'),

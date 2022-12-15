@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * It's a DTO that represents a request to add a user to a role
+ */
 @Getter
 @Setter
 @AllArgsConstructor

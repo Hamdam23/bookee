@@ -1,5 +1,6 @@
 package hamdam.bookee.APIs.book;
 
+import hamdam.bookee.APIs.book.helpers.BookMappers;
 import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
 import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
@@ -13,8 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static hamdam.bookee.APIs.book.helpers.BookMappers.getAuthors;
+import static hamdam.bookee.APIs.book.helpers.BookMappers.getGenres;
 
 @Service
 @RequiredArgsConstructor
@@ -34,46 +37,56 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public BookResponseDTO addBook(BookRequestDTO book) {
-        BookEntity bookEntity = new BookEntity(book);
-        List<AppUserEntity> authors = new ArrayList<>();
-        // Getting the authors from the database and adding them to the bookEntity
-        book.getAuthors().forEach(aLong -> {
-            AppUserEntity author = userRepository.findById(aLong).orElseThrow(()
-                    -> new ResourceNotFoundException("Author", "id", aLong));
-            authors.add(author);
-        });
-        bookEntity.setAuthors(authors);
+        BookEntity bookEntity = BookMappers.mapToBookEntity(book, userRepository, genreRepository);
 
-        List<GenreEntity> genres = getGenreEntities(book.getGenres());
-        bookEntity.setGenres(genres);
-
-        return new BookResponseDTO(bookRepository.save(bookEntity));
+        return BookMappers.mapToBookResponse(bookRepository.save(bookEntity));
     }
 
+    /**
+     * It returns a page of BookResponseDTO objects.
+     *
+     * @param pageable This is the pageable object that contains the page number, page size, and sort order.
+     * @return A Page of BookResponseDTOs
+     */
     @Override
     public Page<BookResponseDTO> getAllBooks(Pageable pageable) {
-        return bookRepository.findAll(pageable).map(BookResponseDTO::new);
+        return bookRepository.findAll(pageable).map(BookMappers::mapToBookResponse);
     }
 
+    /**
+     * It returns a book by id.
+     *
+     * @param id The id of the book to be retrieved.
+     * @return BookResponseDTO
+     */
     @Override
     public BookResponseDTO getBookById(Long id) {
-        return new BookResponseDTO(bookRepository.findById(id).orElseThrow(()
+        return BookMappers.mapToBookResponse(bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id)));
     }
 
+    /**
+     * We are updating the book with the id passed in the request body
+     *
+     * @param bookRequest The request body that contains the new book details.
+     * @param id          The id of the book to be updated.
+     * @return BookResponseDTO
+     */
     @Override
-    public BookResponseDTO updateBook(BookRequestDTO bookRequestDTO, Long id) {
+    public BookResponseDTO updateBook(BookRequestDTO bookRequest, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
-        BeanUtils.copyProperties(bookRequestDTO, oldBook, "id");
+        bookRepository.save(BookMappers.mapToBookEntity(bookRequest, oldBook, userRepository, genreRepository));
 
-        List<GenreEntity> genres = getGenreEntities(bookRequestDTO.getGenres());
-        oldBook.setGenres(genres);
-        bookRepository.save(oldBook);
-
-        return new BookResponseDTO(bookRequestDTO);
+        return BookMappers.mapToBookResponse(oldBook);
     }
 
+    /**
+     * If the book with the given id doesn't exist, throw a ResourceNotFoundException. Otherwise, delete the book with the
+     * given id
+     *
+     * @param id The id of the book to delete.
+     */
     @Override
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
@@ -82,14 +95,4 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    List<GenreEntity> getGenreEntities(List<Long> genreIds) {
-        List<GenreEntity> genreEntities = new ArrayList<>();
-        genreIds.forEach(aLong -> {
-            GenreEntity genre = genreRepository.findById(aLong).orElseThrow(()
-                    -> new ResourceNotFoundException("Genre", "id", aLong));
-            genreEntities.add(genre);
-        });
-
-        return genreEntities;
-    }
 }

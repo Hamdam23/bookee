@@ -3,8 +3,10 @@ package hamdam.bookee.APIs.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +60,7 @@ class AuthControllerTest {
         //given
         String username = "blood";
         RegistrationRequest request = new RegistrationRequest("blood-seeker", username, "pass");
-        roleRepository.save(new AppRoleEntity("role-name", true, LocalDateTime.now()));
+        roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", true, LocalDateTime.now()));
 
         //when
         ResultActions perform = mockMvc.perform(post(API_REGISTER)
@@ -69,18 +71,18 @@ class AuthControllerTest {
         //then
         TokensResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), TokensResponse.class);
         perform.andExpect(status().isOk());
+        assertThat(userRepository.existsByUsername(username)).isTrue();
         assertThat(response.getAccessToken()).isNotBlank();
         assertThat(response.getAccessTokenExpiry()).isNotBlank();
         assertThat(response.getRefreshToken()).isNotBlank();
         assertThat(response.getRefreshTokenExpiry()).isNotBlank();
-        assertThat(userRepository.existsByUsername(username)).isTrue();
     }
 
     @Test
     void refreshToken_shouldRefreshToken() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
 
         //when
         ResultActions perform = mockMvc.perform(get(API_TOKEN_REFRESH)

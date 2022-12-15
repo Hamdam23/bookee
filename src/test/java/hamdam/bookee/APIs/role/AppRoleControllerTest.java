@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
 import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
+import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
+import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -58,8 +60,8 @@ class AppRoleControllerTest {
     @Test
     void postRole_shouldPostRole() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
         AppRoleRequestDTO request = new AppRoleRequestDTO("sniper", false, Set.of(GET_USER, GET_GENRE));
 
         //when
@@ -75,19 +77,20 @@ class AppRoleControllerTest {
         assertThat(response.getRoleName()).isEqualTo(request.getRoleName());
         assertThat(response.getPermissions()).isEqualTo(request.getPermissions());
         assertThat(roleRepository.existsByRoleName(request.getRoleName())).isTrue();
+        assertThat(roleRepository.existsById(response.getId())).isTrue();
     }
 
     @Test
     void getAllRoles_shouldGetAllRoles() throws Exception {
         //given
         List<AppRoleEntity> roleList = List.of(
-                new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)),
-                new AppRoleEntity("dirk", Set.of(GET_USER)),
-                new AppRoleEntity("niko", Set.of(GET_USER)),
-                new AppRoleEntity("dev1ce", Set.of(GET_USER))
+                RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)),
+                RoleMappers.mapToAppRoleEntity("dirk", Set.of(GET_USER)),
+                RoleMappers.mapToAppRoleEntity("niko", Set.of(GET_USER)),
+                RoleMappers.mapToAppRoleEntity("dev1ce", Set.of(GET_USER))
         );
         roleRepository.saveAll(roleList);
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", roleList.get(0)));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", roleList.get(0)));
 
         roleRepository.saveAll(roleList);
 
@@ -113,9 +116,9 @@ class AppRoleControllerTest {
     @Test
     void deleteRoleById_shouldDeleteRole() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(new AppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
-        AppUserEntity user = userRepository.save(new AppUserEntity("nikola", "niko", "pass", role));
-        AppRoleEntity existingRole = roleRepository.save(new AppRoleEntity("lurker", Set.of(MONITOR_ROLE)));
+        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
+        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity existingRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("lurker", Set.of(MONITOR_ROLE)));
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_ROLE + "/" + existingRole.getId())

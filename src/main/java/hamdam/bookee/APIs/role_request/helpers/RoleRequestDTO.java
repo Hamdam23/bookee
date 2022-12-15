@@ -8,6 +8,9 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * It's a DTO class that contains a roleId field
+ */
 @Getter
 @Setter
 @AllArgsConstructor

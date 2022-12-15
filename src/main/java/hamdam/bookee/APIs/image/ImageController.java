@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
+import static hamdam.bookee.tools.annotations.ValidFile.ExtensionGroup.IMAGES;
 import static hamdam.bookee.tools.constants.DeletionMessage.getDeletionMessage;
 import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 
@@ -22,16 +23,36 @@ import static hamdam.bookee.tools.constants.Endpoints.API_IMAGE;
 public class ImageController {
     private final ImageService imageService;
 
+    /**
+     * It takes a file, validates it, and then uploads it to the server
+     *
+     * @param file The file to be uploaded.
+     * @return ImageEntity
+     */
     @PostMapping
-    public ImageEntity uploadImage(@ValidFile @RequestParam MultipartFile file) throws Exception {
+    public ImageEntity uploadImage(@ValidFile(
+            extensionGroups = IMAGES
+    ) @RequestParam MultipartFile file) throws Exception {
         return imageService.uploadImage(file);
     }
 
+    /**
+     * This function takes in a Long id, and returns an ImageDTO
+     *
+     * @param id The id of the image you want to get.
+     * @return ImageDTO
+     */
     @GetMapping("{id}")
     public ImageDTO getImageByID(@PathVariable Long id) {
         return imageService.getImageByID(id);
     }
 
+    /**
+     * It deletes an image by id and returns a response entity with a status of OK
+     *
+     * @param id The id of the image to be deleted.
+     * @return A ResponseEntity object is being returned.
+     */
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long id) {
         imageService.deleteImageById(id);

@@ -1,14 +1,24 @@
 package hamdam.bookee.APIs.image;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
+
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_IMAGE;
+
+/**
+ * It's a JPA entity that represents an Image
+ */
 @Entity
-@Table(name = "images")
+@Table(name = TABLE_NAME_IMAGE)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,10 +31,9 @@ public class ImageEntity {
     private String imageName;
 
     @Column(nullable = false)
-    private String location;
+    private String url;
 
-    public ImageEntity(String imageName, String location) {
-        this.imageName = imageName;
-        this.location = location;
-    }
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 }

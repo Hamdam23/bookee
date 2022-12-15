@@ -1,23 +1,30 @@
 package hamdam.bookee.APIs.book;
 
-import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.BeanUtils;
+import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.*;
+
+/**
+ * It's a book entity with a name, tagline, description, authors, rating, and genres
+ */
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "books")
+@AllArgsConstructor
+@Builder
+@Table(name = TABLE_NAME_BOOK)
 public class BookEntity {
 
     @Id
@@ -35,7 +42,7 @@ public class BookEntity {
 
     @NotEmpty(message = "authors can not be empty!")
     @ManyToMany
-    @JoinTable(name = "book_author",
+    @JoinTable(name = TABLE_NAME_BOOK_AUTHOR,
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
@@ -47,23 +54,13 @@ public class BookEntity {
 
     @NotEmpty(message = "genres can not be empty!")
     @ManyToMany
-    @JoinTable(name = "book_genre",
+    @JoinTable(name = TABLE_NAME_BOOK_GENRE,
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<GenreEntity> genres = new ArrayList<>();
 
-    public BookEntity(BookRequestDTO bookRequestDTO) {
-        BeanUtils.copyProperties(bookRequestDTO, this, "id");
-    }
-
-    public BookEntity(String name, String tagline, String description,
-                      List<AppUserEntity> authors, Double rating, List<GenreEntity> genres) {
-        this.name = name;
-        this.tagline = tagline;
-        this.description = description;
-        this.authors = authors;
-        this.rating = rating;
-        this.genres = genres;
-    }
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 }

@@ -9,6 +9,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+/**
+ * It's a DTO class that contains the name and description of a genre, and a list of books that belong to that genre
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,9 +24,4 @@ public class GenreRequestDTO {
     private String description;
 
     private List<Long> books;
-
-    public GenreRequestDTO(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
 }

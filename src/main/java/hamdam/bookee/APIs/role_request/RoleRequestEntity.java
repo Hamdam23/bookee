@@ -12,12 +12,18 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
+import static hamdam.bookee.tools.constants.Patterns.TIMESTAMP_PATTERN;
+import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_ROLE_REQUEST;
+
+/**
+ * It's a class that represents a request for a role
+ */
 @Entity
-@Table(name = "role_requests")
+@Table(name = TABLE_NAME_ROLE_REQUEST)
 @Getter
 @Setter
 @NoArgsConstructor
-public class RequestEntity {
+public class RoleRequestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,24 +36,13 @@ public class RequestEntity {
     @ManyToOne(optional = false)
     private AppRoleEntity requestedRole;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @UpdateTimestamp
-    private LocalDateTime timeStamp;
-
     @Enumerated(EnumType.STRING)
     private State state;
 
     @Size(max = 200, message = "Description size is too long!")
     private String description;
 
-    public RequestEntity(AppUserEntity user, AppRoleEntity requestedRole, State state) {
-        this.user = user;
-        this.requestedRole = requestedRole;
-        this.state = state;
-    }
-
-    public RequestEntity(AppUserEntity user, AppRoleEntity requestedRole) {
-        this.user = user;
-        this.requestedRole = requestedRole;
-    }
+    @JsonFormat(pattern = TIMESTAMP_PATTERN)
+    @UpdateTimestamp
+    private LocalDateTime timeStamp;
 }
