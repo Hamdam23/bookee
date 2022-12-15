@@ -49,8 +49,7 @@ class BookMappersTest {
         //then
         assertThatThrownBy(() -> BookMappers.getGenres(genreIds, genreRepository))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining(genreIds.toString()
-                );
+                .hasMessageContaining(genreIds.toString());
     }
 
     @Test

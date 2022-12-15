@@ -76,14 +76,7 @@ public class BookServiceImpl implements BookService {
     public BookResponseDTO updateBook(BookRequestDTO bookRequest, Long id) {
         BookEntity oldBook = bookRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Book", "id", id));
-        BeanUtils.copyProperties(bookRequest, oldBook, "id");
-
-        List<AppUserEntity> authors = getAuthors(bookRequest.getAuthors(), userRepository);
-        oldBook.setAuthors(authors);
-
-        List<GenreEntity> genres = getGenres(bookRequest.getGenres(), genreRepository);
-        oldBook.setGenres(genres);
-        bookRepository.save(oldBook);
+        bookRepository.save(BookMappers.mapToBookEntity(bookRequest, oldBook, userRepository, genreRepository));
 
         return BookMappers.mapToBookResponse(oldBook);
     }

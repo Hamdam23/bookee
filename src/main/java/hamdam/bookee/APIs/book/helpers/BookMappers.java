@@ -48,6 +48,21 @@ public class BookMappers {
         return bookEntity;
     }
 
+    public static BookEntity mapToBookEntity(
+            BookRequestDTO bookRequestDTO,
+            BookEntity oldBook,
+            AppUserRepository userRepository,
+            GenreRepository genreRepository
+    ) {
+        if (bookRequestDTO == null) return null;
+        BeanUtils.copyProperties(bookRequestDTO, oldBook, "id");
+
+        oldBook.setAuthors(getAuthors(bookRequestDTO.getAuthors(), userRepository));
+        oldBook.setGenres(getGenres(bookRequestDTO.getGenres(), genreRepository));
+
+        return oldBook;
+    }
+
     public static List<AppUserEntity> getAuthors(List<Long> authorIds, AppUserRepository userRepository) {
         List<AppUserEntity> authors = new ArrayList<>();
         authorIds.forEach(aLong -> {

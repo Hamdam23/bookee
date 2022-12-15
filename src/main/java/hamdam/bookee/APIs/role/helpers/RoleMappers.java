@@ -31,6 +31,7 @@ public class RoleMappers {
         return entity;
     }
 
+
     public static AppRoleEntity mapToAppRoleEntity(String roleName, boolean isDefault, LocalDateTime timeStamp) {
         AppRoleEntity entity = new AppRoleEntity();
         entity.setRoleName(roleName);

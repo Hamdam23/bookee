@@ -112,7 +112,7 @@ class BookControllerTest {
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
         GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
 
-        List<BookEntity> books = List.of(
+        List<BookEntity> books = bookRepository.saveAll(List.of(
                 BookEntity.builder()
                         .name("hobbit")
                         .tagline("h-tag")
@@ -129,8 +129,7 @@ class BookControllerTest {
                         .rating(10.0)
                         .genres(List.of(genre))
                         .build()
-        );
-        bookRepository.saveAll(books);
+        ));
 
         //when
         ResultActions perform = mockMvc.perform(get(API_BOOK)
