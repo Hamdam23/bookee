@@ -6,7 +6,6 @@ import hamdam.bookee.APIs.book.helpers.BookRequestDTO;
 import hamdam.bookee.APIs.book.helpers.BookResponseDTO;
 import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
-import hamdam.bookee.APIs.genre.helpers.GenreMappers;
 import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
@@ -31,11 +30,17 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static hamdam.bookee.APIs.role.Permissions.*;
+import static hamdam.bookee.APIs.role.Permissions.CREATE_BOOK;
+import static hamdam.bookee.APIs.role.Permissions.DELETE_BOOK;
+import static hamdam.bookee.APIs.role.Permissions.GET_BOOK;
+import static hamdam.bookee.APIs.role.Permissions.UPDATE_BOOK;
 import static hamdam.bookee.tools.constants.Endpoints.API_BOOK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -76,7 +81,7 @@ class BookControllerTest {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(CREATE_BOOK)));
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
-        GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
+        GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
         BookRequestDTO request = new BookRequestDTO(
                 "name",
                 "tagline",
@@ -110,7 +115,7 @@ class BookControllerTest {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(GET_BOOK)));
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
-        GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
+        GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
         List<BookEntity> books = bookRepository.saveAll(List.of(
                 BookEntity.builder()
@@ -153,7 +158,7 @@ class BookControllerTest {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(GET_BOOK)));
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
-        GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
+        GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
         BookEntity book = bookRepository.save(BookEntity.builder()
                 .name("hobbit")
@@ -184,7 +189,7 @@ class BookControllerTest {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(UPDATE_BOOK)));
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
-        GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
+        GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
         BookEntity book = bookRepository.save(BookEntity.builder()
                 .name("hobbit")
@@ -227,7 +232,7 @@ class BookControllerTest {
         //given
         AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role", Set.of(DELETE_BOOK)));
         AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("name", "username", "pass", role));
-        GenreEntity genre = genreRepository.save(GenreMappers.mapToGenreEntity("name", "desc"));
+        GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
         BookEntity book = bookRepository.save(BookEntity.builder()
                 .name("hobbit")
                 .tagline("h-tag")

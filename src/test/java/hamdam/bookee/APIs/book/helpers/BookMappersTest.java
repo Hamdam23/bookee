@@ -90,8 +90,7 @@ class BookMappersTest {
         //then
         assertThatThrownBy(() -> BookMappers.getAuthors(authorIds, userRepository))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining(authorIds.toString()
-                );
+                .hasMessageContaining(authorIds.toString());
     }
 
     @Test
@@ -172,6 +171,48 @@ class BookMappersTest {
                 .usingRecursiveComparison()
                 .ignoringFields("timeStamp", "id")
                 .isEqualTo(request);
+    }
+
+    @Test
+    void mapToBookEntity_shouldReturnNullWhenRequestedDtoIsNullOnUpdatingBook() {
+        //given
+        //when
+        BookEntity actual = BookMappers.mapToBookEntity(null, null, userRepository, genreRepository);
+
+        //then
+        assertThat(actual).isNull();
+    }
+
+    @Test
+    void mapToBookEntity_shouldReturnNullWhenRequestIsValidOnUpdatingBook() {
+        //given
+        BookRequestDTO request = BookRequestDTO.builder()
+                .name("hobbit")
+                .tagline("h-tag")
+                .description("h-desc")
+                .authors(new ArrayList<>())
+                .rating(10.0)
+                .genres(new ArrayList<>())
+                .build();
+
+        //when
+        BookEntity actual = BookMappers.mapToBookEntity(request, new BookEntity(), userRepository, genreRepository);
+
+        //then
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("timeStamp", "id")
+                .isEqualTo(request);
+    }
+
+    @Test
+    void mapToGenreEntity_shouldReturnNullWhenRequestedDtoIsNullOnUpdatingBook() {
+        //given
+        //when
+        BookEntity actual = BookMappers.mapToBookEntity(null, null, userRepository, genreRepository);
+
+        //then
+        assertThat(actual).isNull();
     }
 
 }
