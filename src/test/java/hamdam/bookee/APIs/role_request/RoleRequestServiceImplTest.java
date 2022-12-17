@@ -8,7 +8,6 @@ import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
 import hamdam.bookee.tools.exceptions.roleRequest.AlreadyHasInProgressRequestException;
@@ -64,9 +63,19 @@ class RoleRequestServiceImplTest {
     @Test
     void roleRequestBelongsUser_shouldReturnFalseWhenRequestIsNotByUser() {
         //given
-        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", "pass");
+        AppUserEntity userLi = AppUserEntity
+                .builder()
+                .name("Li")
+                .username("li")
+                .password("pass")
+                .build();
         userLi.setId(1L);
-        AppUserEntity userKun = UserMappers.mapToAppUserEntity("Kun", "kun", "pass");
+        AppUserEntity userKun = AppUserEntity
+                .builder()
+                .name("Kun")
+                .username("kun")
+                .password("pass")
+                .build();
         userKun.setId(2L);
         AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("role").build();
         RoleRequestEntity request = RoleRequestEntity.builder().user(userKun).requestedRole(requestedRole).build();
@@ -81,7 +90,12 @@ class RoleRequestServiceImplTest {
     @Test
     void roleRequestBelongsUser_shouldReturnTrueWhenRequestIsByUser() {
         //given
-        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", "pass");
+        AppUserEntity userLi = AppUserEntity
+                .builder()
+                .name("Kun")
+                .username("kun")
+                .password("pass")
+                .build();
         userLi.setId(1L);
         AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("author").build();
         RoleRequestEntity request = RoleRequestEntity.builder().user(userLi).requestedRole(requestedRole).build();
@@ -97,7 +111,7 @@ class RoleRequestServiceImplTest {
     void getUserPermissions_shouldReturnEmptySetWhenUserDoesNotHavePermissions() {
         //given
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
-        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", role);
+        AppUserEntity userLi = AppUserEntity.builder().name("Li").username("li").role(role).build();
 
         //when
         Set<Permissions> actual = underTest.getUserPermissions(userLi);
@@ -110,7 +124,7 @@ class RoleRequestServiceImplTest {
     void getUserPermissions_shouldReturnPermissionsWhenRequestIsValid() {
         //given
         AppRoleEntity role = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_USER, GET_USER)).build();
-        AppUserEntity userLi = UserMappers.mapToAppUserEntity("Li", "li", role);
+        AppUserEntity userLi = AppUserEntity.builder().name("Li").username("li").role(role).build();
 
         //when
         Set<Permissions> actual = underTest.getUserPermissions(userLi);
@@ -123,7 +137,12 @@ class RoleRequestServiceImplTest {
     @WithMockUser("li")
     void postRoleRequest_throwsExceptionWhenUserNotAllowedToRequestRole() {
         //given
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", "pass");
+        AppUserEntity currUser = AppUserEntity
+                .builder()
+                .name("Li")
+                .username("li")
+                .password("pass")
+                .build();
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(true);
 
@@ -143,7 +162,12 @@ class RoleRequestServiceImplTest {
 
         RoleIdRoleRequest request = new RoleIdRoleRequest(role.getId());
 
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", "pass");
+        AppUserEntity currUser = AppUserEntity
+                .builder()
+                .name("Li")
+                .username("li")
+                .password("pass")
+                .build();
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(role.getId())).thenReturn(Optional.empty());
@@ -169,7 +193,7 @@ class RoleRequestServiceImplTest {
 
         RoleIdRoleRequest request = new RoleIdRoleRequest(requestedRole.getId());
 
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
+        AppUserEntity currUser = AppUserEntity.builder().name("Li").username("li").role(userRole).build();
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
@@ -193,7 +217,7 @@ class RoleRequestServiceImplTest {
 
         RoleIdRoleRequest request = new RoleIdRoleRequest(requestedRole.getId());
 
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
+        AppUserEntity currUser = AppUserEntity.builder().name("Li").username("li").role(userRole).build();
         when(userRepository.findAppUserByUsername(currUser.getUsername())).thenReturn(Optional.of(currUser));
         when(roleRequestRepository.existsByUserAndState(currUser, IN_PROGRESS)).thenReturn(false);
         when(roleRepository.findById(requestedRole.getId())).thenReturn(Optional.of(requestedRole));
@@ -214,7 +238,7 @@ class RoleRequestServiceImplTest {
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(CREATE_ROLE_REQUEST)).build();
         userRole.setId(2L);
 
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
+        AppUserEntity currUser = AppUserEntity.builder().name("Li").username("li").role(userRole).build();
         RoleRequestEntity roleRequestEntity = RoleRequestEntity.builder().user(currUser).requestedRole(requestedRole).state(IN_PROGRESS).build();
         RoleIdRoleRequest requestDTO = new RoleIdRoleRequest(requestedRole.getId());
 
@@ -246,7 +270,7 @@ class RoleRequestServiceImplTest {
     void getAllRoleRequests_returnValidDataWhenUserWithoutStateAndWithoutPermission() {
         //given
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
+        AppUserEntity currUser = AppUserEntity.builder().name("Li").username("li").role(userRole).build();
 
         AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
@@ -274,9 +298,9 @@ class RoleRequestServiceImplTest {
     void getAllRoleRequests_returnValidDataWhenUserWithStateAndWithoutPermission() {
         //given
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity("Li", "li", userRole);
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
-        AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
+        AppUserEntity currUser = AppUserEntity.builder().name("Li").username("li").role(userRole).build();
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
+        AppUserEntity userJack = AppUserEntity.builder().name("Jack").username("jackie").role(userRole).build();
 
         AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
@@ -310,10 +334,14 @@ class RoleRequestServiceImplTest {
         AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
 
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
-        AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity(
-                "Li", "li", AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
+        AppUserEntity userJack = AppUserEntity.builder().name("Jack").username("jackie").role(userRole).build();
+        AppUserEntity currUser = AppUserEntity
+                .builder()
+                .name("Li")
+                .username("li")
+                .role(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build())
+                .build();
 
         List<RoleRequestEntity> requestEntities = new ArrayList<>();
         requestEntities.add(RoleRequestEntity.builder().user(currUser).requestedRole(authorRole).state(ACCEPTED).build());
@@ -341,10 +369,14 @@ class RoleRequestServiceImplTest {
         AppRoleEntity authorRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
         AppRoleEntity policeRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
 
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
-        AppUserEntity userJack = UserMappers.mapToAppUserEntity("Jack", "jackie", userRole);
-        AppUserEntity currUser = UserMappers.mapToAppUserEntity(
-                "Li", "li", AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
+        AppUserEntity userJack = AppUserEntity.builder().name("Jack").username("jackie").role(userRole).build();
+        AppUserEntity currUser = AppUserEntity
+                .builder()
+                .name("Li")
+                .username("li")
+                .role(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build())
+                .build();
 
         List<RoleRequestEntity> requestEntities = new ArrayList<>();
         requestEntities.add(RoleRequestEntity.builder().user(currUser).requestedRole(authorRole).state(ACCEPTED).build());
@@ -384,7 +416,7 @@ class RoleRequestServiceImplTest {
         //given
         Long id = 1L;
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
 
         when(roleRequestRepository.findById(id)).thenReturn(Optional.of(new RoleRequestEntity()));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
@@ -403,7 +435,7 @@ class RoleRequestServiceImplTest {
         //given
         Long id = 1L;
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
 
         when(roleRequestRepository.findById(id)).thenReturn(Optional.of(new RoleRequestEntity()));
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
@@ -423,7 +455,7 @@ class RoleRequestServiceImplTest {
         Long id = 1L;
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
         AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
         RoleRequestEntity request = RoleRequestEntity.builder().user(userAnn).requestedRole(requestedRole).state(IN_PROGRESS).build();
 
         when(roleRequestRepository.findById(id)).thenReturn(Optional.of(request));
@@ -448,7 +480,7 @@ class RoleRequestServiceImplTest {
         Long id = 1L;
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
         AppRoleEntity requestedRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build();
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
         RoleRequestEntity request = RoleRequestEntity.builder().user(userAnn).requestedRole(requestedRole).state(IN_PROGRESS).build();
 
 
@@ -486,9 +518,14 @@ class RoleRequestServiceImplTest {
     void deleteRequest_throwsExceptionWhenUserDoesNotHaveAccess() {
         Long id = 1L;
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
         userAnn.setId(2L);
-        AppUserEntity userJon = UserMappers.mapToAppUserEntity("Jon", "snow", userRole);
+        AppUserEntity userJon = AppUserEntity
+                .builder()
+                .name("John")
+                .username("snow")
+                .role(userRole)
+                .build();
         userJon.setId(3L);
         RoleRequestEntity roleRequestEntity = RoleRequestEntity.builder().user(userJon).requestedRole(userRole).state(IN_PROGRESS).build();
 
@@ -507,7 +544,7 @@ class RoleRequestServiceImplTest {
     void deleteRequest_deletesDataWhenUserOwnsRequest() {
         Long id = 1L;
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("author").permissions(Collections.emptySet()).build();
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
         userAnn.setId(2L);
         RoleRequestEntity roleRequestEntity = RoleRequestEntity.builder().user(userAnn).requestedRole(userRole).state(IN_PROGRESS).build();
 
@@ -527,7 +564,7 @@ class RoleRequestServiceImplTest {
     void deleteRequest_deletesDataWhenUserHasMonitoringPermission() {
         Long id = 1L;
         AppRoleEntity userRole = AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build();
-        AppUserEntity userAnn = UserMappers.mapToAppUserEntity("Ann", "ann", userRole);
+        AppUserEntity userAnn = AppUserEntity.builder().name("Ann").username("ann").role(userRole).build();
         userAnn.setId(2L);
         RoleRequestEntity roleRequestEntity = RoleRequestEntity.builder().user(userAnn).requestedRole(userRole).state(IN_PROGRESS).build();
 

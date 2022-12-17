@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 class AppUserRepositoryTest {
@@ -42,8 +43,12 @@ class AppUserRepositoryTest {
     void existsByUsername_returnFalseWhenUserDoesNotExistsWithUsername() {
         //given
         String username = "jackie";
-        underTest.save(UserMappers.mapToAppUserEntity("bob", username, "pass")
-        );
+        underTest.save(AppUserEntity
+                .builder()
+                .name("Kun")
+                .username(username)
+                .password("pass")
+                .build());
 
         //when
         boolean actual = underTest.existsByUsername(username + " test");
@@ -56,8 +61,12 @@ class AppUserRepositoryTest {
     void existsByUsername_returnTrueWhenUserExistsWithUsername() {
         //given
         String username = "jackie";
-        underTest.save(UserMappers.mapToAppUserEntity("bob", username, "pass")
-        );
+        underTest.save(AppUserEntity
+                .builder()
+                .name("Kun")
+                .username(username)
+                .password("pass")
+                .build());
 
         //when
         boolean actual = underTest.existsByUsername(username);
@@ -92,8 +101,12 @@ class AppUserRepositoryTest {
     void findAppUserByUsername_returnValidDataWhenUserFoundWithUsername() {
         //given
         String username = "jackie";
-        AppUserEntity expected = underTest.save(UserMappers.mapToAppUserEntity("bob", username, "pass")
-        );
+        AppUserEntity expected = underTest.save(AppUserEntity
+                .builder()
+                .name("Kun")
+                .username(username)
+                .password("pass")
+                .build());
 
         //when
         Optional<AppUserEntity> actual = underTest.findAppUserByUsername(username);
@@ -118,7 +131,12 @@ class AppUserRepositoryTest {
     @Test
     void findAllByOrderByTimeStampDesc_returnSingleDataWhenSingleUser() {
         //given
-        underTest.save(UserMappers.mapToAppUserEntity("Jackie", "jackie", "pass"));
+        underTest.save(AppUserEntity
+                .builder()
+                .name("Kun")
+                .username("kun")
+                .password("pass")
+                .build());
 
         //when
         Page<AppUserEntity> actual = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(1));
@@ -131,9 +149,9 @@ class AppUserRepositoryTest {
     void findAllByOrderByTimeStampDesc_returnOrderedUsersWhenMultipleUsers() {
         //given
         List<AppUserEntity> expected = new ArrayList<>();
-        expected.add(underTest.save(UserMappers.mapToAppUserEntity("Phil", "philly", "pass", LocalDateTime.now())));
-        expected.add(underTest.save(UserMappers.mapToAppUserEntity("Bob", "bobby", "pass", LocalDateTime.now())));
-        expected.add(underTest.save(UserMappers.mapToAppUserEntity("Luna", "lun", "pass", LocalDateTime.now())));
+        expected.add(underTest.save(AppUserEntity.builder().name("Phil").username("philly").password("pass").timeStamp(LocalDateTime.now()).build()));
+        expected.add(underTest.save(AppUserEntity.builder().name("Bob").username("bobby").password("pass").timeStamp(LocalDateTime.now()).build()));
+        expected.add(underTest.save(AppUserEntity.builder().name("Luna").username("lun").password("pass").timeStamp(LocalDateTime.now()).build()));
 
         //when
         Page<AppUserEntity> actual = underTest.findAllByOrderByTimeStampDesc(Pageable.ofSize(expected.size()));
@@ -150,9 +168,9 @@ class AppUserRepositoryTest {
     void findAllByOrderByTimeStampDesc_returnOrderedUsersWhenMultipleUsersWithUpdatedUser() {
         //given
         List<AppUserEntity> expected = new ArrayList<>();
-        expected.add(underTest.save(UserMappers.mapToAppUserEntity("Phil", "philly", "pass", LocalDateTime.now())));
-        expected.add(underTest.save(UserMappers.mapToAppUserEntity("Bob", "bobby", "pass", LocalDateTime.now())));
-        expected.add(underTest.save(UserMappers.mapToAppUserEntity("Luna", "lun", "pass", LocalDateTime.now())));
+        expected.add(underTest.save(AppUserEntity.builder().name("Phil").username("philly").password("pass").timeStamp(LocalDateTime.now()).build()));
+        expected.add(underTest.save(AppUserEntity.builder().name("Bob").username("bobby").password("pass").timeStamp(LocalDateTime.now()).build()));
+        expected.add(underTest.save(AppUserEntity.builder().name("Luna").username("lun").password("pass").timeStamp(LocalDateTime.now()).build()));
 
         AppUserEntity updated = expected.get(2);
         updated.setUsername(updated.getUsername() + " UPDATED");

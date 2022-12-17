@@ -12,7 +12,6 @@ import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -81,7 +80,7 @@ class ImageControllerTest {
     void uploadImage_shouldUploadImage() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         String name = "file";
         MockMultipartFile file = new MockMultipartFile(name, "file.png", "image/png", name.getBytes());
@@ -105,7 +104,7 @@ class ImageControllerTest {
     void getImageByID_shouldGetImageById() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         ImageEntity image = imageRepository.save(ImageEntity.builder().imageName("name").url("url").build());
 
@@ -126,7 +125,7 @@ class ImageControllerTest {
     void deleteImage_shouldDeleteImageById() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         ImageEntity image = imageRepository.save(ImageEntity.builder().imageName("name").url("url").build());
 

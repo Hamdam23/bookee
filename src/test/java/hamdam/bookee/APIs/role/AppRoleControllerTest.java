@@ -6,7 +6,6 @@ import hamdam.bookee.APIs.role.helpers.AppRoleRequestDTO;
 import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -64,7 +63,7 @@ class AppRoleControllerTest {
     void postRole_shouldPostRole() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(MONITOR_ROLE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
         AppRoleRequestDTO request = new AppRoleRequestDTO("sniper", false, Set.of(GET_USER, GET_GENRE));
 
         //when
@@ -93,7 +92,7 @@ class AppRoleControllerTest {
                 AppRoleEntity.builder().roleName("joke").permissions(Set.of(GET_USER)).build()
         );
         roleRepository.saveAll(roleList);
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", roleList.get(0)));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(roleList.get(0)).build());
 
         roleRepository.saveAll(roleList);
 
@@ -120,7 +119,7 @@ class AppRoleControllerTest {
     void deleteRoleById_shouldDeleteRole() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
         AppRoleEntity existingRole = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE)).build());
 
         //when

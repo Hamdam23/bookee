@@ -9,7 +9,6 @@ import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +73,7 @@ class RoleRequestControllerTest {
     void sendRoleRequest_shouldSendRoleRequest() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(CREATE_ROLE_REQUEST)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity existingRole = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE)).build());
         RoleIdRoleRequest request = new RoleIdRoleRequest(existingRole.getId());
@@ -97,12 +96,12 @@ class RoleRequestControllerTest {
     void getAllRoleRequests_shouldGetAllRoleRequests() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
-        AppUserEntity sam = userRepository.save(UserMappers.mapToAppUserEntity("sam", "sammy", "pass", userRole));
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
+        AppUserEntity sam = userRepository.save(AppUserEntity.builder().name("sam").username("sammy").password("pass").role(userRole).build());
         List<RoleRequestEntity> requestEntities = List.of(
                 RoleRequestEntity.builder().user(phil).requestedRole(role).state(ACCEPTED).build(),
                 RoleRequestEntity.builder().user(bill).requestedRole(role).state(IN_PROGRESS).build(),
@@ -131,12 +130,12 @@ class RoleRequestControllerTest {
     void getAllRoleRequests_shouldGetAllAcceptedRoleRequests() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
-        AppUserEntity sam = userRepository.save(UserMappers.mapToAppUserEntity("sam", "sammy", "pass", userRole));
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
+        AppUserEntity sam = userRepository.save(AppUserEntity.builder().name("sam").username("sammy").password("pass").role(userRole).build());
         List<RoleRequestEntity> requestEntities = List.of(
                 RoleRequestEntity.builder().user(phil).requestedRole(role).state(ACCEPTED).build(),
                 RoleRequestEntity.builder().user(bill).requestedRole(role).state(ACCEPTED).build(),
@@ -168,10 +167,10 @@ class RoleRequestControllerTest {
     void reviewRequest_shouldReviewRoleRequest() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
         RoleRequestEntity existingRequest = roleRequestRepository.save(RoleRequestEntity.builder().user(phil).requestedRole(role).state(IN_PROGRESS).build());
 
         ReviewRequest request = new ReviewRequest(DECLINED, "very bad");
@@ -194,10 +193,10 @@ class RoleRequestControllerTest {
     void reviewRequest_shouldDeleteRoleRequest() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
         RoleRequestEntity existingRequest = roleRequestRepository.save(RoleRequestEntity.builder().user(phil).requestedRole(role).state(IN_PROGRESS).build());
 
         //when

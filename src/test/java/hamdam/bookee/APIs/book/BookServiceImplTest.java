@@ -7,7 +7,6 @@ import hamdam.bookee.APIs.genre.GenreEntity;
 import hamdam.bookee.APIs.genre.GenreRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +60,12 @@ class BookServiceImplTest {
     @Test
     void addBook_shouldAddBookWhenRequestIsValid() {
         //given
-        AppUserEntity author = UserMappers.mapToAppUserEntity("name", "username", "pass");
+        AppUserEntity author = AppUserEntity
+                .builder()
+                .name("name")
+                .username("username")
+                .password("pass")
+                .build();
         author.setId(1L);
         List<AppUserEntity> authors = List.of(author);
 

@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
 import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
+import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
+import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -80,10 +79,10 @@ class AppUserControllerTest {
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_USER)).build());
 
         List<AppUserEntity> users = List.of(
-                UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role),
-                UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole),
-                UserMappers.mapToAppUserEntity("blood", "bloody", "pass", userRole),
-                UserMappers.mapToAppUserEntity("shaker", "shaky", "pass", userRole)
+                AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build(),
+                AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build(),
+                AppUserEntity.builder().name("blood").username("bloody").password("pass").role(userRole).build(),
+                AppUserEntity.builder().name("shaker").username("shaky").password("pass").role(userRole).build()
         );
         userRepository.saveAll(users);
 
@@ -107,13 +106,13 @@ class AppUserControllerTest {
     @Test
     void getUser_shouldGetUserById() throws Exception {
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_USER)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_USER)).build());
         List<AppUserEntity> users = List.of(
-                UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole),
-                UserMappers.mapToAppUserEntity("blood", "bloody", "pass", userRole),
-                UserMappers.mapToAppUserEntity("shaker", "shaky", "pass", userRole)
+                AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build(),
+                AppUserEntity.builder().name("blood").username("bloody").password("pass").role(userRole).build(),
+                AppUserEntity.builder().name("shaker").username("shaky").password("pass").role(userRole).build()
         );
         userRepository.saveAll(users);
 
@@ -131,12 +130,12 @@ class AppUserControllerTest {
     @Test
     void updateUser_shouldUpdateUser() throws Exception {
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_USER)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_USER)).build());
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
 
-        AppUserRequestDTO request = UserMappers.mapToAppUserRequestDTO("jon", "jonny");
+        AppUserRequestDTO request = new AppUserRequestDTO("jon", "jonny", null, null);
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + "/" + bill.getId())
@@ -154,12 +153,14 @@ class AppUserControllerTest {
     void updatePassword_shouldUpdatePassword() throws Exception {
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build());
         String oldPassword = "12345";
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity(
-                "bill",
-                "billy",
-                passwordEncoder.encode(oldPassword),
-                userRole)
-        );
+        AppUserEntity bill = userRepository.save(AppUserEntity
+                .builder()
+                .name("bill")
+                .username("billy")
+                .password(passwordEncoder.encode(oldPassword))
+                .role(userRole)
+                .build());
+
         String newPassword = "new-pass";
         String confirmNewPassword = "new-pass";
         PasswordUpdateRequest request = new PasswordUpdateRequest(oldPassword, newPassword, confirmNewPassword);
@@ -179,10 +180,10 @@ class AppUserControllerTest {
     @Test
     void setRoleToUser_shouldSetRoleToUser() throws Exception {
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_USER)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_USER)).build());
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
 
         SetRoleUserRequest request = new SetRoleUserRequest(role.getId());
 
@@ -203,7 +204,7 @@ class AppUserControllerTest {
     void setImageToUser_shouldSetImageToUser() throws Exception {
         //given
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(GET_USER)).build());
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
 
         ImageEntity image = imageRepository.save(ImageEntity.builder().imageName("name").url("url").build());
         SetImageUserRequest request = new SetImageUserRequest(image.getId());
@@ -225,10 +226,10 @@ class AppUserControllerTest {
     void deleteUser_shouldDeleteUser() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_USER)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_USER)).build());
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_USER + "/" + bill.getId())

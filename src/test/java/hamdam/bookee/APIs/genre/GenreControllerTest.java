@@ -8,7 +8,6 @@ import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -73,7 +72,7 @@ class GenreControllerTest {
     void addGenre_shouldPostGenre() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(CREATE_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
         GenreRequestDTO request = new GenreRequestDTO("name", "desc", null);
 
         //when
@@ -95,7 +94,7 @@ class GenreControllerTest {
     void getAllGenres_shouldGetAllGenres() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(GET_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         List<GenreEntity> genreList = List.of(
                 GenreEntity.builder().name("dirk").description("desc").build(),
@@ -128,7 +127,7 @@ class GenreControllerTest {
     void getGenreByID_shouldGetGenreById() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(GET_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
         GenreEntity genre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
         //when
@@ -150,7 +149,7 @@ class GenreControllerTest {
     void updateGenre_shouldUpdateGenre() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(UPDATE_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
         GenreEntity existingGenre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
         GenreRequestDTO genreRequest = new GenreRequestDTO(
@@ -179,7 +178,7 @@ class GenreControllerTest {
     void deleteGenre_shouldDeleteGenre() throws Exception {
         //given
         AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(DELETE_GENRE)).build());
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
         GenreEntity existingGenre = genreRepository.save(GenreEntity.builder().name("name").description("desc").build());
 
         //when
