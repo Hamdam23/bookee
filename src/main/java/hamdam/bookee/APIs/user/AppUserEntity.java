@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role_request.RoleRequestEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +28,8 @@ import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_USER;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AppUserEntity {
 
     @Id

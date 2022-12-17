@@ -1,5 +1,7 @@
 package hamdam.bookee.APIs.user.helpers;
 
+import hamdam.bookee.APIs.image.helpers.ImageResponseDTO;
+import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +17,6 @@ public class AppUserResponseDTO {
     private Long id;
     private String name;
     private String username;
-    private AppUserRoleDTO role;
-    private SetUserImageDTO image;
+    private AppRoleResponseDTO role;
+    private ImageResponseDTO image;
 }
