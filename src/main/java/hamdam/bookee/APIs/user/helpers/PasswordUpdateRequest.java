@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdatePasswordRequest {
+public class PasswordUpdateRequest {
 
     @JsonProperty("old_password")
     private String oldPassword;
