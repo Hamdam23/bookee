@@ -1,9 +1,9 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.APIs.image.helpers.UserImageDTO;
+import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
 import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
@@ -69,7 +69,7 @@ public class AppUserController {
      * @return AppUserResponseDTO
      */
     @PatchMapping("/change-password/{id}")
-    public AppUserResponseDTO updatePassword(@RequestBody UpdatePasswordRequest passwordDTO, @PathVariable Long id) {
+    public AppUserResponseDTO updatePassword(@RequestBody PasswordUpdateRequest passwordDTO, @PathVariable Long id) {
         return userService.updatePassword(passwordDTO, id);
     }
 
@@ -93,7 +93,7 @@ public class AppUserController {
      * @return AppUserResponseDTO
      */
     @PatchMapping(SET_IMAGE_TO_USER + "/{id}")
-    public AppUserResponseDTO setImageToUser(@PathVariable Long id, @RequestBody UserImageDTO dto) {
+    public AppUserResponseDTO setImageToUser(@PathVariable Long id, @RequestBody SetImageUserRequest dto) {
         return userService.setImageToUser(id, dto);
     }
 

@@ -1,7 +1,8 @@
 package hamdam.bookee.APIs.role_request;
 
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
-import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRequest;
+import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
+import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,12 +26,12 @@ public class RoleRequestController {
     /**
      * It takes a RoleRequestDTO object, validates it, and then sends it to the roleRequestService
      *
-     * @param roleRequestDTO This is the object that will be sent to the server.
+     * @param roleIdRoleRequest This is the object that will be sent to the server.
      * @return A RoleRequestResponse object
      */
     @PostMapping
-    public RoleRequestResponse sendRoleRequest(@Valid @RequestBody RoleRequestDTO roleRequestDTO) {
-        return roleRequestService.postRoleRequest(roleRequestDTO);
+    public RoleRequestResponseDTO sendRoleRequest(@Valid @RequestBody RoleIdRoleRequest roleIdRoleRequest) {
+        return roleRequestService.postRoleRequest(roleIdRoleRequest);
     }
 
     /**
@@ -40,7 +41,7 @@ public class RoleRequestController {
      * @return List of RoleRequestResponse objects
      */
     @GetMapping
-    public List<RoleRequestResponse> getAllRoleRequests(@RequestParam(required = false) State state) {
+    public List<RoleRequestResponseDTO> getAllRoleRequests(@RequestParam(required = false) State state) {
         return roleRequestService.getAllRoleRequests(state);
     }
 
@@ -52,8 +53,8 @@ public class RoleRequestController {
      * @return A RoleRequestResponse object
      */
     @PutMapping("{id}")
-    public RoleRequestResponse reviewRequest(@PathVariable Long id,
-                                             @Valid @RequestBody ReviewRequestDTO review) {
+    public RoleRequestResponseDTO reviewRequest(@PathVariable Long id,
+                                                @Valid @RequestBody ReviewRequest review) {
         return roleRequestService.reviewRequest(id, review);
     }
 

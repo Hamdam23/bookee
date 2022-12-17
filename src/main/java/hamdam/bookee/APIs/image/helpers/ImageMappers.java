@@ -8,10 +8,10 @@ import org.springframework.beans.BeanUtils;
  */
 public class ImageMappers {
 
-    public static ImageDTO mapToImageDTO(ImageEntity entity) {
+    public static ImageResponseDTO mapToImageDTO(ImageEntity entity) {
         if (entity == null) return null;
-        ImageDTO imageDTO = new ImageDTO();
-        BeanUtils.copyProperties(entity, imageDTO);
-        return imageDTO;
+        ImageResponseDTO imageResponseDTO = new ImageResponseDTO();
+        BeanUtils.copyProperties(entity, imageResponseDTO);
+        return imageResponseDTO;
     }
 }

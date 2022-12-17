@@ -1,7 +1,7 @@
 package hamdam.bookee.APIs.image;
 
 import hamdam.bookee.APIs.image.aws_s3.S3Repository;
-import hamdam.bookee.APIs.image.helpers.ImageDTO;
+import hamdam.bookee.APIs.image.helpers.ImageResponseDTO;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,7 +73,7 @@ class ImageServiceImplTest {
         when(imageRepository.findById(id)).thenReturn(Optional.of(image));
 
         //when
-        ImageDTO actual = underTest.getImageByID(id);
+        ImageResponseDTO actual = underTest.getImageByID(id);
 
         //then
         assertThat(actual.getImageName()).isEqualTo(name);

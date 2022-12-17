@@ -3,14 +3,14 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.image.helpers.UserImageDTO;
+import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
-import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
@@ -406,7 +406,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldThrowExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
-        UserImageDTO imageDTO = new UserImageDTO();
+        SetImageUserRequest imageDTO = new SetImageUserRequest();
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(2L);
@@ -425,7 +425,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldThrowExceptionWhenUserDoesNotHaveRequiredPermission() {
         //given
         Long userId = 1L;
-        UserImageDTO imageDTO = new UserImageDTO();
+        SetImageUserRequest imageDTO = new SetImageUserRequest();
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
         user.setId(2L);
@@ -444,7 +444,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldThrowExceptionWhenRequestedImageIsInvalid() {
         //given
         Long userId = 1L;
-        UserImageDTO imageDTO = new UserImageDTO();
+        SetImageUserRequest imageDTO = new SetImageUserRequest();
         imageDTO.setImageId(2L);
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         AppUserEntity user = UserMappers.mapToAppUserEntity("Nicola", "niko", role);
@@ -469,7 +469,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
-        UserImageDTO imageDTO = new UserImageDTO();
+        SetImageUserRequest imageDTO = new SetImageUserRequest();
         imageDTO.setImageId(2L);
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         role.setId(3L);
@@ -605,7 +605,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
-        UpdatePasswordRequest request = new UpdatePasswordRequest(
+        PasswordUpdateRequest request = new PasswordUpdateRequest(
                 "old_password", "new_password", "new_Password"
         );
 
@@ -628,7 +628,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenNewPasswordNotConfirmed() {
         //given
         Long userId = 1L;
-        UpdatePasswordRequest request = new UpdatePasswordRequest(
+        PasswordUpdateRequest request = new PasswordUpdateRequest(
                 "old_password", "new_password", "new_Password"
         );
 
@@ -655,7 +655,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenOldAndNewPasswordAreEqual() {
         //given
         Long userId = 1L;
-        UpdatePasswordRequest request = new UpdatePasswordRequest(
+        PasswordUpdateRequest request = new PasswordUpdateRequest(
                 "old_password", "old_password", "old_password"
         );
 
@@ -683,7 +683,7 @@ class AppUserServiceImplTest {
     void updatePassword_throwsExceptionWhenOldPasswordIsWrong() {
         //given
         Long userId = 1L;
-        UpdatePasswordRequest request = new UpdatePasswordRequest(
+        PasswordUpdateRequest request = new PasswordUpdateRequest(
                 "old_password", "new_password", "new_password"
         );
 
@@ -710,7 +710,7 @@ class AppUserServiceImplTest {
     void updatePassword_returnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
-        UpdatePasswordRequest request = new UpdatePasswordRequest(
+        PasswordUpdateRequest request = new PasswordUpdateRequest(
                 "old_password", "new_password", "new_password"
         );
 

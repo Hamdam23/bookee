@@ -2,7 +2,9 @@ package hamdam.bookee.APIs.user.helpers;
 
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
+import hamdam.bookee.APIs.image.helpers.ImageResponseDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
+import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import org.springframework.beans.BeanUtils;
 
@@ -30,14 +32,14 @@ public class UserMappers {
         return request;
     }
 
-    public static AppUserRoleDTO mapToAppUserRoleDTO(AppRoleEntity entity) {
-        AppUserRoleDTO userRole = new AppUserRoleDTO();
+    public static AppRoleResponseDTO mapToAppUserRoleDTO(AppRoleEntity entity) {
+        AppRoleResponseDTO userRole = new AppRoleResponseDTO();
         BeanUtils.copyProperties(entity, userRole);
         return userRole;
     }
 
-    public static SetUserImageDTO mapToSetUserImageDTO(ImageEntity entity) {
-        SetUserImageDTO image = new SetUserImageDTO();
+    public static ImageResponseDTO mapToImageDTO(ImageEntity entity) {
+        ImageResponseDTO image = new ImageResponseDTO();
         BeanUtils.copyProperties(entity, image);
         return image;
     }
@@ -49,7 +51,7 @@ public class UserMappers {
         if (entity.getRole() != null)
             response.setRole(mapToAppUserRoleDTO(entity.getRole()));
         if (entity.getUserImage() != null)
-            response.setImage(mapToSetUserImageDTO(entity.getUserImage()));
+            response.setImage(mapToImageDTO(entity.getUserImage()));
         return response;
     }
 

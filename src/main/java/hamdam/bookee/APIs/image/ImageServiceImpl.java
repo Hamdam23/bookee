@@ -2,7 +2,7 @@ package hamdam.bookee.APIs.image;
 
 import hamdam.bookee.APIs.image.aws_s3.S3Repository;
 import hamdam.bookee.APIs.image.helpers.FileUtils;
-import hamdam.bookee.APIs.image.helpers.ImageDTO;
+import hamdam.bookee.APIs.image.helpers.ImageResponseDTO;
 import hamdam.bookee.APIs.image.helpers.ImageMappers;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class ImageServiceImpl implements ImageService {
      * @return ImageDTO
      */
     @Override
-    public ImageDTO getImageByID(Long id) {
+    public ImageResponseDTO getImageByID(Long id) {
         return ImageMappers.mapToImageDTO(imageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Image", "id", id)));
     }

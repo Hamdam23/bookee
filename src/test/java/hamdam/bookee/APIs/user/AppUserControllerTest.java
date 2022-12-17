@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.image.helpers.UserImageDTO;
+import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
 import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
-import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
+import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
@@ -162,7 +162,7 @@ class AppUserControllerTest {
         );
         String newPassword = "new-pass";
         String confirmNewPassword = "new-pass";
-        UpdatePasswordRequest request = new UpdatePasswordRequest(oldPassword, newPassword, confirmNewPassword);
+        PasswordUpdateRequest request = new PasswordUpdateRequest(oldPassword, newPassword, confirmNewPassword);
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + "/change-password/" + bill.getId())
@@ -206,7 +206,7 @@ class AppUserControllerTest {
         AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
 
         ImageEntity image = imageRepository.save(ImageEntity.builder().imageName("name").url("url").build());
-        UserImageDTO request = new UserImageDTO(image.getId());
+        SetImageUserRequest request = new SetImageUserRequest(image.getId());
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + SET_IMAGE_TO_USER + "/" + bill.getId())

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ImageDTO {
+public class ImageResponseDTO {
     private Long id;
 
     @JsonProperty("image_name")

@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hamdam.bookee.APIs.image.helpers.ImageDTO;
+import hamdam.bookee.APIs.image.helpers.ImageResponseDTO;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
@@ -117,7 +117,7 @@ class ImageControllerTest {
 
         //then
         perform.andExpect(status().isOk());
-        ImageDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), ImageDTO.class);
+        ImageResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), ImageResponseDTO.class);
         assertThat(response.getId()).isEqualTo(image.getId());
         assertThat(response.getImageName()).isEqualTo(image.getImageName());
     }

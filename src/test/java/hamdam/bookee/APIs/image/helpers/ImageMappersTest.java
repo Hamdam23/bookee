@@ -12,7 +12,7 @@ class ImageMappersTest {
     void mapToImageDTO_shouldReturnNullWhenRequestIsNull() {
         //given
         //when
-        ImageDTO actual = ImageMappers.mapToImageDTO(null);
+        ImageResponseDTO actual = ImageMappers.mapToImageDTO(null);
 
         //then
         assertThat(actual).isNull();
@@ -24,7 +24,7 @@ class ImageMappersTest {
         ImageEntity image = ImageEntity.builder().imageName("name").url("url").build();
 
         //when
-        ImageDTO actual = ImageMappers.mapToImageDTO(image);
+        ImageResponseDTO actual = ImageMappers.mapToImageDTO(image);
 
         //then
         Assertions.assertThat(actual)

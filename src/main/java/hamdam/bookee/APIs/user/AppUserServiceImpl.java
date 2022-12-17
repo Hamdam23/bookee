@@ -3,7 +3,7 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.image.helpers.UserImageDTO;
+import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.*;
@@ -152,7 +152,7 @@ public class AppUserServiceImpl implements AppUserService {
      * @return The user's image is being returned.
      */
     @Override
-    public AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO) {
+    public AppUserResponseDTO setImageToUser(Long id, SetImageUserRequest imageDTO) {
 
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 
@@ -217,7 +217,7 @@ public class AppUserServiceImpl implements AppUserService {
      * @return A user object
      */
     @Override
-    public AppUserResponseDTO updatePassword(UpdatePasswordRequest passwordDTO, Long id) {
+    public AppUserResponseDTO updatePassword(PasswordUpdateRequest passwordDTO, Long id) {
         AppUserEntity user = getAppUserById(id);
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 

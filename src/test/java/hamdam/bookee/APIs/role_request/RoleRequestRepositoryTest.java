@@ -2,7 +2,6 @@ package hamdam.bookee.APIs.role_request;
 
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.APIs.user.helpers.UserMappers;
@@ -85,7 +84,7 @@ class RoleRequestRepositoryTest {
         AppUserEntity userLi = userRepository.save(UserMappers.mapToAppUserEntity("Li", "li", "pass"));
         AppRoleEntity requestedRole = roleRepository.save(AppRoleEntity.builder().roleName("role").build());
 
-        underTest.save(RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole, DECLINED));
+        underTest.save(RoleRequestEntity.builder().user(userLi).requestedRole(requestedRole).state(DECLINED).build());
 
         //when
         boolean actual = underTest.existsByUserAndState(userLi, IN_PROGRESS);
@@ -100,7 +99,7 @@ class RoleRequestRepositoryTest {
         AppUserEntity userLi = userRepository.save(UserMappers.mapToAppUserEntity("Li", "li", "pass"));
         AppRoleEntity requestedRole = roleRepository.save(AppRoleEntity.builder().roleName("role").build());
 
-        underTest.save(RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole, IN_PROGRESS));
+        underTest.save(RoleRequestEntity.builder().user(userLi).requestedRole(requestedRole).state(IN_PROGRESS).build());
 
         //when
         boolean actual = underTest.existsByUserAndState(userLi, IN_PROGRESS);
@@ -140,9 +139,9 @@ class RoleRequestRepositoryTest {
         AppUserEntity userTi = userRepository.save(UserMappers.mapToAppUserEntity("Ti", "ti", "pass"));
 
         List<RoleRequestEntity> expected = new ArrayList<>();
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole, state));
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userKun, requestedRole, state));
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userTi, requestedRole, state));
+        expected.add(RoleRequestEntity.builder().user(userLi).requestedRole(requestedRole).state(state).build());
+        expected.add(RoleRequestEntity.builder().user(userKun).requestedRole(requestedRole).state(state).build());
+        expected.add(RoleRequestEntity.builder().user(userTi).requestedRole(requestedRole).state(state).build());
         underTest.saveAll(expected);
 
         //when
@@ -174,9 +173,9 @@ class RoleRequestRepositoryTest {
         AppUserEntity userTi = userRepository.save(UserMappers.mapToAppUserEntity("Ti", "ti", "pass"));
 
         List<RoleRequestEntity> expected = new ArrayList<>();
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole));
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userKun, requestedRole));
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userTi, requestedRole));
+        expected.add(RoleRequestEntity.builder().user(userLi).requestedRole(requestedRole).build());
+        expected.add(RoleRequestEntity.builder().user(userKun).requestedRole(requestedRole).build());
+        expected.add(RoleRequestEntity.builder().user(userTi).requestedRole(requestedRole).build());
         underTest.saveAll(expected);
 
         //when
@@ -198,10 +197,10 @@ class RoleRequestRepositoryTest {
         AppUserEntity userTi = userRepository.save(UserMappers.mapToAppUserEntity("Ti", "ti", "pass"));
 
         List<RoleRequestEntity> expected = new ArrayList<>();
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(user, requestedRole));
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userLi, requestedRole));
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userKun, requestedRole));
-        expected.add(RoleRequestMappers.mapToRoleRequestEntity(userTi, requestedRole));
+        expected.add(RoleRequestEntity.builder().user(user).requestedRole(requestedRole).build());
+        expected.add(RoleRequestEntity.builder().user(userLi).requestedRole(requestedRole).build());
+        expected.add(RoleRequestEntity.builder().user(userKun).requestedRole(requestedRole).build());
+        expected.add(RoleRequestEntity.builder().user(userTi).requestedRole(requestedRole).build());
         underTest.saveAll(expected);
 
         //when

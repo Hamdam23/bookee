@@ -60,5 +60,4 @@ public class AppRoleEntity {
     @JsonFormat(pattern = TIMESTAMP_PATTERN)
     @UpdateTimestamp
     private LocalDateTime timeStamp;
-
 }
