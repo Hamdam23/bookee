@@ -18,7 +18,7 @@ class UserMappersTest {
     void mapToAppUserResponseDTO_shouldReturnNullWhenRequestIsNull() {
         //given
         //when
-        AppUserResponseDTO actual = UserMappers.mapToAppUserResponseDTO(null);
+        UserResponseDTO actual = UserMappers.mapToAppUserResponseDTO(null);
 
         //then
         assertThat(actual).isNull();
@@ -44,7 +44,7 @@ class UserMappersTest {
                 .userImage(image)
                 .build();
         //when
-        AppUserResponseDTO actual = UserMappers.mapToAppUserResponseDTO(user);
+        UserResponseDTO actual = UserMappers.mapToAppUserResponseDTO(user);
 
         //then
         Assertions.assertThat(actual)

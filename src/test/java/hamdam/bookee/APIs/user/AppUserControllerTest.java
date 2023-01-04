@@ -6,11 +6,11 @@ import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.UserRequestDTO;
+import hamdam.bookee.APIs.user.helpers.UserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
-import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
-import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
+import hamdam.bookee.APIs.user.helpers.SetUserImageRequest;
+import hamdam.bookee.APIs.user.helpers.SetUseRoleRequest;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -92,11 +92,11 @@ class AppUserControllerTest {
         );
 
         //then
-        PagedResponse<AppUserResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+        PagedResponse<UserResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
         assertThat(response.getContent())
-                .extracting(AppUserResponseDTO::getId)
+                .extracting(UserResponseDTO::getId)
                 .containsExactlyInAnyOrderElementsOf(
                         users.stream().map(AppUserEntity::getId).collect(Collectors.toList())
                 );
@@ -122,7 +122,7 @@ class AppUserControllerTest {
         );
 
         //then
-        AppUserResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), AppUserResponseDTO.class);
+        UserResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), UserResponseDTO.class);
         perform.andExpect(status().isOk());
         assertThat(response.getUsername()).isEqualTo(users.get(0).getUsername());
     }
@@ -135,7 +135,7 @@ class AppUserControllerTest {
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_USER)).build());
         AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
 
-        AppUserRequestDTO request = new AppUserRequestDTO("jon", "jonny", null, null);
+        UserRequestDTO request = new UserRequestDTO("jon", "jonny", null, null);
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + "/" + bill.getId())
@@ -185,7 +185,7 @@ class AppUserControllerTest {
         AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_USER)).build());
         AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
 
-        SetRoleUserRequest request = new SetRoleUserRequest(role.getId());
+        SetUseRoleRequest request = new SetUseRoleRequest(role.getId());
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + API_SET_ROLE_USER + "/" + bill.getId())
@@ -195,7 +195,7 @@ class AppUserControllerTest {
         );
 
         //then
-        AppUserResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), AppUserResponseDTO.class);
+        UserResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), UserResponseDTO.class);
         perform.andExpect(status().isOk());
         assertThat(response.getRole().getId()).isEqualTo(role.getId());
     }
@@ -207,7 +207,7 @@ class AppUserControllerTest {
         AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
 
         ImageEntity image = imageRepository.save(ImageEntity.builder().imageName("name").url("url").build());
-        SetImageUserRequest request = new SetImageUserRequest(image.getId());
+        SetUserImageRequest request = new SetUserImageRequest(image.getId());
 
         //when
         ResultActions perform = mockMvc.perform(patch(API_USER + SET_IMAGE_TO_USER + "/" + bill.getId())
@@ -217,7 +217,7 @@ class AppUserControllerTest {
         );
 
         //then
-        AppUserResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), AppUserResponseDTO.class);
+        UserResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), UserResponseDTO.class);
         perform.andExpect(status().isOk());
         assertThat(response.getImage().getId()).isEqualTo(image.getId());
     }

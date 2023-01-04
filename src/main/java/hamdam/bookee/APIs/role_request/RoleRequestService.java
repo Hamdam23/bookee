@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.role_request;
 
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequest;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRoleRequestRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 
@@ -12,7 +12,7 @@ public interface RoleRequestService {
 
     List<RoleRequestResponseDTO> getAllRoleRequests(State reviewState);
 
-    RoleRequestResponseDTO reviewRequest(Long id, ReviewRequest reviewState);
+    RoleRequestResponseDTO reviewRequest(Long id, ReviewRoleRequestRequestDTO reviewState);
 
     void deleteRequest(Long id);
 }

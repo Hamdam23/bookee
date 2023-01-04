@@ -3,7 +3,7 @@ package hamdam.bookee.APIs.role_request;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequest;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRoleRequestRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
@@ -404,7 +404,7 @@ class RoleRequestServiceImplTest {
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequest()))
+        assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRoleRequestRequestDTO()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining(id.toString());
         verify(roleRequestRepository).findById(id);
@@ -423,7 +423,7 @@ class RoleRequestServiceImplTest {
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequest()))
+        assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRoleRequestRequestDTO()))
                 .isInstanceOf(LimitedPermissionException.class);
         verify(roleRequestRepository).findById(id);
         verify(userRepository).findAppUserByUsername(userAnn.getUsername());
@@ -442,7 +442,7 @@ class RoleRequestServiceImplTest {
 
         //when
         //then
-        assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRequest(IN_PROGRESS, null)))
+        assertThatThrownBy(() -> underTest.reviewRequest(id, new ReviewRoleRequestRequestDTO(IN_PROGRESS, null)))
                 .isInstanceOf(IncorrectStateValueException.class);
         verify(roleRequestRepository).findById(id);
         verify(userRepository).findAppUserByUsername(userAnn.getUsername());
@@ -462,7 +462,7 @@ class RoleRequestServiceImplTest {
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
-        RoleRequestResponseDTO actual = underTest.reviewRequest(id, new ReviewRequest(DECLINED, null));
+        RoleRequestResponseDTO actual = underTest.reviewRequest(id, new ReviewRoleRequestRequestDTO(DECLINED, null));
 
         //then
         verify(roleRequestRepository).findById(id);
@@ -488,7 +488,7 @@ class RoleRequestServiceImplTest {
         when(userRepository.findAppUserByUsername(userAnn.getUsername())).thenReturn(Optional.of(userAnn));
 
         //when
-        RoleRequestResponseDTO actual = underTest.reviewRequest(id, new ReviewRequest(ACCEPTED, "nice"));
+        RoleRequestResponseDTO actual = underTest.reviewRequest(id, new ReviewRoleRequestRequestDTO(ACCEPTED, "nice"));
 
         //then
         verify(roleRequestRepository).findById(id);

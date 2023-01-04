@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AppUserResponseDTO {
+public class UserResponseDTO {
 
     private Long id;
     private String name;

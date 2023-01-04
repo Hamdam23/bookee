@@ -6,11 +6,11 @@ import hamdam.bookee.APIs.image.ImageRepository;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.UserRequestDTO;
+import hamdam.bookee.APIs.user.helpers.UserResponseDTO;
 import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
-import hamdam.bookee.APIs.user.helpers.SetImageUserRequest;
-import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
+import hamdam.bookee.APIs.user.helpers.SetUserImageRequest;
+import hamdam.bookee.APIs.user.helpers.SetUseRoleRequest;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -231,7 +231,7 @@ class AppUserServiceImplTest {
                 .thenReturn(Page.empty(Pageable.ofSize(1)));
 
         //when
-        Page<AppUserResponseDTO> actual = underTest.getAllUsers(pageable);
+        Page<UserResponseDTO> actual = underTest.getAllUsers(pageable);
 
         //then
         verify(appUserRepository).findAllByOrderByTimeStampDesc(pageable);
@@ -260,7 +260,7 @@ class AppUserServiceImplTest {
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(new AppUserEntity()));
 
         //when
-        AppUserResponseDTO actual = underTest.getUserById(userId);
+        UserResponseDTO actual = underTest.getUserById(userId);
 
         //then
         verify(appUserRepository).findById(userId);
@@ -272,7 +272,7 @@ class AppUserServiceImplTest {
     void updateUser_shouldThrowExceptionWhenImageIdIsInvalid() {
         //given
         Long userId = 1L;
-        AppUserRequestDTO request = new AppUserRequestDTO(
+        UserRequestDTO request = new UserRequestDTO(
                 "Nicola",
                 "niko",
                 2L,
@@ -305,7 +305,7 @@ class AppUserServiceImplTest {
     void updateUser_shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
         //given
         Long userId = 1L;
-        AppUserRequestDTO request = new AppUserRequestDTO(
+        UserRequestDTO request = new UserRequestDTO(
                 "Nicola",
                 "niko",
                 2L,
@@ -333,7 +333,7 @@ class AppUserServiceImplTest {
     void updateUser_shouldThrowExceptionWhenUserRequest() {
         //given
         Long userId = 1L;
-        AppUserRequestDTO request = new AppUserRequestDTO(
+        UserRequestDTO request = new UserRequestDTO(
                 "Nicola",
                 "niko",
                 2L,
@@ -363,7 +363,7 @@ class AppUserServiceImplTest {
     void updateUser_shouldThrowExceptionWhenUserWithRequestedUsernameExists() {
         //given
         Long userId = 1L;
-        AppUserRequestDTO request = new AppUserRequestDTO(
+        UserRequestDTO request = new UserRequestDTO(
                 "Nicola",
                 "niko",
                 2L,
@@ -397,7 +397,7 @@ class AppUserServiceImplTest {
     void updateUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
-        AppUserRequestDTO request = new AppUserRequestDTO(
+        UserRequestDTO request = new UserRequestDTO(
                 "Nicola",
                 "niko",
                 2L,
@@ -425,7 +425,7 @@ class AppUserServiceImplTest {
         when(appUserRepository.save(requestedUser)).thenReturn(requestedUser);
 
         //when
-        AppUserResponseDTO actual = underTest.updateUser(request, userId);
+        UserResponseDTO actual = underTest.updateUser(request, userId);
 
         //then
         verify(appUserRepository).save(requestedUser);
@@ -440,7 +440,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldThrowExceptionWhenUserIdIsInvalid() {
         //given
         Long userId = 1L;
-        SetImageUserRequest imageDTO = new SetImageUserRequest();
+        SetUserImageRequest imageDTO = new SetUserImageRequest();
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = AppUserEntity
                 .builder()
@@ -464,7 +464,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldThrowExceptionWhenUserDoesNotHaveRequiredPermission() {
         //given
         Long userId = 1L;
-        SetImageUserRequest imageDTO = new SetImageUserRequest();
+        SetUserImageRequest imageDTO = new SetUserImageRequest();
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Collections.emptySet()).build();
         AppUserEntity user = AppUserEntity
                 .builder()
@@ -488,7 +488,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldThrowExceptionWhenRequestedImageIsInvalid() {
         //given
         Long userId = 1L;
-        SetImageUserRequest imageDTO = new SetImageUserRequest();
+        SetUserImageRequest imageDTO = new SetUserImageRequest();
         imageDTO.setImageId(2L);
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         AppUserEntity user = AppUserEntity
@@ -518,7 +518,7 @@ class AppUserServiceImplTest {
     void setImageToUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
-        SetImageUserRequest imageDTO = new SetImageUserRequest();
+        SetUserImageRequest imageDTO = new SetUserImageRequest();
         imageDTO.setImageId(2L);
         AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_USER)).build();
         role.setId(3L);
@@ -538,7 +538,7 @@ class AppUserServiceImplTest {
         when(appUserRepository.save(user)).thenReturn(user);
 
         //when
-        AppUserResponseDTO actual = underTest.setImageToUser(userId, imageDTO);
+        UserResponseDTO actual = underTest.setImageToUser(userId, imageDTO);
 
         //then
         verify(appUserRepository).findAppUserByUsername(user.getUsername());
@@ -555,7 +555,7 @@ class AppUserServiceImplTest {
     void setRoleToUser_throwsExceptionWhenRoleIdIsInvalid() {
         //given
         Long userId = 1L;
-        SetRoleUserRequest roleDTO = new SetRoleUserRequest(2L);
+        SetUseRoleRequest roleDTO = new SetUseRoleRequest(2L);
         when(appUserRepository.findById(userId)).thenReturn(Optional.of(new AppUserEntity()));
         when(appRoleRepository.findById(roleDTO.getRoleId())).thenReturn(Optional.empty());
 
@@ -574,7 +574,7 @@ class AppUserServiceImplTest {
     void setRoleToUser_shouldReturnValidDataWhenRequestIsValid() {
         //given
         Long userId = 1L;
-        SetRoleUserRequest roleDTO = new SetRoleUserRequest(2L);
+        SetUseRoleRequest roleDTO = new SetUseRoleRequest(2L);
         AppRoleEntity role = AppRoleEntity.builder().roleName("test").permissions(Collections.emptySet()).build();
         role.setId(2L);
         AppUserEntity user = AppUserEntity
@@ -590,7 +590,7 @@ class AppUserServiceImplTest {
         when(appUserRepository.save(user)).thenReturn(user);
 
         //when
-        AppUserResponseDTO actual = underTest.setRoleToUser(userId, roleDTO);
+        UserResponseDTO actual = underTest.setRoleToUser(userId, roleDTO);
 
         //then
         verify(appUserRepository).findById(userId);

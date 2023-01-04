@@ -12,22 +12,19 @@ import org.springframework.beans.BeanUtils;
  */
 public class UserMappers {
 
-    public static AppUserResponseDTO mapToAppUserResponseDTO(AppUserEntity entity) {
+    public static UserResponseDTO mapToAppUserResponseDTO(AppUserEntity entity) {
         if (entity == null) return null;
-        AppUserResponseDTO response = new AppUserResponseDTO();
+        UserResponseDTO response = new UserResponseDTO();
         BeanUtils.copyProperties(entity, response);
-        if (entity.getRole() != null)
-            response.setRole(RoleMappers.mapToAppRoleResponseDTO(entity.getRole()));
-        if (entity.getUserImage() != null)
-            response.setImage(ImageMappers.mapToImageDTO(entity.getUserImage()));
+        response.setRole(RoleMappers.mapToAppRoleResponseDTO(entity.getRole()));
+        response.setImage(ImageMappers.mapToImageDTO(entity.getUserImage()));
         return response;
     }
 
     public static AppUserEntity mapToAppUserEntity(RegistrationRequest dto) {
         if (dto == null) return null;
         AppUserEntity user = new AppUserEntity();
-        user.setName(dto.getName());
-        user.setUsername(dto.getUsername());
+        BeanUtils.copyProperties(dto, user, "password");
         return user;
     }
 }

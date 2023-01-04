@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * It's a DTO that contains the ID of an image
+ * It's a request object that contains a roleId
  */
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class SetImageUserRequest {
-    @JsonProperty("image_id")
-    private Long imageId;
+@NoArgsConstructor
+public class SetUseRoleRequest {
+    @JsonProperty("role_id")
+    private Long roleId;
 }

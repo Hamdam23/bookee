@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppUserRequestDTO {
+public class UserRequestDTO {
 
     @NotBlank()
     private String name;

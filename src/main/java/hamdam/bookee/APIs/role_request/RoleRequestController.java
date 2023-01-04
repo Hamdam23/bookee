@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.role_request;
 
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequest;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRoleRequestRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.tools.exceptions.ApiResponse;
@@ -54,7 +54,7 @@ public class RoleRequestController {
      */
     @PutMapping("{id}")
     public RoleRequestResponseDTO reviewRequest(@PathVariable Long id,
-                                                @Valid @RequestBody ReviewRequest review) {
+                                                @Valid @RequestBody ReviewRoleRequestRequestDTO review) {
         return roleRequestService.reviewRequest(id, review);
     }
 

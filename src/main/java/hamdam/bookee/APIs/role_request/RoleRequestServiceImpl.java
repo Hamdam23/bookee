@@ -6,7 +6,7 @@ package hamdam.bookee.APIs.role_request;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequest;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRoleRequestRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
@@ -90,7 +90,7 @@ public class RoleRequestServiceImpl implements RoleRequestService {
      * @return A RoleRequestResponse object is being returned.
      */
     @Override
-    public RoleRequestResponseDTO reviewRequest(Long id, ReviewRequest review) {
+    public RoleRequestResponseDTO reviewRequest(Long id, ReviewRoleRequestRequestDTO review) {
         RoleRequestEntity roleRequestEntity = roleRequestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );

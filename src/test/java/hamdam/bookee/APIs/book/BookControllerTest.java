@@ -11,7 +11,7 @@ import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.UserResponseDTO;
 import hamdam.bookee.tools.paging.PagedResponse;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -103,7 +103,7 @@ class BookControllerTest {
                 .usingRecursiveComparison()
                 .ignoringFields("authors", "genres")
                 .isEqualTo(response);
-        assertThat(response.getAuthors().stream().map(AppUserResponseDTO::getId).collect(Collectors.toList())).contains(user.getId());
+        assertThat(response.getAuthors().stream().map(UserResponseDTO::getId).collect(Collectors.toList())).contains(user.getId());
         assertThat(response.getGenres().stream().map(GenreResponseDTO::getId).collect(Collectors.toList())).contains(genre.getId());
         assertThat(bookRepository.existsById(response.getId())).isTrue();
     }
@@ -221,7 +221,7 @@ class BookControllerTest {
         assertThat(response.getName()).isEqualTo(request.getName());
         assertThat(response.getRating()).isEqualTo(request.getRating());
         assertThat(response.getTagline()).isEqualTo(request.getTagline());
-        assertThat(response.getAuthors().stream().map(AppUserResponseDTO::getId).collect(Collectors.toList())).contains(request.getAuthors().get(0));
+        assertThat(response.getAuthors().stream().map(UserResponseDTO::getId).collect(Collectors.toList())).contains(request.getAuthors().get(0));
         assertThat(response.getGenres().stream().map(GenreResponseDTO::getId).collect(Collectors.toList())).contains(request.getGenres().get(0));
     }
 

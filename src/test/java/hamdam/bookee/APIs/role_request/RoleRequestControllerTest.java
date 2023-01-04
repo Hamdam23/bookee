@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequest;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRoleRequestRequestDTO;
 import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
@@ -173,7 +173,7 @@ class RoleRequestControllerTest {
         AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
         RoleRequestEntity existingRequest = roleRequestRepository.save(RoleRequestEntity.builder().user(phil).requestedRole(role).state(IN_PROGRESS).build());
 
-        ReviewRequest request = new ReviewRequest(DECLINED, "very bad");
+        ReviewRoleRequestRequestDTO request = new ReviewRoleRequestRequestDTO(DECLINED, "very bad");
 
         //when
         ResultActions perform = mockMvc.perform(put(API_ROLE_REQUEST + "/" + existingRequest.getId())
