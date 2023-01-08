@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  app:
+    image: 'bookee'
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://PostgreSQL:5432/bookee
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    networks:
+      - host
+
+  db:
+    image: 'postgres:14.6-alpine'
+    container_name: db
+    ports:
+      - "5454:5432"
+    volumes:
+      - ./postgresql/:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - host
+
+networks:
+  host:
