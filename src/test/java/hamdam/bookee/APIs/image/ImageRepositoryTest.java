@@ -1,6 +1,5 @@
 package hamdam.bookee.APIs.image;
 
-import hamdam.bookee.APIs.image.helpers.ImageMappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ class ImageRepositoryTest {
     void findByImageName_returnValidDataWhenImageNameIsValid() {
         //given
         String name = "name123456.jpg";
-        underTest.save(ImageMappers.mapToImageEntity(name, "location"));
+        underTest.save(ImageEntity.builder().imageName(name).url("url").build());
 
         //when
         Optional<ImageEntity> actual = underTest.findByImageName(name);

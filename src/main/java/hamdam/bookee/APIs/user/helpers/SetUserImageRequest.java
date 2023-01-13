@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.image.helpers;
+package hamdam.bookee.APIs.user.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserImageDTO {
+public class SetUserImageRequest {
     @JsonProperty("image_id")
     private Long imageId;
 }

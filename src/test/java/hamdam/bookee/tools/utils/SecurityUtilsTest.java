@@ -2,7 +2,6 @@ package hamdam.bookee.tools.utils;
 
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +46,12 @@ class SecurityUtilsTest {
     @WithMockUser(username = "philly")
     void getUserByRequest_returnValidDataWhenRequestIsValid() {
         //given
-        AppUserEntity user = UserMappers.mapToAppUserEntity("Phil", "philly", "pass");
+        AppUserEntity user = AppUserEntity
+                .builder()
+                .name("Phil")
+                .username("philly")
+                .password("pass")
+                .build();
 
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 

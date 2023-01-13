@@ -1,10 +1,10 @@
 package hamdam.bookee.APIs.user;
 
-import hamdam.bookee.APIs.image.helpers.UserImageDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
-import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
+import hamdam.bookee.APIs.user.helpers.SetUserImageRequest;
+import hamdam.bookee.APIs.user.helpers.UserRequestDTO;
+import hamdam.bookee.APIs.user.helpers.UserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
+import hamdam.bookee.APIs.user.helpers.SetUseRoleRequest;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import hamdam.bookee.tools.paging.PagedResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class AppUserController {
      * @return A PagedResponse object containing a list of AppUserResponseDTO objects.
      */
     @GetMapping
-    public PagedResponse<AppUserResponseDTO> getAllUsers(@PageableDefault Pageable pageable) {
+    public PagedResponse<UserResponseDTO> getAllUsers(@PageableDefault Pageable pageable) {
         return new PagedResponse<>(userService.getAllUsers(pageable));
     }
 
@@ -44,7 +44,7 @@ public class AppUserController {
      * @return AppUserResponseDTO
      */
     @GetMapping("/{id}")
-    public AppUserResponseDTO getUser(@PathVariable Long id) {
+    public UserResponseDTO getUser(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
@@ -56,7 +56,7 @@ public class AppUserController {
      * @return AppUserResponseDTO
      */
     @PatchMapping("/{id}")
-    public AppUserResponseDTO updateUser(@RequestBody AppUserRequestDTO user, @PathVariable Long id) {
+    public UserResponseDTO updateUser(@RequestBody UserRequestDTO user, @PathVariable Long id) {
         return userService.updateUser(user, id);
     }
 
@@ -69,7 +69,7 @@ public class AppUserController {
      * @return AppUserResponseDTO
      */
     @PatchMapping("/change-password/{id}")
-    public AppUserResponseDTO updatePassword(@RequestBody UpdatePasswordRequest passwordDTO, @PathVariable Long id) {
+    public UserResponseDTO updatePassword(@RequestBody PasswordUpdateRequest passwordDTO, @PathVariable Long id) {
         return userService.updatePassword(passwordDTO, id);
     }
 
@@ -77,12 +77,12 @@ public class AppUserController {
      * It sets the role of a user.
      *
      * @param id The id of the user to be updated
-     * @param setRoleUserRequest
+     * @param setUseRoleRequest
      * @return AppUserResponseDTO
      */
     @PatchMapping(API_SET_ROLE_USER + "/{id}")
-    public AppUserResponseDTO setRoleToUser(@PathVariable Long id, @RequestBody SetRoleUserRequest setRoleUserRequest) {
-        return userService.setRoleToUser(id, setRoleUserRequest);
+    public UserResponseDTO setRoleToUser(@PathVariable Long id, @RequestBody SetUseRoleRequest setUseRoleRequest) {
+        return userService.setRoleToUser(id, setUseRoleRequest);
     }
 
     /**
@@ -93,7 +93,7 @@ public class AppUserController {
      * @return AppUserResponseDTO
      */
     @PatchMapping(SET_IMAGE_TO_USER + "/{id}")
-    public AppUserResponseDTO setImageToUser(@PathVariable Long id, @RequestBody UserImageDTO dto) {
+    public UserResponseDTO setImageToUser(@PathVariable Long id, @RequestBody SetUserImageRequest dto) {
         return userService.setImageToUser(id, dto);
     }
 

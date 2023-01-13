@@ -1,6 +1,6 @@
 package hamdam.bookee.APIs.image;
 
-import hamdam.bookee.APIs.image.helpers.ImageDTO;
+import hamdam.bookee.APIs.image.helpers.ImageResponseDTO;
 import hamdam.bookee.tools.annotations.ValidFile;
 import hamdam.bookee.tools.exceptions.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class ImageController {
      * @return ImageDTO
      */
     @GetMapping("{id}")
-    public ImageDTO getImageByID(@PathVariable Long id) {
+    public ImageResponseDTO getImageByID(@PathVariable Long id) {
         return imageService.getImageByID(id);
     }
 

@@ -6,9 +6,10 @@ package hamdam.bookee.APIs.role_request;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.role.Permissions;
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
-import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRoleRequestRequestDTO;
+import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
 import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
+import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
@@ -39,13 +40,13 @@ public class RoleRequestServiceImpl implements RoleRequestService {
     private final AppUserRepository userRepository;
 
     @Override
-    public RoleRequestResponse postRoleRequest(RoleRequestDTO roleRequestDTO) {
+    public RoleRequestResponseDTO postRoleRequest(RoleIdRoleRequest roleIdRoleRequest) {
         AppUserEntity requestingUser = getUserByRequest(userRepository);
         if (roleRequestRepository.existsByUserAndState(requestingUser, IN_PROGRESS)) {
             throw new AlreadyHasInProgressRequestException();
         }
-        AppRoleEntity role = roleRepository.findById(roleRequestDTO.getRoleId()).orElseThrow(
-                () -> new ResourceNotFoundException("Role", "id", roleRequestDTO.getRoleId()));
+        AppRoleEntity role = roleRepository.findById(roleIdRoleRequest.getRoleId()).orElseThrow(
+                () -> new ResourceNotFoundException("Role", "id", roleIdRoleRequest.getRoleId()));
         Set<Permissions> permissionsSet = getUserPermissions(requestingUser);
 
         if (!permissionsSet.contains(CREATE_ROLE_REQUEST)) {
@@ -54,13 +55,13 @@ public class RoleRequestServiceImpl implements RoleRequestService {
             throw new NotAllowedRoleOnRequestException();
         }
         RoleRequestEntity roleRequestEntity =
-                roleRequestRepository.save(RoleRequestMappers.mapToRoleRequestEntity(requestingUser, role, State.IN_PROGRESS));
+                roleRequestRepository.save(RoleRequestEntity.builder().user(requestingUser).requestedRole(role).state(IN_PROGRESS).build());
 
         return RoleRequestMappers.mapToRoleRequestResponse(roleRequestEntity, role.getRoleName());
     }
 
     @Override
-    public List<RoleRequestResponse> getAllRoleRequests(State state) {
+    public List<RoleRequestResponseDTO> getAllRoleRequests(State state) {
         List<RoleRequestEntity> responseList;
         if (state == null) {
             responseList = roleRequestRepository.findAll();
@@ -73,9 +74,9 @@ public class RoleRequestServiceImpl implements RoleRequestService {
         if (!permissionsSet.contains(MONITOR_ROLE_REQUEST)) {
             responseList = roleRequestRepository.findAllByUser(requestingUser);
         }
-        List<RoleRequestResponse> requestResponses = new ArrayList<>();
+        List<RoleRequestResponseDTO> requestResponses = new ArrayList<>();
         responseList.forEach(response -> {
-            RoleRequestResponse requestResponse = RoleRequestMappers.mapToRoleRequestResponse(response, response.getRequestedRole().getRoleName());
+            RoleRequestResponseDTO requestResponse = RoleRequestMappers.mapToRoleRequestResponse(response, response.getRequestedRole().getRoleName());
             requestResponses.add(requestResponse);
         });
         return requestResponses;
@@ -89,7 +90,7 @@ public class RoleRequestServiceImpl implements RoleRequestService {
      * @return A RoleRequestResponse object is being returned.
      */
     @Override
-    public RoleRequestResponse reviewRequest(Long id, ReviewRequestDTO review) {
+    public RoleRequestResponseDTO reviewRequest(Long id, ReviewRoleRequestRequestDTO review) {
         RoleRequestEntity roleRequestEntity = roleRequestRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Role request", "id", id)
         );

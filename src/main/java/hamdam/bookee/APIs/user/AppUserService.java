@@ -1,11 +1,11 @@
 package hamdam.bookee.APIs.user;
 
 import hamdam.bookee.APIs.auth.RegistrationRequest;
-import hamdam.bookee.APIs.image.helpers.UserImageDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserRequestDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
-import hamdam.bookee.APIs.user.helpers.UpdatePasswordRequest;
-import hamdam.bookee.APIs.user.helpers.SetRoleUserRequest;
+import hamdam.bookee.APIs.user.helpers.SetUserImageRequest;
+import hamdam.bookee.APIs.user.helpers.UserRequestDTO;
+import hamdam.bookee.APIs.user.helpers.UserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.PasswordUpdateRequest;
+import hamdam.bookee.APIs.user.helpers.SetUseRoleRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,15 +13,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public interface AppUserService extends UserDetailsService {
     void saveUser(RegistrationRequest request);
 
-    Page<AppUserResponseDTO> getAllUsers(Pageable pageable);
+    Page<UserResponseDTO> getAllUsers(Pageable pageable);
 
-    AppUserResponseDTO getUserById(Long id);
+    UserResponseDTO getUserById(Long id);
 
-    AppUserResponseDTO updateUser(AppUserRequestDTO newUser, Long id);
+    UserResponseDTO updateUser(UserRequestDTO newUser, Long id);
 
-    AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO);
+    UserResponseDTO setImageToUser(Long id, SetUserImageRequest imageDTO);
 
-    AppUserResponseDTO setRoleToUser(Long id, SetRoleUserRequest setRoleUserRequest);
+    UserResponseDTO setRoleToUser(Long id, SetUseRoleRequest setUseRoleRequest);
 
     void deleteUser(Long id);
 
@@ -29,5 +29,5 @@ public interface AppUserService extends UserDetailsService {
 
     AppUserEntity getUserByUsername(String username, boolean withPermissions);
 
-    AppUserResponseDTO updatePassword(UpdatePasswordRequest passwordDTO, Long id);
+    UserResponseDTO updatePassword(PasswordUpdateRequest passwordDTO, Long id);
 }

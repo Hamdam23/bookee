@@ -3,10 +3,8 @@ package hamdam.bookee.APIs.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -59,8 +57,8 @@ class AuthControllerTest {
     void register_shouldRegisterUser() throws Exception {
         //given
         String username = "blood";
-        RegistrationRequest request = new RegistrationRequest("blood-seeker", username, "pass");
-        roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", true, LocalDateTime.now()));
+        RegistrationRequest request = new RegistrationRequest("blood-seeker", username, "pass", null);
+        roleRepository.save(AppRoleEntity.builder().roleName("role").isDefault(true).timeStamp(LocalDateTime.now()).build());
 
         //when
         ResultActions perform = mockMvc.perform(post(API_REGISTER)
@@ -81,8 +79,8 @@ class AuthControllerTest {
     @Test
     void refreshToken_shouldRefreshToken() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE)));
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("name").permissions(Set.of(MONITOR_ROLE)).build());
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
         //when
         ResultActions perform = mockMvc.perform(get(API_TOKEN_REFRESH)

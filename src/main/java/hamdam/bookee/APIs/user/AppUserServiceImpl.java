@@ -3,7 +3,7 @@ package hamdam.bookee.APIs.user;
 import hamdam.bookee.APIs.auth.RegistrationRequest;
 import hamdam.bookee.APIs.image.ImageEntity;
 import hamdam.bookee.APIs.image.ImageRepository;
-import hamdam.bookee.APIs.image.helpers.UserImageDTO;
+import hamdam.bookee.APIs.user.helpers.SetUserImageRequest;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
 import hamdam.bookee.APIs.user.helpers.*;
@@ -92,7 +92,7 @@ public class AppUserServiceImpl implements AppUserService {
      * @return A Page of AppUserResponseDTO
      */
     @Override
-    public Page<AppUserResponseDTO> getAllUsers(Pageable pageable) {
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
         return userRepository.findAllByOrderByTimeStampDesc(pageable).map(UserMappers::mapToAppUserResponseDTO);
     }
 
@@ -103,7 +103,7 @@ public class AppUserServiceImpl implements AppUserService {
      * @return A user object
      */
     @Override
-    public AppUserResponseDTO getUserById(Long id) {
+    public UserResponseDTO getUserById(Long id) {
         return UserMappers.mapToAppUserResponseDTO(userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id))
         );
@@ -111,7 +111,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     // Updating the user.
     @Override
-    public AppUserResponseDTO updateUser(AppUserRequestDTO request, Long id) {
+    public UserResponseDTO updateUser(UserRequestDTO request, Long id) {
         AppUserEntity existingUser = getAppUserById(id);
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 
@@ -152,7 +152,7 @@ public class AppUserServiceImpl implements AppUserService {
      * @return The user's image is being returned.
      */
     @Override
-    public AppUserResponseDTO setImageToUser(Long id, UserImageDTO imageDTO) {
+    public UserResponseDTO setImageToUser(Long id, SetUserImageRequest imageDTO) {
 
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 
@@ -179,7 +179,7 @@ public class AppUserServiceImpl implements AppUserService {
      * @return AppUserResponseDTO
      */
     @Override
-    public AppUserResponseDTO setRoleToUser(Long id, SetRoleUserRequest roleDTO) {
+    public UserResponseDTO setRoleToUser(Long id, SetUseRoleRequest roleDTO) {
         AppUserEntity user = getAppUserById(id);
         AppRoleEntity appRoleEntity = roleRepository.findById(roleDTO.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleDTO.getRoleId()));
@@ -217,7 +217,7 @@ public class AppUserServiceImpl implements AppUserService {
      * @return A user object
      */
     @Override
-    public AppUserResponseDTO updatePassword(UpdatePasswordRequest passwordDTO, Long id) {
+    public UserResponseDTO updatePassword(PasswordUpdateRequest passwordDTO, Long id) {
         AppUserEntity user = getAppUserById(id);
         AppUserEntity requestingUser = getUserByRequest(userRepository);
 

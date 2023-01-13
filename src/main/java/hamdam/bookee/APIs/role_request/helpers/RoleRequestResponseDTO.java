@@ -1,17 +1,17 @@
-package hamdam.bookee.APIs.role_request;
+package hamdam.bookee.APIs.role_request.helpers;
 
-import hamdam.bookee.APIs.role_request.helpers.UserOnRoleRequestDTO;
+import hamdam.bookee.APIs.role_request.State;
+import hamdam.bookee.APIs.user.helpers.UserResponseDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class RoleRequestResponse {
+public class RoleRequestResponseDTO {
     private Long id;
-    private UserOnRoleRequestDTO user;
+    private UserResponseDTO user;
     private String requestedRole;
     private LocalDateTime timeStamp;
     private State state;

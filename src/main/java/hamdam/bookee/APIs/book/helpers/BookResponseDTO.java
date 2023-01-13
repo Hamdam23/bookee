@@ -3,7 +3,7 @@ package hamdam.bookee.APIs.book.helpers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hamdam.bookee.APIs.genre.helpers.GenreResponseDTO;
-import hamdam.bookee.APIs.user.helpers.AppUserResponseDTO;
+import hamdam.bookee.APIs.user.helpers.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +28,7 @@ public class BookResponseDTO {
     private String tagline;
     private String description;
     @JsonProperty("authors")
-    private List<AppUserResponseDTO> authors = new ArrayList<>();
+    private List<UserResponseDTO> authors = new ArrayList<>();
     private Double rating;
     private List<GenreResponseDTO> genres = new ArrayList<>();
 }

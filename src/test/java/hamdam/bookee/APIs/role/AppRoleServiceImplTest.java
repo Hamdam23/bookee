@@ -5,7 +5,6 @@ import hamdam.bookee.APIs.role.helpers.AppRoleResponseDTO;
 import hamdam.bookee.APIs.role.helpers.RoleMappers;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.exceptions.DuplicateResourceException;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import hamdam.bookee.tools.exceptions.pemission.LimitedPermissionException;
@@ -91,12 +90,16 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    @WithMockUser(username = "Hamdam")
+    @WithMockUser(username = "niko")
     void deleteRoleById_shouldThrowExceptionWhenUserDoesNotHaveValidPermission() {
         //given
         Long id = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(GET_USER));
-        AppUserEntity user = UserMappers.mapToAppUserEntity("Hamdam", role);
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(GET_USER)).build();
+        AppUserEntity user = AppUserEntity
+                .builder()
+                .username("niko")
+                .role(role)
+                .build();
 
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
@@ -107,11 +110,15 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    @WithMockUser(username = "Hamdam")
+    @WithMockUser(username = "niko")
     void deleteRoleById_shouldThrowExceptionWhenRoleIdIsInvalid() {
         Long id = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_ROLE));
-        AppUserEntity user = UserMappers.mapToAppUserEntity("Hamdam", role);
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_ROLE)).build();
+        AppUserEntity user = AppUserEntity
+                .builder()
+                .username("niko")
+                .role(role)
+                .build();
 
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
@@ -123,12 +130,16 @@ class AppRoleServiceImplTest {
     }
 
     @Test
-    @WithMockUser(username = "Hamdam")
+    @WithMockUser(username = "niko")
     void deleteRoleById_shouldReturnValidResponseWhenRequestIsValid() {
         //given
         Long id = 1L;
-        AppRoleEntity role = RoleMappers.mapToAppRoleEntity("USER", Set.of(MONITOR_ROLE));
-        AppUserEntity user = UserMappers.mapToAppUserEntity("Hamdam", role);
+        AppRoleEntity role = AppRoleEntity.builder().roleName("USER").permissions(Set.of(MONITOR_ROLE)).build();
+        AppUserEntity user = AppUserEntity
+                .builder()
+                .username("niko")
+                .role(role)
+                .build();
 
         when(appRoleRepository.existsById(id)).thenReturn(true);
         when(appUserRepository.findAppUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
