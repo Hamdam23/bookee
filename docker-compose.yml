@@ -2,7 +2,9 @@ version: '2'
 
 services:
   app:
-    image: 'bookee'
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
@@ -10,11 +12,11 @@ services:
     environment:
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://PostgreSQL:5432/bookee
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bookee
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     networks:
-      - host
+      - bookee-net
 
   db:
     image: 'postgres:14.6-alpine'
@@ -22,12 +24,13 @@ services:
     ports:
       - "5454:5432"
     volumes:
-      - ./postgresql/:/var/lib/postgresql/data/
+      - ./postgresql-data1/:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bookee
     networks:
-      - host
+      - bookee-net
 
 networks:
-  host:
+  bookee-net:
