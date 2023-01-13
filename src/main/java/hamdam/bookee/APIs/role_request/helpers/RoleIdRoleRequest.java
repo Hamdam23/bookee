@@ -1,4 +1,4 @@
-package hamdam.bookee.APIs.user.helpers;
+package hamdam.bookee.APIs.role_request.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -6,17 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 /**
- * It's a DTO class that maps to the app_user_role table
+ * It's a DTO class that contains a roleId field
  */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUserRoleDTO {
+public class RoleIdRoleRequest {
 
     @JsonProperty("role_id")
-    private Long id;
-    @JsonProperty("role_name")
-    private String roleName;
+    @NotNull(message = "role_id name can not be null!")
+    private Long roleId;
 }

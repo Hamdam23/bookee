@@ -1,8 +1,7 @@
 package hamdam.bookee.APIs.image;
 
 import hamdam.bookee.APIs.image.aws_s3.S3Repository;
-import hamdam.bookee.APIs.image.helpers.ImageDTO;
-import hamdam.bookee.APIs.image.helpers.ImageMappers;
+import hamdam.bookee.APIs.image.helpers.ImageResponseDTO;
 import hamdam.bookee.tools.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +42,7 @@ class ImageServiceImplTest {
         MultipartFile file = new MockMultipartFile("godzilla", "godzilla.png", "image/png", "godzilla".getBytes());
         String url = BUCKET_NAME + file.getOriginalFilename();
         when(s3Repository.writeFileToS3(any(), any(), any())).thenReturn(url);
-        when(imageRepository.save(any())).thenReturn(ImageMappers.mapToImageEntity(file.getOriginalFilename(), url));
+        when(imageRepository.save(any())).thenReturn(ImageEntity.builder().imageName(file.getOriginalFilename()).url(url).build());
 
         //when
         ImageEntity actual = underTest.uploadImage(file);
@@ -68,13 +67,13 @@ class ImageServiceImplTest {
         //given
         Long id = 1L;
         String name = "godzilla";
-        String location = "movies/Narnia";
-        ImageEntity image = ImageMappers.mapToImageEntity(name, location);
+        String url = "movies/Narnia";
+        ImageEntity image = ImageEntity.builder().imageName(name).url(url).build();
         image.setId(id);
         when(imageRepository.findById(id)).thenReturn(Optional.of(image));
 
         //when
-        ImageDTO actual = underTest.getImageByID(id);
+        ImageResponseDTO actual = underTest.getImageByID(id);
 
         //then
         assertThat(actual.getImageName()).isEqualTo(name);
@@ -99,7 +98,7 @@ class ImageServiceImplTest {
     void deleteImageById_returnValidResponseWhenIdIsValid() {
         //given
         Long id = 1L;
-        ImageEntity image = ImageMappers.mapToImageEntity("name", "location");
+        ImageEntity image = ImageEntity.builder().imageName("name").url("url").build();
         when(imageRepository.findById(id)).thenReturn(Optional.of(image));
 
         //when

@@ -11,13 +11,6 @@ import java.util.stream.Collectors;
  */
 public class GenreMappers {
 
-    public static GenreRequestDTO mapToGenreRequestDTO(String name, String description) {
-        GenreRequestDTO genreRequest = new GenreRequestDTO();
-        genreRequest.setName(name);
-        genreRequest.setDescription(description);
-        return genreRequest;
-    }
-
     public static GenreResponseDTO mapToGenreResponseDTO(GenreEntity entity) {
         if (entity == null) return null;
         GenreResponseDTO response = new GenreResponseDTO();
@@ -27,15 +20,9 @@ public class GenreMappers {
     }
 
     public static GenreEntity mapToGenreEntity(GenreRequestDTO genreRequestDTO) {
+        if (genreRequestDTO == null) return null;
         GenreEntity entity = new GenreEntity();
         BeanUtils.copyProperties(genreRequestDTO, entity);
-        return entity;
-    }
-
-    public static GenreEntity mapToGenreEntity(String name, String description) {
-        GenreEntity entity = new GenreEntity();
-        entity.setName(name);
-        entity.setDescription(description);
         return entity;
     }
 }

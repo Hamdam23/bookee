@@ -1,9 +1,8 @@
 package hamdam.bookee.APIs.auth;
 
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
+import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserService;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,13 +33,17 @@ class AuthServiceImplTest {
     void registerUser_returnValidResponseWhenRequestIsValid() {
         //given
         String username = "niko";
-        AppUserEntity user = UserMappers.mapToAppUserEntity(username, RoleMappers.mapToAppRoleEntity("role"));
+        AppUserEntity user = AppUserEntity
+                .builder()
+                .username(username)
+                .role(AppRoleEntity.builder().roleName("role").build())
+                .build();
         when(userService.getUserByUsername(username, true)).thenReturn(user);
         when(tokenProvider.getTokenResponse(user)).thenReturn(
                 new TokensResponse("a", "b", "c", "d", "e", Set.of(GET_USER)));
 
         //when
-        TokensResponse actual = underTest.registerUser(new RegistrationRequest("Nikola", username, "pass"));
+        TokensResponse actual = underTest.registerUser(new RegistrationRequest("Nikola", username, "pass", null));
 
         //then
         verify(userService).getUserByUsername(username, true);

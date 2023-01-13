@@ -3,6 +3,8 @@ package hamdam.bookee.APIs.genre;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hamdam.bookee.APIs.book.BookEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +28,8 @@ import static hamdam.bookee.tools.constants.TableNames.TABLE_NAME_GENRE;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = TABLE_NAME_GENRE)
 @JsonIgnoreProperties(value = {"books"})
 public class GenreEntity {
@@ -48,8 +52,4 @@ public class GenreEntity {
     @UpdateTimestamp
     private LocalDateTime timeStamp;
 
-    public GenreEntity(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
 }

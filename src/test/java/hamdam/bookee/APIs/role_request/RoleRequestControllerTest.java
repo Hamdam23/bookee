@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hamdam.bookee.APIs.role.AppRoleEntity;
 import hamdam.bookee.APIs.role.AppRoleRepository;
-import hamdam.bookee.APIs.role.helpers.RoleMappers;
-import hamdam.bookee.APIs.role_request.helpers.ReviewRequestDTO;
-import hamdam.bookee.APIs.role_request.helpers.RoleRequestDTO;
-import hamdam.bookee.APIs.role_request.helpers.RoleRequestMappers;
+import hamdam.bookee.APIs.role_request.helpers.ReviewRoleRequestRequestDTO;
+import hamdam.bookee.APIs.role_request.helpers.RoleIdRoleRequest;
+import hamdam.bookee.APIs.role_request.helpers.RoleRequestResponseDTO;
 import hamdam.bookee.APIs.user.AppUserEntity;
 import hamdam.bookee.APIs.user.AppUserRepository;
-import hamdam.bookee.APIs.user.helpers.UserMappers;
 import hamdam.bookee.tools.utils.TokenProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -26,12 +24,20 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static hamdam.bookee.APIs.role.Permissions.*;
-import static hamdam.bookee.APIs.role_request.State.*;
+import static hamdam.bookee.APIs.role.Permissions.CREATE_ROLE_REQUEST;
+import static hamdam.bookee.APIs.role.Permissions.GET_ROLE_REQUEST;
+import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE;
+import static hamdam.bookee.APIs.role.Permissions.MONITOR_ROLE_REQUEST;
+import static hamdam.bookee.APIs.role_request.State.ACCEPTED;
+import static hamdam.bookee.APIs.role_request.State.DECLINED;
+import static hamdam.bookee.APIs.role_request.State.IN_PROGRESS;
 import static hamdam.bookee.tools.constants.Endpoints.API_ROLE_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -66,11 +72,11 @@ class RoleRequestControllerTest {
     @Test
     void sendRoleRequest_shouldSendRoleRequest() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(CREATE_ROLE_REQUEST)));
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(CREATE_ROLE_REQUEST)).build());
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
-        AppRoleEntity existingRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("powerful", Set.of(MONITOR_ROLE)));
-        RoleRequestDTO request = new RoleRequestDTO(existingRole.getId());
+        AppRoleEntity existingRole = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE)).build());
+        RoleIdRoleRequest request = new RoleIdRoleRequest(existingRole.getId());
 
         //when
         ResultActions perform = mockMvc.perform(post(API_ROLE_REQUEST)
@@ -80,7 +86,7 @@ class RoleRequestControllerTest {
         );
 
         //then
-        RoleRequestResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), RoleRequestResponse.class);
+        RoleRequestResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), RoleRequestResponseDTO.class);
         perform.andExpect(status().isOk());
         assertThat(roleRequestRepository.existsById(response.getId())).isTrue();
         assertThat(response.getState()).isEqualTo(IN_PROGRESS);
@@ -89,17 +95,17 @@ class RoleRequestControllerTest {
     @Test
     void getAllRoleRequests_shouldGetAllRoleRequests() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
-        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
-        AppUserEntity sam = userRepository.save(UserMappers.mapToAppUserEntity("sam", "sammy", "pass", userRole));
+        AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
+        AppUserEntity sam = userRepository.save(AppUserEntity.builder().name("sam").username("sammy").password("pass").role(userRole).build());
         List<RoleRequestEntity> requestEntities = List.of(
-                RoleRequestMappers.mapToRoleRequestEntity(phil, role, ACCEPTED),
-                RoleRequestMappers.mapToRoleRequestEntity(bill, role, IN_PROGRESS),
-                RoleRequestMappers.mapToRoleRequestEntity(sam, role, DECLINED)
+                RoleRequestEntity.builder().user(phil).requestedRole(role).state(ACCEPTED).build(),
+                RoleRequestEntity.builder().user(bill).requestedRole(role).state(IN_PROGRESS).build(),
+                RoleRequestEntity.builder().user(sam).requestedRole(role).state(DECLINED).build()
         );
         roleRequestRepository.saveAll(requestEntities);
 
@@ -109,11 +115,11 @@ class RoleRequestControllerTest {
         );
 
         //then
-        List<RoleRequestResponse> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+        List<RoleRequestResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
         assertThat(response)
-                .extracting(RoleRequestResponse::getId)
+                .extracting(RoleRequestResponseDTO::getId)
                 .containsExactlyInAnyOrderElementsOf(
                         requestEntities.stream().map(RoleRequestEntity::getId).collect(Collectors.toList())
                 );
@@ -123,17 +129,17 @@ class RoleRequestControllerTest {
     @Test
     void getAllRoleRequests_shouldGetAllAcceptedRoleRequests() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
-        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
-        AppUserEntity bill = userRepository.save(UserMappers.mapToAppUserEntity("bill", "billy", "pass", userRole));
-        AppUserEntity sam = userRepository.save(UserMappers.mapToAppUserEntity("sam", "sammy", "pass", userRole));
+        AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
+        AppUserEntity bill = userRepository.save(AppUserEntity.builder().name("bill").username("billy").password("pass").role(userRole).build());
+        AppUserEntity sam = userRepository.save(AppUserEntity.builder().name("sam").username("sammy").password("pass").role(userRole).build());
         List<RoleRequestEntity> requestEntities = List.of(
-                RoleRequestMappers.mapToRoleRequestEntity(phil, role, ACCEPTED),
-                RoleRequestMappers.mapToRoleRequestEntity(bill, role, ACCEPTED),
-                RoleRequestMappers.mapToRoleRequestEntity(sam, role, DECLINED)
+                RoleRequestEntity.builder().user(phil).requestedRole(role).state(ACCEPTED).build(),
+                RoleRequestEntity.builder().user(bill).requestedRole(role).state(ACCEPTED).build(),
+                RoleRequestEntity.builder().user(sam).requestedRole(role).state(DECLINED).build()
         );
         roleRequestRepository.saveAll(requestEntities);
 
@@ -144,11 +150,11 @@ class RoleRequestControllerTest {
         );
 
         //then
-        List<RoleRequestResponse> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+        List<RoleRequestResponseDTO> response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), new TypeReference<>() {
         });
         perform.andExpect(status().isOk());
         assertThat(response)
-                .extracting(RoleRequestResponse::getId)
+                .extracting(RoleRequestResponseDTO::getId)
                 .containsExactlyInAnyOrderElementsOf(
                         requestEntities.stream()
                                 .filter(state -> (state.getState() == ACCEPTED))
@@ -160,14 +166,14 @@ class RoleRequestControllerTest {
     @Test
     void reviewRequest_shouldReviewRoleRequest() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
-        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
-        RoleRequestEntity existingRequest = roleRequestRepository.save(RoleRequestMappers.mapToRoleRequestEntity(phil, role, IN_PROGRESS));
+        AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
+        RoleRequestEntity existingRequest = roleRequestRepository.save(RoleRequestEntity.builder().user(phil).requestedRole(role).state(IN_PROGRESS).build());
 
-        ReviewRequestDTO request = new ReviewRequestDTO(DECLINED, "very bad");
+        ReviewRoleRequestRequestDTO request = new ReviewRoleRequestRequestDTO(DECLINED, "very bad");
 
         //when
         ResultActions perform = mockMvc.perform(put(API_ROLE_REQUEST + "/" + existingRequest.getId())
@@ -177,7 +183,7 @@ class RoleRequestControllerTest {
         );
 
         //then
-        RoleRequestResponse response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), RoleRequestResponse.class);
+        RoleRequestResponseDTO response = objectMapper.readValue(perform.andReturn().getResponse().getContentAsString(), RoleRequestResponseDTO.class);
         perform.andExpect(status().isOk());
         assertThat(response.getId()).isEqualTo(existingRequest.getId());
         assertThat(response.getState()).isEqualTo(request.getState());
@@ -186,12 +192,12 @@ class RoleRequestControllerTest {
     @Test
     void reviewRequest_shouldDeleteRoleRequest() throws Exception {
         //given
-        AppRoleEntity role = roleRepository.save(RoleMappers.mapToAppRoleEntity("role-name", Set.of(MONITOR_ROLE_REQUEST)));
-        AppUserEntity user = userRepository.save(UserMappers.mapToAppUserEntity("nikola", "niko", "pass", role));
+        AppRoleEntity role = roleRepository.save(AppRoleEntity.builder().roleName("role-name").permissions(Set.of(MONITOR_ROLE_REQUEST)).build());
+        AppUserEntity user = userRepository.save(AppUserEntity.builder().name("nikola").username("niko").password("pass").role(role).build());
 
-        AppRoleEntity userRole = roleRepository.save(RoleMappers.mapToAppRoleEntity("user-role", Set.of(GET_ROLE_REQUEST)));
-        AppUserEntity phil = userRepository.save(UserMappers.mapToAppUserEntity("phil", "philly", "pass", userRole));
-        RoleRequestEntity existingRequest = roleRequestRepository.save(RoleRequestMappers.mapToRoleRequestEntity(phil, role, IN_PROGRESS));
+        AppRoleEntity userRole = roleRepository.save(AppRoleEntity.builder().roleName("user-role").permissions(Set.of(GET_ROLE_REQUEST)).build());
+        AppUserEntity phil = userRepository.save(AppUserEntity.builder().name("phil").username("philly").password("pass").role(userRole).build());
+        RoleRequestEntity existingRequest = roleRequestRepository.save(RoleRequestEntity.builder().user(phil).requestedRole(role).state(IN_PROGRESS).build());
 
         //when
         ResultActions perform = mockMvc.perform(delete(API_ROLE_REQUEST + "/" + existingRequest.getId())

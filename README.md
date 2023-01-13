@@ -13,30 +13,54 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 <!-- TABLE OF CONTENTS -->
-## Table of Contents
+## <span style="font-weight:bold">Table of Contents</span>
 
-* [Built-With](#built-with)
-* [Requirements](#requirements)
+* [Tech Stack](#tech-stack)
+* [Database-Relationships](#database-relationships)
+* [API docs](#api-docs)
+* [Usage](#usage)
 * [Running](#running)
 * [Contact](#contact)
-* [License](#license)
 
-### Built-With
-* [Spring Boot](https://spring.io/projects/spring-boot)
-* [PostgreSQL](https://www.postgresql.org/)
+## Tech stack
 
-## Requirements
+This REST API is developed using Java programming language and Spring Boot starter of Spring framework. The full tech stack:
 
-For building and running the application you need:
+  - [Spring Boot](https://spring.io/projects/spring-boot)
+  - [Spring Security](https://spring.io/projects/spring-security) for authentication and authorization
+  - [JWT](https://auth0.com/docs/secure/tokens/json-web-tokens) for tokens and share security information between two parties — a client and a server
+  - [AWS S3](https://aws.amazon.com/s3/) for storing images and other files
+  - [JUnit 5](https://junit.org/junit5/) for unit and integration tests
+  - [TestContainer](https://www.testcontainers.org/) for using Docker images in integration tests
+  - [Localstack](https://github.com/localstack/localstack) for mocking AWS services in integration tests
+  - [Spring Data JPA](https://spring.io/projects/spring-data-jpa) for data access layers
+  - [PostgreSQL](https://www.postgresql.org/) for Database
+  - [FlywayDB](https://flywaydb.org/) for Database migrations
+  - [Lombok](https://projectlombok.org/) for reducing boilerplate code
+  - and etc.
 
-- [JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-- [Maven 3](https://maven.apache.org)
+
+## Database-Relationships
+
+![image](https://user-images.githubusercontent.com/90045606/206860056-0dfe4f92-1614-45ab-87ea-321a247194db.png)
+
+## API docs
+
+<p>Check out. You can review Postman Documenter on this <a href="https://documenter.getpostman.com/view/23459056/2s8YzTT2Vd">url.</a></p>
+
+## Usage
+
+**Attention!** This project uses environment variables for some configuration properties. Define your environment variables in application.yml file. Otherwise default values will be used.
+
+  - AWS_ACCESS_KEY
+  - AWS_SECRET_KEY
+
+**Hint**: Get AWS access and secret keys from your [Amazon Web Services console](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html)
 
 ## Running
 
@@ -60,9 +84,7 @@ mvn spring-boot:run
   <img src="https://img.shields.io/badge/gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" />
 </a>&nbsp;
 
-## License
-
-Released under the Apache License 2.0. See the [LICENSE](https://github.com/Hamdam23/bookee/blob/master/LICENSE) file.
+<br>Released under the Apache License 2.0. See the [LICENSE](https://github.com/Hamdam23/bookee/blob/master/LICENSE) file.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->

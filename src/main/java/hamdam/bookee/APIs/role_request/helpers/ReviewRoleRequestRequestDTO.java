@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewRequestDTO {
+public class ReviewRoleRequestRequestDTO {
 
     @NotNull
     private State state;
