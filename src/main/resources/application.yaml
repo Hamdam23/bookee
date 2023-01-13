@@ -1,7 +1,7 @@
 #db stuff
 spring:
   datasource:
-    url: jdbc:postgresql://db:5432/bookee
+    url: jdbc:postgresql://localhost:5432/bookee
     username: postgres
     password: postgres
   flyway:
